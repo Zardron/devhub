@@ -1,0 +1,57 @@
+import mongoose, { Schema, Model, Document, Types } from 'mongoose';
+import { Event, IEvent } from './event.model';
+
+export interface IBooking extends Document {
+    eventId: Types.ObjectId;
+    email: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+// Email validation regex
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const bookingSchema = new Schema<IBooking>(
+    {
+        eventId: {
+            type: Schema.Types.ObjectId,
+            ref: 'Event',
+            required: [true, 'Event ID is required'],
+            index: true,
+        },
+        email: {
+            type: String,
+            required: [true, 'Email is required'],
+            trim: true,
+            lowercase: true,
+            validate: {
+                validator: (v: string) => {
+                    if (!v || v.trim().length === 0) return false;
+                    return emailRegex.test(v);
+                },
+                message: 'Email must be a valid email address',
+            },
+        },
+    },
+    {
+        timestamps: true,
+    }
+);
+
+// Validate event exists before saving booking
+(bookingSchema as any).pre('save', async function (this: IBooking, next: (err?: Error) => void) {
+    try {
+        const event = await Event.findById(this.eventId);
+        if (!event) {
+            return next(new Error(`Event with ID ${this.eventId} does not exist`));
+        }
+        next();
+    } catch (error) {
+        next(error instanceof Error ? error : new Error('Failed to validate event reference'));
+    }
+});
+
+bookingSchema.index({ eventId: 1 });
+
+export const Booking: Model<IBooking> = mongoose.models.Booking || mongoose.model<IBooking>('Booking', bookingSchema);
+
