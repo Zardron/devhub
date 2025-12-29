@@ -202,6 +202,10 @@
   #event {
     .header {
       @apply flex w-2/3 flex-col items-start gap-4 max-lg:w-full mb-10;
+
+      p {
+        @apply text-light-200 text-sm font-light;
+      }
     }
 
     .details {
@@ -239,7 +243,7 @@
     }
 
     p {
-      @apply text-light-100 text-lg max-sm:text-sm;
+      @apply text-light-200 text-sm font-light;
     }
 
     .flex-col-gap-2 {

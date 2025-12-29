@@ -9,7 +9,7 @@ const page = async () => {
   const { events } = await response.json();
 
   return (
-    <section className="container mx-auto px-10 py-10">
+    <section>
       <h1 className="text-center">All Developer Events. <br /> <span className=" text-blue">One Platform. Your Future.</span></h1>
       <p className="text-center mt-5">Hackathons, Conferences, Workshops, and more. All in one place.</p>
 
