@@ -10,8 +10,8 @@ const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const pathname = usePathname()
 
-    // Hide navbar on sign-in page
-    if (pathname === '/sign-in') {
+    // Hide navbar on sign-in and sign-up pages
+    if (pathname === '/sign-in' || pathname === '/sign-up') {
         return null
     }
 
