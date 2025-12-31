@@ -1,15 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
 const SignUpPage = () => {
+    const router = useRouter();
     const [name, setName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [apiError, setApiError] = useState<string>('');
+    const [success, setSuccess] = useState<string>('');
+
+    // Check if user is already authenticated and redirect
+    useEffect(() => {
+        const checkAuth = async () => {
+            if (typeof window === 'undefined') return;
+
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            // Immediately redirect if token exists (optimistic check)
+            // Then verify token is valid in background
+            router.replace('/');
+
+            // Verify token is valid in background
+            try {
+                const response = await fetch('/api/auth/sign-in', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    // Token is invalid, remove it
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                }
+            } catch (error) {
+                // Error verifying token, remove it
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+            }
+        };
+
+        checkAuth();
+    }, [router]);
 
     // Password validation regex: at least 8 characters, contains uppercase, lowercase, number, and special character
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -53,25 +94,52 @@ const SignUpPage = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
+        setApiError('');
+        setSuccess('');
+
         if (!validateForm()) {
             return;
         }
 
-        // TODO: Implement sign-up logic - call API to create user
+        setIsSubmitting(true);
+
         try {
-            // This will be implemented when the API route is created
-            console.log('Sign up:', { name, email, password });
+            const response = await fetch('/api/auth/sign-up', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setSuccess(data.message || 'Account created successfully!');
+                // Store token in localStorage
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                }
+                // Redirect to home page after a short delay
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1500);
+            } else {
+                setApiError(data.message || 'Something went wrong. Please try again.');
+            }
         } catch (error) {
-            console.error('Sign up error:', error);
+            setApiError('Failed to create account. Please try again later.');
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
     return (
         <section className="fixed inset-0 h-screen w-full z-10 flex items-center justify-center p-4 sm:p-6 lg:p-8">
             {/* Back to Home Link - Upper Left */}
-            <Link 
-                href="/" 
+            <Link
+                href="/"
                 className="fixed top-6 left-6 z-50 flex items-center gap-2 text-light-200 hover:text-primary transition-colors duration-200 group"
             >
                 <span className="text-lg group-hover:-translate-x-1 transition-transform duration-200">←</span>
@@ -89,7 +157,7 @@ const SignUpPage = () => {
             <div className="w-full max-w-5xl mx-auto bg-dark-100/40 backdrop-blur-2xl border border-blue/20 rounded-2xl shadow-2xl overflow-hidden relative animate-scale-in">
                 {/* Subtle inner glow */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue/5 pointer-events-none" />
-                
+
                 <div className="relative z-10 flex flex-col lg:flex-row">
                     {/* Left Panel - Branding & Visuals */}
                     <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
@@ -152,7 +220,7 @@ const SignUpPage = () => {
                     </div>
 
                     {/* Right Panel - Sign Up Form */}
-                    <div className="w-full lg:w-1/2 flex items-center justify-center px-6 sm:px-8 lg:px-10 py-8 relative">
+                    <div className="w-full lg:w-1/2 flex items-center justify-center px-6 sm:px-8 lg:px-10 py-8 relative animate-fade-in-up">
                         <div className="w-full max-w-sm relative z-10">
                             {/* Mobile Logo */}
                             <div className="lg:hidden mb-8 text-center animate-fade-in-up">
@@ -189,16 +257,16 @@ const SignUpPage = () => {
                             </div>
 
                             {/* Sign Up Form Card */}
-                            <div className="bg-dark-200/60 backdrop-blur-xl border border-blue/20 rounded-xl shadow-lg px-5 py-6 relative overflow-hidden">
+                            <div className="bg-dark-200/60 backdrop-blur-xl border border-blue/20 rounded-xl shadow-lg px-5 py-6 relative overflow-hidden animate-fade-in-up">
                                 {/* Subtle glow effect inside card */}
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                                
+
                                 <form onSubmit={handleSubmit} className="relative z-10">
                                     <div className="flex flex-col gap-4">
                                         {/* Name Field */}
                                         <div className="space-y-1.5">
-                                            <label 
-                                                htmlFor="name" 
+                                            <label
+                                                htmlFor="name"
                                                 className="text-light-100 text-xs font-medium block"
                                             >
                                                 Full Name
@@ -215,9 +283,8 @@ const SignUpPage = () => {
                                                 }}
                                                 required
                                                 maxLength={100}
-                                                className={`bg-dark-100/80 backdrop-blur-sm rounded-lg px-4 py-2.5 w-full text-sm text-foreground placeholder:text-light-200/60 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 border transition-all duration-300 hover:border-blue/30 ${
-                                                    errors.name ? 'border-red-500/50' : 'border-border-dark/50'
-                                                }`}
+                                                className={`bg-dark-100/80 backdrop-blur-sm rounded-lg px-4 py-2.5 w-full text-sm text-foreground placeholder:text-light-200/60 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 border transition-all duration-300 hover:border-blue/30 ${errors.name ? 'border-red-500/50' : 'border-border-dark/50'
+                                                    }`}
                                             />
                                             {errors.name && (
                                                 <p className="text-red-400 text-xs mt-0.5">{errors.name}</p>
@@ -226,8 +293,8 @@ const SignUpPage = () => {
 
                                         {/* Email Field */}
                                         <div className="space-y-1.5">
-                                            <label 
-                                                htmlFor="email" 
+                                            <label
+                                                htmlFor="email"
                                                 className="text-light-100 text-xs font-medium block"
                                             >
                                                 Email Address
@@ -243,9 +310,8 @@ const SignUpPage = () => {
                                                     if (errors.email) setErrors({ ...errors, email: '' });
                                                 }}
                                                 required
-                                                className={`bg-dark-100/80 backdrop-blur-sm rounded-lg px-4 py-2.5 w-full text-sm text-foreground placeholder:text-light-200/60 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 border transition-all duration-300 hover:border-blue/30 ${
-                                                    errors.email ? 'border-red-500/50' : 'border-border-dark/50'
-                                                }`}
+                                                className={`bg-dark-100/80 backdrop-blur-sm rounded-lg px-4 py-2.5 w-full text-sm text-foreground placeholder:text-light-200/60 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 border transition-all duration-300 hover:border-blue/30 ${errors.email ? 'border-red-500/50' : 'border-border-dark/50'
+                                                    }`}
                                             />
                                             {errors.email && (
                                                 <p className="text-red-400 text-xs mt-0.5">{errors.email}</p>
@@ -254,8 +320,8 @@ const SignUpPage = () => {
 
                                         {/* Password Field */}
                                         <div className="space-y-1.5">
-                                            <label 
-                                                htmlFor="password" 
+                                            <label
+                                                htmlFor="password"
                                                 className="text-light-100 text-xs font-medium block"
                                             >
                                                 Password
@@ -274,9 +340,8 @@ const SignUpPage = () => {
                                                     }
                                                 }}
                                                 required
-                                                className={`bg-dark-100/80 backdrop-blur-sm rounded-lg px-4 py-2.5 w-full text-sm text-foreground placeholder:text-light-200/60 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 border transition-all duration-300 hover:border-blue/30 ${
-                                                    errors.password ? 'border-red-500/50' : 'border-border-dark/50'
-                                                }`}
+                                                className={`bg-dark-100/80 backdrop-blur-sm rounded-lg px-4 py-2.5 w-full text-sm text-foreground placeholder:text-light-200/60 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 border transition-all duration-300 hover:border-blue/30 ${errors.password ? 'border-red-500/50' : 'border-border-dark/50'
+                                                    }`}
                                             />
                                             {errors.password && (
                                                 <p className="text-red-400 text-xs mt-0.5">{errors.password}</p>
@@ -288,8 +353,8 @@ const SignUpPage = () => {
 
                                         {/* Confirm Password Field */}
                                         <div className="space-y-1.5">
-                                            <label 
-                                                htmlFor="confirmPassword" 
+                                            <label
+                                                htmlFor="confirmPassword"
                                                 className="text-light-100 text-xs font-medium block"
                                             >
                                                 Confirm Password
@@ -305,31 +370,45 @@ const SignUpPage = () => {
                                                     if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: '' });
                                                 }}
                                                 required
-                                                className={`bg-dark-100/80 backdrop-blur-sm rounded-lg px-4 py-2.5 w-full text-sm text-foreground placeholder:text-light-200/60 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 border transition-all duration-300 hover:border-blue/30 ${
-                                                    errors.confirmPassword ? 'border-red-500/50' : 'border-border-dark/50'
-                                                }`}
+                                                className={`bg-dark-100/80 backdrop-blur-sm rounded-lg px-4 py-2.5 w-full text-sm text-foreground placeholder:text-light-200/60 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 border transition-all duration-300 hover:border-blue/30 ${errors.confirmPassword ? 'border-red-500/50' : 'border-border-dark/50'
+                                                    }`}
                                             />
                                             {errors.confirmPassword && (
                                                 <p className="text-red-400 text-xs mt-0.5">{errors.confirmPassword}</p>
                                             )}
                                         </div>
 
+                                        {/* API Error Message */}
+                                        {apiError && (
+                                            <div className="bg-red-500/10 border border-red-500/50 rounded-lg px-4 py-2.5 text-red-400 text-xs">
+                                                {apiError}
+                                            </div>
+                                        )}
+
+                                        {/* Success Message */}
+                                        {success && (
+                                            <div className="bg-green-500/10 border border-green-500/50 rounded-lg px-4 py-2.5 text-green-400 text-xs">
+                                                {success}
+                                            </div>
+                                        )}
+
                                         {/* Sign Up Button */}
                                         <button
                                             type="submit"
-                                            className="bg-primary hover:bg-primary/90 w-full cursor-pointer items-center justify-center rounded-lg px-4 py-3 text-base font-semibold text-black transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/50 mt-1"
+                                            disabled={isSubmitting}
+                                            className="bg-primary hover:bg-primary/90 w-full cursor-pointer items-center justify-center rounded-lg px-4 py-3 text-base font-semibold text-black transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/50 mt-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                                         >
-                                            Sign up
+                                            {isSubmitting ? 'Creating account...' : 'Sign up'}
                                         </button>
                                     </div>
                                 </form>
 
                                 {/* Sign In Link */}
-                                <div className="mt-6 text-center relative z-10">
+                                <div className="mt-6 text-center relative z-10 animate-fade-in-up">
                                     <p className="text-light-200 text-sm">
                                         Already have an account?{" "}
-                                        <Link 
-                                            href="/sign-in" 
+                                        <Link
+                                            href="/sign-in"
                                             className="text-primary hover:text-primary/80 font-medium transition-colors duration-200 hover:underline inline-flex items-center gap-1"
                                         >
                                             Sign in

@@ -1,24 +1,97 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
 const SignInPage = () => {
+    const router = useRouter();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
+    const [success, setSuccess] = useState<string>('');
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    // Check if user is already authenticated and redirect
+    useEffect(() => {
+        const checkAuth = async () => {
+            if (typeof window === 'undefined') return;
+
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            // Immediately redirect if token exists (optimistic check)
+            // Then verify token is valid in background
+            router.replace('/');
+
+            // Verify token is valid in background
+            try {
+                const response = await fetch('/api/auth/sign-in', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    // Token is invalid, remove it
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                }
+            } catch (error) {
+                // Error verifying token, remove it
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+            }
+        };
+
+        checkAuth();
+    }, [router]);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // TODO: Implement sign-in logic
-        console.log('Sign in:', { email, password });
+        setIsSubmitting(true);
+        setError('');
+        setSuccess('');
+
+        try {
+            const response = await fetch('/api/auth/sign-in', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setSuccess(data.message || 'Login successful!');
+                // Store token in localStorage
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                }
+                // Redirect to home page after a short delay
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
+            } else {
+                setError(data.message || 'Something went wrong. Please try again.');
+            }
+        } catch (error) {
+            setError('Failed to sign in. Please try again later.');
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
         <section className="fixed inset-0 h-screen w-full z-10 flex items-center justify-center p-4 sm:p-6 lg:p-8">
             {/* Back to Home Link - Upper Left */}
-            <Link 
-                href="/" 
+            <Link
+                href="/"
                 className="fixed top-6 left-6 z-50 flex items-center gap-2 text-light-200 hover:text-primary transition-colors duration-200 group"
             >
                 <span className="text-lg group-hover:-translate-x-1 transition-transform duration-200">←</span>
@@ -36,7 +109,7 @@ const SignInPage = () => {
             <div className="w-full max-w-5xl mx-auto bg-dark-100/40 backdrop-blur-2xl border border-blue/20 rounded-2xl shadow-2xl overflow-hidden relative animate-scale-in">
                 {/* Subtle inner glow */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue/5 pointer-events-none" />
-                
+
                 <div className="relative z-10 flex flex-col lg:flex-row">
                     {/* Left Panel - Branding & Visuals */}
                     <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
@@ -94,7 +167,7 @@ const SignInPage = () => {
                     </div>
 
                     {/* Right Panel - Sign In Form */}
-                    <div className="w-full lg:w-1/2 flex items-center justify-center px-6 sm:px-8 lg:px-10 py-8 relative">
+                    <div className="w-full lg:w-1/2 flex items-center justify-center px-6 sm:px-8 lg:px-10 py-8 relative animate-fade-in-up">
                         <div className="w-full max-w-sm relative z-10">
                             {/* Mobile Logo */}
                             <div className="lg:hidden mb-6 text-center animate-fade-in-up">
@@ -131,16 +204,16 @@ const SignInPage = () => {
                             </div>
 
                             {/* Login Form Card */}
-                            <div className="bg-dark-200/60 backdrop-blur-xl border border-blue/20 rounded-xl shadow-lg px-5 py-6 relative overflow-hidden">
+                            <div className="bg-dark-200/60 backdrop-blur-xl border border-blue/20 rounded-xl shadow-lg px-5 py-6 relative overflow-hidden animate-fade-in-up">
                                 {/* Subtle glow effect inside card */}
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                                
+
                                 <form onSubmit={handleSubmit} className="relative z-10">
                                     <div className="flex flex-col gap-4">
                                         {/* Email Field */}
                                         <div className="space-y-1.5">
-                                            <label 
-                                                htmlFor="email" 
+                                            <label
+                                                htmlFor="email"
                                                 className="text-light-100 text-xs font-medium block"
                                             >
                                                 Email Address
@@ -159,8 +232,8 @@ const SignInPage = () => {
 
                                         {/* Password Field */}
                                         <div className="space-y-1.5">
-                                            <label 
-                                                htmlFor="password" 
+                                            <label
+                                                htmlFor="password"
                                                 className="text-light-100 text-xs font-medium block"
                                             >
                                                 Password
@@ -177,22 +250,37 @@ const SignInPage = () => {
                                             />
                                         </div>
 
+                                        {/* Error Message */}
+                                        {error && (
+                                            <div className="bg-red-500/10 border border-red-500/50 rounded-lg px-4 py-2.5 text-red-400 text-xs">
+                                                {error}
+                                            </div>
+                                        )}
+
+                                        {/* Success Message */}
+                                        {success && (
+                                            <div className="bg-green-500/10 border border-green-500/50 rounded-lg px-4 py-2.5 text-green-400 text-xs">
+                                                {success}
+                                            </div>
+                                        )}
+
                                         {/* Sign In Button */}
                                         <button
                                             type="submit"
-                                            className="bg-primary hover:bg-primary/90 w-full cursor-pointer items-center justify-center rounded-lg px-4 py-3 text-base font-semibold text-black transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/50 mt-1"
+                                            disabled={isSubmitting}
+                                            className="bg-primary hover:bg-primary/90 w-full cursor-pointer items-center justify-center rounded-lg px-4 py-3 text-base font-semibold text-black transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/50 mt-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                                         >
-                                            Sign in
+                                            {isSubmitting ? 'Signing in...' : 'Sign in'}
                                         </button>
                                     </div>
                                 </form>
 
                                 {/* Sign Up Link */}
-                                <div className="mt-6 text-center relative z-10">
+                                <div className="mt-6 text-center relative z-10 animate-fade-in-up">
                                     <p className="text-light-200 text-xs">
                                         Don't have an account?{" "}
-                                        <Link 
-                                            href="/sign-up" 
+                                        <Link
+                                            href="/sign-up"
                                             className="text-primary hover:text-primary/80 font-medium transition-colors duration-200 hover:underline inline-flex items-center gap-1"
                                         >
                                             Sign up
