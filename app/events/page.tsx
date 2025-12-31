@@ -1,6 +1,5 @@
 import EventCard from "@/components/EventCard"
 import { IEvent } from "@/database/event.model";
-import { formatDateToReadable, formatTimeWithAMPM } from "@/lib/utils";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import Image from "next/image";
 
@@ -11,21 +10,6 @@ const EventsPage = async () => {
     const { events } = await response.json();
 
     const allEvents: IEvent[] = events || [];
-
-    // Group events by date
-    const eventsByDate = allEvents.reduce((acc: Record<string, IEvent[]>, event: IEvent) => {
-        const date = event.date;
-        if (!acc[date]) {
-            acc[date] = [];
-        }
-        acc[date].push(event);
-        return acc;
-    }, {});
-
-    // Sort dates
-    const sortedDates = Object.keys(eventsByDate).sort((a, b) =>
-        new Date(a).getTime() - new Date(b).getTime()
-    );
 
     // Calculate unique locations
     const uniqueLocations = new Set(allEvents.map((e: IEvent) => e.location)).size;
@@ -135,48 +119,17 @@ const EventsPage = async () => {
                     </div>
                 </AnimateOnScroll>
             ) : (
-                <div className="space-y-20">
-                    {sortedDates.map((date, dateIndex) => (
-                        <AnimateOnScroll key={date} variant="fade" delay={dateIndex * 100}>
-                            <div className="space-y-8">
-                                {/* Date Header */}
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pb-6 border-b border-border-dark/50">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-1 h-12 bg-gradient-to-b from-blue to-blue/30 rounded-full" />
-                                        <div>
-                                            <h2 className="text-3xl font-bold mb-1">
-                                                {formatDateToReadable(date)}
-                                            </h2>
-                                            <p className="text-light-200 text-sm">
-                                                {new Date(date).toLocaleDateString('en-US', { weekday: 'long' })}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="ml-auto flex items-center gap-3">
-                                        <div className="glass px-4 py-2 rounded-full border border-blue/20">
-                                            <span className="text-blue font-semibold text-sm">
-                                                {eventsByDate[date].length} {eventsByDate[date].length === 1 ? 'event' : 'events'}
-                                            </span>
-                                        </div>
-                                    </div>
+                <ul className="events">
+                    {allEvents.map((event: IEvent, eventIndex: number) => (
+                        <li key={event.slug}>
+                            <AnimateOnScroll delay={eventIndex * 50} variant="scale">
+                                <div className="hover:scale-[1.02] transition-transform duration-300">
+                                    <EventCard {...event} />
                                 </div>
-
-                                {/* Events Grid */}
-                                <ul className="events">
-                                    {eventsByDate[date].map((event: IEvent, eventIndex: number) => (
-                                        <li key={event.slug}>
-                                            <AnimateOnScroll delay={eventIndex * 50} variant="scale">
-                                                <div className="hover:scale-[1.02] transition-transform duration-300">
-                                                    <EventCard {...event} />
-                                                </div>
-                                            </AnimateOnScroll>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </AnimateOnScroll>
+                            </AnimateOnScroll>
+                        </li>
                     ))}
-                </div>
+                </ul>
             )}
 
             {/* Enhanced Summary Section */}
@@ -200,7 +153,7 @@ const EventsPage = async () => {
                                 <div className="inline-block p-4 rounded-full bg-blue/10 mb-4">
                                     <Image src="/icons/clock.svg" alt="Dates" width={32} height={32} />
                                 </div>
-                                <p className="text-4xl font-bold text-blue mb-2">{sortedDates.length}</p>
+                                <p className="text-4xl font-bold text-blue mb-2">{new Set(allEvents.map((e: IEvent) => e.date)).size}</p>
                                 <p className="text-light-200 font-medium">Event Dates</p>
                                 <p className="text-light-200 text-xs mt-2 opacity-70">Unique dates scheduled</p>
                             </div>
