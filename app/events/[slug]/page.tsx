@@ -11,11 +11,11 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const InfoBadge = ({ icon, label, value }: { icon: string, label: string, value: string }) => {
     return (
         <div className="flex items-center gap-3 p-4 rounded-xl bg-dark-200/30 border border-border-dark/30 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm">
-            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+            <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
                 <Image src={icon} alt={label} width={20} height={20} className="opacity-90" />
             </div>
             <div className="flex flex-col">
-                <span className="text-xs text-light-200 uppercase tracking-wider uppercase">{label}</span>
+                <span className="text-xs text-light-200 uppercase tracking-wider">{label}</span>
                 <span className="text-sm font-semibold text-light-100 mt-0.5 capitalize">{value}</span>
             </div>
         </div>
@@ -27,11 +27,11 @@ const AgendaItem = ({ item, index, total }: { item: string, index: number, total
         <div className="relative flex gap-4 group">
             {/* Timeline */}
             <div className="flex flex-col items-center">
-                <div className="w-10 h-10 rounded-full bg-primary/20 border-2 border-primary/30 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/30 transition-colors duration-200">
+                <div className="w-10 h-10 rounded-full bg-primary/20 border-2 border-primary/30 flex items-center justify-center shrink-0 group-hover:bg-primary/30 transition-colors duration-200">
                     <span className="text-primary text-sm font-bold">{index + 1}</span>
                 </div>
                 {index < total - 1 && (
-                    <div className="w-0.5 h-full bg-gradient-to-b from-primary/30 to-transparent mt-2 min-h-[40px]" />
+                    <div className="w-0.5 h-full bg-linear-to-b from-primary/30 to-transparent mt-2 min-h-[40px]" />
                 )}
             </div>
             {/* Content */}
@@ -94,7 +94,7 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }> 
 
                         {/* Right Column - Image */}
                         <div className="relative order-1 lg:order-2">
-                            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border-dark/50 shadow-2xl">
+                            <div className="relative aspect-4/3 rounded-2xl overflow-hidden border border-border-dark/50 shadow-2xl">
                                 <Image
                                     src={image}
                                     alt={title}
@@ -105,7 +105,7 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }> 
                                     quality={95}
                                     sizes="(max-width: 1024px) 100vw, 50vw"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent pointer-events-none" />
+                                <div className="absolute inset-0 bg-linear-to-t from-background/20 via-transparent to-transparent pointer-events-none" />
                             </div>
                         </div>
                     </div>
