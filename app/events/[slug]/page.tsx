@@ -8,38 +8,36 @@ import { formatTimeWithAMPM, formatDateToReadable } from "@/lib/utils";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-const EventDetailItem = ({ icon, alt, label }: { icon: string, alt: string, label: string }) => {
+const InfoBadge = ({ icon, label, value }: { icon: string, label: string, value: string }) => {
     return (
-        <div className="flex flex-row gap-2 items-center">
-            <Image src={icon} alt={alt} width={14} height={14} />
-            <p className="text-light-200 text-sm font-light capitalize">{label}</p>
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-dark-200/30 border border-border-dark/30 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm">
+            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Image src={icon} alt={label} width={20} height={20} className="opacity-90" />
+            </div>
+            <div className="flex flex-col">
+                <span className="text-xs text-light-200 uppercase tracking-wider">{label}</span>
+                <span className="text-sm font-semibold text-light-100 mt-0.5">{value}</span>
+            </div>
         </div>
     )
 }
 
-const EventAgendaItem = ({ agendaItems }: { agendaItems: string[] }) => {
+const AgendaItem = ({ item, index, total }: { item: string, index: number, total: number }) => {
     return (
-        <div className="agenda">
-            <h2>Agenda</h2>
-            <ul>
-                {agendaItems.map((item, index) => (
-                    <li key={index}>
-                        <p className="text-light-200 text-sm font-ligh capitalize">{item}</p>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    )
-}
-
-const EventTags = ({ tags }: { tags: string[] }) => {
-    return (
-        <div className="flex flex-row gap-1.5 flex-wrap items-center">
-            {tags.map((tag, index) => (
-                <div key={index}>
-                    <p className="pill capitalize">{tag}</p>
+        <div className="relative flex gap-4 group">
+            {/* Timeline */}
+            <div className="flex flex-col items-center">
+                <div className="w-10 h-10 rounded-full bg-primary/20 border-2 border-primary/30 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/30 transition-colors duration-200">
+                    <span className="text-primary text-sm font-bold">{index + 1}</span>
                 </div>
-            ))}
+                {index < total - 1 && (
+                    <div className="w-0.5 h-full bg-gradient-to-b from-primary/30 to-transparent mt-2 min-h-[40px]" />
+                )}
+            </div>
+            {/* Content */}
+            <div className="flex-1 pb-8 group-hover:translate-x-1 transition-transform duration-200">
+                <p className="mt-2 text-light-100 text-base leading-relaxed">{item}</p>
+            </div>
         </div>
     )
 }
@@ -58,70 +56,260 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }> 
     const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
 
     return (
-        <section id="event">
-            <div className="header">
-                <h1>{title}</h1>
-                <p>{description}</p>
-            </div>
+        <div className="w-full mt-14 -mx-10 max-sm:-mx-5">
+            {/* Hero Section - Redesigned with Contained Image */}
+            <div className="px-5 sm:px-10 mb-12 md:mb-16">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        {/* Left Column - Content */}
+                        <div className="space-y-6 order-2 lg:order-1">
+                            {/* Tags */}
+                            <div className="flex flex-wrap gap-2">
+                                {tags.slice(0, 3).map((tag: string, index: number) => (
+                                    <span
+                                        key={index}
+                                        className="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold border border-primary/20"
+                                    >
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
 
-            <div className="details">
-                {/* Event Content */}
-                <div className="content">
-                    <div className="flex flex-col gap-2">
-                        <Image src={image} alt={title} width={800} height={450} className="banner" priority />
-                        <EventDetailItem icon="/icons/pin.svg" alt="Venue" label={location} />
-                    </div>
+                            {/* Title */}
+                            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-gradient">
+                                {title}
+                            </h1>
 
-
-                    <section className="flex-col gap-2">
-                        <h2>Overview</h2>
-                        <p>{overview}</p>
-                    </section>
-
-                    <section className="flex-col gap-2">
-                        <h2>Event Details</h2>
-                        <EventDetailItem icon="/icons/calendar.svg" alt="Date" label={formatDateToReadable(date)} />
-                        <EventDetailItem icon="/icons/clock.svg" alt="Time" label={formatTimeWithAMPM(time)} />
-                        <EventDetailItem icon="/icons/pin.svg" alt="Pin" label={venue} />
-                        <EventDetailItem icon="/icons/mode.svg" alt="Mode" label={mode} />
-                        <EventDetailItem icon="/icons/audience.svg" alt="Audience" label={audience} />
-                    </section>
-
-                    <EventAgendaItem agendaItems={agenda} />
-
-                    <section className="flex-col gap-2">
-                        <h2>About the Organizer</h2>
-                        <p>{organizer}</p>
-                    </section>
-
-                    <EventTags tags={tags} />
-                </div>
-
-                {/* Booking Content */}
-                <aside className="booking">
-                    <div className="signup-card">
-                        <h2>Book Your Spot</h2>
-                        {bookings > 0 ? (
-                            <p className="text-sm">
-                                {bookings} {bookings === 1 ? 'person has' : 'people have'} already booked.
+                            {/* Description */}
+                            <p className="text-lg md:text-xl text-light-100 leading-relaxed max-w-2xl">
+                                {description}
                             </p>
-                        ) : (
-                            <p className="text-sm">Be the first to book your spot.</p>
-                        )}
-                        <BookEvent />
-                    </div>
-                </aside>
-            </div>
 
-            <div className="flex flex-col w-full gap-4 pt-20">
-                <h2>Similar Events</h2>
-                <div className="events">
-                    {similarEvents.length > 0 && similarEvents.map((similarEvent: IEvent) => (
-                        <EventCard key={similarEvent.slug} {...similarEvent} />
-                    ))}
+                            {/* Location Badge */}
+                            <div className="flex items-center gap-2 px-5 py-3 rounded-xl bg-dark-200/50 border border-border-dark/50 w-fit">
+                                <Image src="/icons/pin.svg" alt="Location" width={18} height={18} className="opacity-90" />
+                                <span className="text-light-100 font-medium">{location}</span>
+                            </div>
+                        </div>
+
+                        {/* Right Column - Image */}
+                        <div className="relative order-1 lg:order-2">
+                            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border-dark/50 shadow-2xl">
+                                <Image
+                                    src={image}
+                                    alt={title}
+                                    width={800}
+                                    height={600}
+                                    className="object-cover w-full h-full"
+                                    priority
+                                    quality={95}
+                                    sizes="(max-width: 1024px) 100vw, 50vw"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent pointer-events-none" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
+
+            {/* Main Content Area */}
+            <div className="px-5 sm:px-10">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+                        {/* Left Column - Main Content */}
+                        <div className="lg:col-span-2 space-y-8">
+                            {/* Quick Info Cards */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                                <InfoBadge
+                                    icon="/icons/calendar.svg"
+                                    label="Date"
+                                    value={formatDateToReadable(date)}
+                                />
+                                <InfoBadge
+                                    icon="/icons/clock.svg"
+                                    label="Time"
+                                    value={formatTimeWithAMPM(time)}
+                                />
+                                <InfoBadge
+                                    icon="/icons/mode.svg"
+                                    label="Mode"
+                                    value={mode}
+                                />
+                            </div>
+
+                            {/* Overview Section */}
+                            <section className="glass rounded-2xl p-6 md:p-8 border border-border-dark/50">
+                                <div className="flex items-center gap-3 mb-4 md:mb-6">
+                                    <div className="w-1 h-6 md:h-8 bg-primary rounded-full" />
+                                    <h2 className="text-2xl md:text-3xl font-bold">Overview</h2>
+                                </div>
+                                <p className="text-light-200 text-base leading-relaxed">
+                                    {overview}
+                                </p>
+                            </section>
+
+                            {/* Event Details */}
+                            <section className="glass rounded-2xl p-6 md:p-8 border border-border-dark/50">
+                                <div className="flex items-center gap-3 mb-4 md:mb-6">
+                                    <div className="w-1 h-6 md:h-8 bg-primary rounded-full" />
+                                    <h2 className="text-2xl md:text-3xl font-bold">Event Details</h2>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="flex items-start gap-4 p-4 rounded-xl bg-dark-200/20 hover:bg-dark-200/30 transition-colors duration-200">
+                                        <Image src="/icons/calendar.svg" alt="Date" width={20} height={20} className="mt-1 opacity-80" />
+                                        <div>
+                                            <p className="text-xs text-light-200 uppercase tracking-wider mb-1">Date</p>
+                                            <p className="text-base font-semibold text-light-100">{formatDateToReadable(date)}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-4 p-4 rounded-xl bg-dark-200/20 hover:bg-dark-200/30 transition-colors duration-200">
+                                        <Image src="/icons/clock.svg" alt="Time" width={20} height={20} className="mt-1 opacity-80" />
+                                        <div>
+                                            <p className="text-xs text-light-200 uppercase tracking-wider mb-1">Time</p>
+                                            <p className="text-base font-semibold text-light-100">{formatTimeWithAMPM(time)}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-4 p-4 rounded-xl bg-dark-200/20 hover:bg-dark-200/30 transition-colors duration-200">
+                                        <Image src="/icons/pin.svg" alt="Venue" width={20} height={20} className="mt-1 opacity-80" />
+                                        <div>
+                                            <p className="text-xs text-light-200 uppercase tracking-wider mb-1">Venue</p>
+                                            <p className="text-base font-semibold text-light-100">{venue}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-4 p-4 rounded-xl bg-dark-200/20 hover:bg-dark-200/30 transition-colors duration-200">
+                                        <Image src="/icons/mode.svg" alt="Mode" width={20} height={20} className="mt-1 opacity-80" />
+                                        <div>
+                                            <p className="text-xs text-light-200 uppercase tracking-wider mb-1">Mode</p>
+                                            <p className="text-base font-semibold text-light-100">{mode}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-4 p-4 rounded-xl bg-dark-200/20 hover:bg-dark-200/30 transition-colors duration-200">
+                                        <Image src="/icons/audience.svg" alt="Audience" width={20} height={20} className="mt-1 opacity-80" />
+                                        <div>
+                                            <p className="text-xs text-light-200 uppercase tracking-wider mb-1">Audience</p>
+                                            <p className="text-base font-semibold text-light-100">{audience}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Agenda Section */}
+                            <section className="glass rounded-2xl p-6 md:p-8 border border-border-dark/50">
+                                <div className="flex items-center gap-3 mb-6 md:mb-8">
+                                    <div className="w-1 h-6 md:h-8 bg-primary rounded-full" />
+                                    <h2 className="text-2xl md:text-3xl font-bold">Agenda</h2>
+                                </div>
+                                <div className="space-y-0">
+                                    {agenda.map((item: string, index: number) => (
+                                        <AgendaItem
+                                            key={index}
+                                            item={item}
+                                            index={index}
+                                            total={agenda.length}
+                                        />
+                                    ))}
+                                </div>
+                            </section>
+
+                            {/* Organizer Section */}
+                            <section className="glass rounded-2xl p-6 md:p-8 border border-border-dark/50">
+                                <div className="flex items-center gap-3 mb-4 md:mb-6">
+                                    <div className="w-1 h-6 md:h-8 bg-primary rounded-full" />
+                                    <h2 className="text-2xl md:text-3xl font-bold">About the Organizer</h2>
+                                </div>
+                                <p className="text-light-200 text-base leading-relaxed">
+                                    {organizer}
+                                </p>
+                            </section>
+
+                            {/* All Tags */}
+                            <section className="glass rounded-2xl p-6 md:p-8 border border-border-dark/50">
+                                <h3 className="text-lg md:text-xl font-semibold mb-4 text-light-100">Tags</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {tags.map((tag: string, index: number) => (
+                                        <span
+                                            key={index}
+                                            className="px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium border border-primary/20 hover:bg-primary/20 transition-colors duration-200"
+                                        >
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+                            </section>
+                        </div>
+
+                        {/* Right Column - Booking Card */}
+                        <div className="lg:col-span-1">
+                            <div className="sticky top-20 lg:top-24">
+                                <div className="glass rounded-2xl p-6 md:p-8 border border-primary/30 card-shadow" style={{ boxShadow: '0 0 10px rgba(89, 222, 202, 0.1), 0 0 20px rgba(89, 222, 202, 0.05)' }}>
+                                    <div className="mb-6">
+                                        <h2 className="text-xl md:text-2xl font-bold mb-3">Book Your Spot</h2>
+                                        {bookings > 0 ? (
+                                            <div className="mb-4">
+                                                <div className="flex items-center gap-2 mb-3">
+                                                    {/* Stacked numbers - first 3 */}
+                                                    <div className="flex -space-x-2">
+                                                        {[...Array(Math.min(3, bookings))].map((_, i) => (
+                                                            <div
+                                                                key={i}
+                                                                className="w-9 h-9 rounded-full bg-primary/20 border-2 border-dark-100 flex items-center justify-center text-xs font-bold text-primary backdrop-blur-sm relative z-10 hover:z-20 transition-all duration-200 hover:scale-110"
+                                                                style={{ zIndex: 10 - i }}
+                                                            >
+                                                                {i + 1}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* Ellipsis if more than 3 bookings */}
+                                                    {bookings > 3 && (
+                                                        <span className="text-light-200 text-sm font-medium px-2 -ml-2">...</span>
+                                                    )}
+
+                                                    {/* Last number (only if more than 3 bookings) */}
+                                                    {bookings > 3 && (
+                                                        <div className="w-9 h-9 rounded-full bg-primary/20 border-2 border-dark-100 flex items-center justify-center text-xs font-bold text-primary backdrop-blur-sm -ml-2 relative z-0">
+                                                            {bookings}
+                                                        </div>
+                                                    )}
+
+                                                    {/* Booking text on the right */}
+                                                    <div className="flex flex-col ml-auto">
+                                                        <span className="text-sm font-semibold text-light-100 whitespace-nowrap">
+                                                            {bookings} {bookings === 1 ? 'person' : 'people'} booked
+                                                        </span>
+                                                        <span className="text-xs text-light-200 whitespace-nowrap">Join them now!</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <p className="text-sm text-light-200 mb-4">Be the first to book your spot.</p>
+                                        )}
+                                    </div>
+                                    <BookEvent />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Similar Events Section */}
+            {similarEvents.length > 0 && (
+                <div className="px-5 sm:px-10 mt-12 md:mt-20 pt-12 md:pt-16 border-t border-border-dark/50">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="flex items-center gap-3 mb-6 md:mb-8">
+                            <div className="w-1 h-8 md:h-10 bg-primary rounded-full" />
+                            <h2 className="text-2xl md:text-4xl font-bold">Similar Events</h2>
+                        </div>
+                        <div className="events">
+                            {similarEvents.map((similarEvent: IEvent) => (
+                                <EventCard key={similarEvent.slug} {...similarEvent} />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     )
 }
 
