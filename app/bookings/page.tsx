@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, ChevronLeft, ChevronRight, Clock, MapPin, Monitor } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Clock, MapPin, Monitor, List } from "lucide-react";
 import { formatTimeWithAMPM, formatDateToReadable } from "@/lib/formatters";
 
 interface Booking {
@@ -31,6 +31,7 @@ const BookingsPage = () => {
     const [loading, setLoading] = useState(true);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [showAllBookings, setShowAllBookings] = useState(false);
 
     useEffect(() => {
         const fetchBookings = async () => {
@@ -80,7 +81,7 @@ const BookingsPage = () => {
         const startingDayOfWeek = firstDay.getDay();
 
         const days = [];
-        
+
         // Add empty cells for days before the first day of the month
         for (let i = 0; i < startingDayOfWeek; i++) {
             days.push(null);
@@ -94,15 +95,22 @@ const BookingsPage = () => {
         return days;
     };
 
+    const formatDateToString = (date: Date): string => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
     const getBookingsForDate = (date: Date | null) => {
         if (!date) return [];
-        const dateStr = date.toISOString().split('T')[0];
+        const dateStr = formatDateToString(date);
         return bookings.filter(booking => booking.event.date === dateStr);
     };
 
     const hasBookingOnDate = (date: Date | null) => {
         if (!date) return false;
-        const dateStr = date.toISOString().split('T')[0];
+        const dateStr = formatDateToString(date);
         return bookings.some(booking => booking.event.date === dateStr);
     };
 
@@ -117,11 +125,13 @@ const BookingsPage = () => {
             return newDate;
         });
         setSelectedDate(null);
+        setShowAllBookings(false);
     };
 
     const goToToday = () => {
         setCurrentDate(new Date());
         setSelectedDate(null);
+        setShowAllBookings(false);
     };
 
     const monthNames = [
@@ -136,7 +146,7 @@ const BookingsPage = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-background pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+            <div className="min-h-screen bg-background pt-20 pb-20 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto flex-center">
                     <div className="text-foreground/60">Loading your bookings...</div>
                 </div>
@@ -145,12 +155,12 @@ const BookingsPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-background pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-background pt-10 pb-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-8">
                     <h1 className="text-4xl font-bold text-foreground mb-2">My Bookings</h1>
                     <p className="text-foreground/60">
-                        {bookings.length === 0 
+                        {bookings.length === 0
                             ? "You don't have any bookings yet."
                             : `You have ${bookings.length} ${bookings.length === 1 ? 'booking' : 'bookings'}`
                         }
@@ -214,7 +224,7 @@ const BookingsPage = () => {
 
                                 <div className="grid grid-cols-7 gap-2">
                                     {calendarDays.map((date, index) => {
-                                        const isToday = date && 
+                                        const isToday = date &&
                                             date.toDateString() === new Date().toDateString();
                                         const hasBooking = hasBookingOnDate(date);
                                         const isSelected = selectedDate && date &&
@@ -223,7 +233,12 @@ const BookingsPage = () => {
                                         return (
                                             <button
                                                 key={index}
-                                                onClick={() => date && setSelectedDate(date)}
+                                                onClick={() => {
+                                                    if (date) {
+                                                        setSelectedDate(date);
+                                                        setShowAllBookings(false);
+                                                    }
+                                                }}
                                                 disabled={!date}
                                                 className={`
                                                     aspect-square p-2 rounded-lg text-sm font-medium transition-all duration-200
@@ -245,13 +260,76 @@ const BookingsPage = () => {
                         {/* Selected Date Bookings */}
                         <div className="lg:col-span-1">
                             <div className="bg-dark-200/50 backdrop-blur-xl rounded-xl border border-blue/20 p-6 sticky top-32">
-                                <h3 className="text-lg font-semibold text-foreground mb-4">
-                                    {selectedDate 
-                                        ? formatDateToReadable(selectedDate.toISOString().split('T')[0])
-                                        : 'Select a date'
-                                    }
-                                </h3>
-                                {selectedDate ? (
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-semibold text-foreground">
+                                        {showAllBookings
+                                            ? 'All Bookings'
+                                            : selectedDate
+                                                ? formatDateToReadable(formatDateToString(selectedDate))
+                                                : 'Select a date'
+                                        }
+                                    </h3>
+                                    {!showAllBookings && bookings.length > 0 && (
+                                        <button
+                                            onClick={() => {
+                                                setShowAllBookings(true);
+                                                setSelectedDate(null);
+                                            }}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg bg-blue/10 text-blue hover:bg-blue/20 transition-colors"
+                                            title="Show all bookings"
+                                        >
+                                            <List className="w-3.5 h-3.5" />
+                                            <span>All</span>
+                                        </button>
+                                    )}
+                                </div>
+                                {showAllBookings ? (
+                                    bookings.length > 0 ? (
+                                        <div className="space-y-4 max-h-[calc(100vh-250px)] overflow-y-auto">
+                                            {bookings.map(booking => (
+                                                <Link
+                                                    key={booking.id}
+                                                    href={`/events/${booking.event.slug}`}
+                                                    className="block p-4 rounded-lg bg-dark-100/50 border border-blue/10 hover:border-blue/30 hover:bg-dark-100/70 transition-all duration-200 group"
+                                                >
+                                                    <div className="relative w-full h-32 mb-3 rounded-lg overflow-hidden">
+                                                        <Image
+                                                            src={booking.event.image}
+                                                            alt={booking.event.title}
+                                                            fill
+                                                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                                        />
+                                                    </div>
+                                                    <h4 className="font-semibold text-foreground mb-2 line-clamp-2 group-hover:text-blue transition-colors">
+                                                        {booking.event.title}
+                                                    </h4>
+                                                    <div className="space-y-1.5 text-sm text-foreground/60">
+                                                        <div className="flex items-center gap-2">
+                                                            <Calendar className="w-3.5 h-3.5" />
+                                                            <span>{formatDateToReadable(booking.event.date)}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <Clock className="w-3.5 h-3.5" />
+                                                            <span>{formatTimeWithAMPM(booking.event.time)}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <MapPin className="w-3.5 h-3.5" />
+                                                            <span className="line-clamp-1">{booking.event.location}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <Monitor className="w-3.5 h-3.5" />
+                                                            <span className="capitalize">{booking.event.mode}</span>
+                                                        </div>
+                                                    </div>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-foreground/60 text-sm">
+                                            No bookings found.
+                                        </p>
+                                    )
+                                ) : selectedDate ? (
                                     selectedDateBookings.length > 0 ? (
                                         <div className="space-y-4">
                                             {selectedDateBookings.map(booking => (
@@ -294,9 +372,20 @@ const BookingsPage = () => {
                                         </p>
                                     )
                                 ) : (
-                                    <p className="text-foreground/60 text-sm">
-                                        Click on a date with bookings to see details.
-                                    </p>
+                                    <div className="space-y-3">
+                                        <p className="text-foreground/60 text-sm">
+                                            Click on a date with bookings to see details.
+                                        </p>
+                                        {bookings.length > 0 && (
+                                            <button
+                                                onClick={() => setShowAllBookings(true)}
+                                                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue/10 text-blue hover:bg-blue/20 border border-blue/20 transition-colors"
+                                            >
+                                                <List className="w-4 h-4" />
+                                                <span>Show All Bookings</span>
+                                            </button>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         </div>
