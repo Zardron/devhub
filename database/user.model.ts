@@ -103,5 +103,5 @@ userSchema.methods.comparePassword = async function (candidatePassword: string):
 // Indexes for fast lookups
 userSchema.index({ email: 1 }, { unique: true });
 
-export const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
-
+const User = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
+export default User;

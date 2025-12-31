@@ -8,23 +8,23 @@ import ScrollToTop from "@/components/ScrollToTop";
 import ConditionalFooter from "@/components/ConditionalFooter";
 
 const schibstedGrotesk = Schibsted_Grotesk({
-  variable: "--font-schibsted-grotesk",
-  subsets: ["latin"],
+    variable: "--font-schibsted-grotesk",
+    subsets: ["latin"],
 });
 
 const martianMono = Martian_Mono({
-  variable: "--font-martian-mono",
-  subsets: ["latin"],
+    variable: "--font-martian-mono",
+    subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "TechHub - Your Tech Event Platform",
-  description: "Discover and attend tech events worldwide. Hackathons, developer conferences, tech workshops, and more.",
-  icons: {
-    icon: "/icons/logo.png",
-    shortcut: "/icons/logo.png",
-    apple: "/icons/logo.png",
-  },
+    title: "TechHub - Your Tech Event Platform",
+    description: "Discover and attend tech events worldwide. Hackathons, developer conferences, tech workshops, and more.",
+    icons: {
+        icon: "/icons/logo.png",
+        shortcut: "/icons/logo.png",
+        apple: "/icons/logo.png",
+    },
 };
 
 export default function RootLayout({
