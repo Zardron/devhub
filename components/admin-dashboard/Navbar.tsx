@@ -11,7 +11,7 @@ const Navbar = ({ sideBarCollapsed, setSideBarCollapsed }: { sideBarCollapsed: b
     const handleSignOut = () => {
         clearAuth()
         setIsMenuOpen(false)
-        window.location.href = '/'
+        window.location.href = '/sign-in'
     }
     // Get user initials for avatar
     const getUserInitials = (name: string | undefined): string => {

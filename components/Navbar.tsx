@@ -37,7 +37,7 @@ const Navbar = () => {
     const handleSignOut = () => {
         clearAuth()
         setIsDropdownOpen(false)
-        window.location.href = '/'
+        window.location.href = '/sign-in'
     }
 
     // Get user initials for avatar
