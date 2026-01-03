@@ -1,11 +1,18 @@
-import type { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-    title: "Add Users | Admin Dashboard | TechHub",
-    description: "Add new users to the platform",
-};
+import { useGetAllUsers } from "@/lib/hooks/api/user.queries";
+import { useEffect } from "react";
+
 
 export default function AddUsersPage() {
+    const { data, isLoading, error, isError } = useGetAllUsers();
+
+    useEffect(() => {
+        if (data) {
+            console.log(data);
+        }
+    }, [data]);
+
     return (
         <div className="space-y-6">
             <div>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
     title: "Admin Dashboard | TechHub",
@@ -46,12 +47,12 @@ function DashboardCard({
     href: string;
 }) {
     return (
-        <a
+        <Link
             href={href}
-            className="block p-6 border rounded-lg hover:bg-accent transition-colors"
+            className="block p-6 border rounded-lg hover:bg-accent transition-colors cursor-pointer"
         >
             <h3 className="text-xl font-semibold mb-2">{title}</h3>
             <p className="text-sm text-muted-foreground">{description}</p>
-        </a>
+        </Link>
     );
 }

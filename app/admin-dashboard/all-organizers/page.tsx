@@ -1,4 +1,6 @@
+import { PlusIcon } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
     title: "All Organizers | Admin Dashboard | TechHub",
@@ -15,12 +17,13 @@ export default function AllOrganizersPage() {
                         View and manage all event organizers on the platform
                     </p>
                 </div>
-                <a
+                <Link
                     href="/admin-dashboard/add-organizers"
-                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors cursor-pointer`"
                 >
+                    <PlusIcon className="w-4 h-4" />
                     Add Organizer
-                </a>
+                </Link>
             </div>
 
             <div className="border rounded-lg p-6">
