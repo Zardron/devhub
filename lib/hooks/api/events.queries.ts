@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { IEvent } from '@/database/event.model';
 
 interface EventsResponse {
@@ -6,6 +6,11 @@ interface EventsResponse {
 }
 
 interface EventResponse {
+    event: IEvent;
+}
+
+interface CreateEventResponse {
+    message: string;
     event: IEvent;
 }
 
@@ -41,6 +46,32 @@ export const useEventBySlug = (slug: string) => {
             return response.json();
         },
         enabled: !!slug,
+    });
+};
+
+// Create event
+export const useCreateEvent = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation<CreateEventResponse, Error, FormData>({
+        mutationFn: async (formData: FormData) => {
+            const response = await fetch(`${BASE_URL}/api/events`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to create event');
+            }
+
+            return data;
+        },
+        onSuccess: () => {
+            // Invalidate and refetch events list
+            queryClient.invalidateQueries({ queryKey: ['events'] });
+        },
     });
 };
 
