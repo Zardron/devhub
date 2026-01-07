@@ -6,14 +6,17 @@ import { FormInput } from "@/components/ui/form-input";
 import { FormSelect } from "@/components/ui/form-select";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useOrganizers } from "@/lib/hooks/use-organizers";
 
 export default function AddUsersPage() {
+    const { organizers, isLoading: isLoadingOrganizers } = useOrganizers();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         password: "",
         confirmPassword: "",
         role: "user" as "admin" | "user" | "organizer",
+        organizerName: "",
     });
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -61,6 +64,13 @@ export default function AddUsersPage() {
             newErrors.role = "Role is required";
         }
 
+        // Validate organizer name if role is organizer
+        if (formData.role === "organizer") {
+            if (!formData.organizerName.trim()) {
+                newErrors.organizerName = "Please select an organizer";
+            }
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -75,7 +85,9 @@ export default function AddUsersPage() {
 
         createUserMutation.mutate(
             {
-                name: formData.name.trim(),
+                name: formData.role === "organizer" && formData.organizerName 
+                    ? formData.organizerName.trim() 
+                    : formData.name.trim(),
                 email: formData.email.trim(),
                 password: formData.password,
                 role: formData.role,
@@ -83,7 +95,7 @@ export default function AddUsersPage() {
             {
                 onSuccess: (data) => {
                     toast.success("User Created Successfully!", {
-                        description: data.message || `User "${formData.name.trim()}" has been created with ${formData.role} role.`,
+                        description: data.message || `User "${formData.role === "organizer" && formData.organizerName ? formData.organizerName : formData.name.trim()}" has been created with ${formData.role} role.`,
                         duration: 5000,
                     });
                     // Reset form
@@ -93,6 +105,7 @@ export default function AddUsersPage() {
                         password: "",
                         confirmPassword: "",
                         role: "user",
+                        organizerName: "",
                     });
                 },
                 onError: (error) => {
@@ -225,6 +238,32 @@ export default function AddUsersPage() {
                                     required
                                     containerClassName="md:col-span-2"
                                 />
+
+                                {/* Organizer Selection - Only show when role is organizer */}
+                                {formData.role === "organizer" && (
+                                    <FormSelect
+                                        id="organizerName"
+                                        name="organizerName"
+                                        label="Select Organizer"
+                                        value={formData.organizerName}
+                                        onChange={handleChange}
+                                        options={[
+                                            { value: "", label: "Select an organizer..." },
+                                            ...organizers.map((org) => ({
+                                                value: org.name,
+                                                label: `${org.name}${org.isSample ? " (Sample)" : ""}`,
+                                            })),
+                                        ]}
+                                        error={errors.organizerName}
+                                        helperText={
+                                            !errors.organizerName
+                                                ? "Select the organizer company this account will represent"
+                                                : undefined
+                                        }
+                                        required={formData.role === "organizer"}
+                                        containerClassName="md:col-span-2"
+                                    />
+                                )}
                             </div>
 
                             {/* Submit Button */}
@@ -239,6 +278,7 @@ export default function AddUsersPage() {
                                             password: "",
                                             confirmPassword: "",
                                             role: "user",
+                                            organizerName: "",
                                         });
                                         setErrors({});
                                     }}
