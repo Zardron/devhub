@@ -25,7 +25,9 @@ export default function AddEventsPage() {
         tags: [] as string[],
         agenda: [] as string[],
     });
+    const [imageSource, setImageSource] = useState<"file" | "url">("file");
     const [image, setImage] = useState<File | null>(null);
+    const [imageUrl, setImageUrl] = useState<string>("");
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [tagInput, setTagInput] = useState("");
     const [agendaInput, setAgendaInput] = useState("");
@@ -97,8 +99,17 @@ export default function AddEventsPage() {
         }
 
         // Validate image
-        if (!image) {
-            newErrors.image = "Image is required";
+        if (imageSource === "file" && !image) {
+            newErrors.image = "Image file is required";
+        } else if (imageSource === "url" && !imageUrl.trim()) {
+            newErrors.image = "Image URL is required";
+        } else if (imageSource === "url" && imageUrl.trim()) {
+            // Validate URL format
+            try {
+                new URL(imageUrl.trim());
+            } catch {
+                newErrors.image = "Please enter a valid image URL";
+            }
         }
 
         setErrors(newErrors);
@@ -126,9 +137,12 @@ export default function AddEventsPage() {
         formDataToSend.append("organizer", formData.organizer.trim());
         formDataToSend.append("tags", JSON.stringify(formData.tags));
         formDataToSend.append("agenda", JSON.stringify(formData.agenda));
+        formDataToSend.append("imageSource", imageSource);
         
-        if (image) {
+        if (imageSource === "file" && image) {
             formDataToSend.append("image", image);
+        } else if (imageSource === "url" && imageUrl.trim()) {
+            formDataToSend.append("imageUrl", imageUrl.trim());
         }
 
         createEventMutation.mutate(formDataToSend, {
@@ -153,7 +167,9 @@ export default function AddEventsPage() {
                     agenda: [],
                 });
                 setImage(null);
+                setImageUrl("");
                 setImagePreview(null);
+                setImageSource("file");
                 setTagInput("");
                 setAgendaInput("");
             },
@@ -194,6 +210,42 @@ export default function AddEventsPage() {
             };
             reader.readAsDataURL(file);
         }
+        if (errors.image) {
+            setErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors.image;
+                return newErrors;
+            });
+        }
+    };
+
+    const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const url = e.target.value;
+        setImageUrl(url);
+        if (url.trim()) {
+            try {
+                new URL(url.trim());
+                setImagePreview(url.trim());
+            } catch {
+                setImagePreview(null);
+            }
+        } else {
+            setImagePreview(null);
+        }
+        if (errors.image) {
+            setErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors.image;
+                return newErrors;
+            });
+        }
+    };
+
+    const handleImageSourceChange = (source: "file" | "url") => {
+        setImageSource(source);
+        setImage(null);
+        setImageUrl("");
+        setImagePreview(null);
         if (errors.image) {
             setErrors((prev) => {
                 const newErrors = { ...prev };
@@ -330,22 +382,73 @@ export default function AddEventsPage() {
 
                             {/* Image */}
                             <div className="space-y-2">
-                                <label htmlFor="image" className="text-sm font-medium text-foreground block">
+                                <label className="text-sm font-medium text-foreground block">
                                     Event Image <span className="text-destructive">*</span>
                                 </label>
-                                <input
-                                    id="image"
-                                    name="image"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    className={`flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${
-                                        errors.image ? "border-destructive focus-visible:ring-destructive" : ""
-                                    }`}
-                                />
+                                
+                                {/* Image Source Toggle */}
+                                <div className="flex gap-4 mb-3">
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="imageSource"
+                                            value="file"
+                                            checked={imageSource === "file"}
+                                            onChange={() => handleImageSourceChange("file")}
+                                            className="w-4 h-4 text-primary focus:ring-primary"
+                                        />
+                                        <span className="text-sm text-foreground">Upload File</span>
+                                    </label>
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="imageSource"
+                                            value="url"
+                                            checked={imageSource === "url"}
+                                            onChange={() => handleImageSourceChange("url")}
+                                            className="w-4 h-4 text-primary focus:ring-primary"
+                                        />
+                                        <span className="text-sm text-foreground">Image URL</span>
+                                    </label>
+                                </div>
+
+                                {/* File Upload */}
+                                {imageSource === "file" && (
+                                    <div className="space-y-2">
+                                        <input
+                                            id="image"
+                                            name="image"
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                            className={`flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${
+                                                errors.image ? "border-destructive focus-visible:ring-destructive" : ""
+                                            }`}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Image URL Input */}
+                                {imageSource === "url" && (
+                                    <div className="space-y-2">
+                                        <FormInput
+                                            id="imageUrl"
+                                            name="imageUrl"
+                                            type="url"
+                                            label=""
+                                            placeholder="https://example.com/image.jpg"
+                                            value={imageUrl}
+                                            onChange={handleImageUrlChange}
+                                            error={errors.image}
+                                            required
+                                        />
+                                    </div>
+                                )}
+
                                 {errors.image && (
                                     <p className="text-xs text-destructive mt-1.5">{errors.image}</p>
                                 )}
+                                
                                 {imagePreview && (
                                     <div className="mt-2">
                                         <img
@@ -584,7 +687,9 @@ export default function AddEventsPage() {
                                         agenda: [],
                                     });
                                     setImage(null);
+                                    setImageUrl("");
                                     setImagePreview(null);
+                                    setImageSource("file");
                                     setTagInput("");
                                     setAgendaInput("");
                                     setErrors({});

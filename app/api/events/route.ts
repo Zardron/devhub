@@ -18,15 +18,50 @@ export async function POST(req: NextRequest) {
             return handleApiError(error);
         }
 
-        const file = formData.get('image') as File;
+        const imageSource = formData.get('imageSource') as string;
+        let imageUrl: string;
 
-        const uploadResult = await handleImageUpload(file, 'TechHub');
+        if (imageSource === 'url') {
+            // Handle image URL
+            const providedUrl = formData.get('imageUrl') as string;
+            if (!providedUrl || typeof providedUrl !== 'string' || providedUrl.trim().length === 0) {
+                return NextResponse.json(
+                    { message: 'Image URL is required' },
+                    { status: 400 }
+                );
+            }
 
-        if (!uploadResult.success) {
-            return uploadResult.response;
+            // Validate URL format
+            try {
+                new URL(providedUrl.trim());
+                imageUrl = providedUrl.trim();
+            } catch {
+                return NextResponse.json(
+                    { message: 'Invalid image URL format' },
+                    { status: 400 }
+                );
+            }
+        } else {
+            // Handle file upload
+            const file = formData.get('image') as File;
+            
+            if (!file || !(file instanceof File)) {
+                return NextResponse.json(
+                    { message: 'Image file is required' },
+                    { status: 400 }
+                );
+            }
+
+            const uploadResult = await handleImageUpload(file, 'TechHub');
+
+            if (!uploadResult.success) {
+                return uploadResult.response;
+            }
+
+            imageUrl = uploadResult.url;
         }
 
-        event.image = uploadResult.url;
+        event.image = imageUrl;
 
         const tags = JSON.parse(formData.get('tags') as string);
         const agenda = JSON.parse(formData.get('agenda') as string);
