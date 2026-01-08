@@ -1,27 +1,37 @@
 "use client";
 
 import { useState } from "react";
-import { useCreateUser } from "@/lib/hooks/api/user.queries";
+import { useCreateOrganizer } from "@/lib/hooks/api/organizers.queries";
 import { FormInput } from "@/components/ui/form-input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export default function AddOrganizersPage() {
+    const DEFAULT_PASSWORD = "P@ssword123!";
     const [formData, setFormData] = useState({
         organizerName: "",
-        name: "",
+        fullName: "",
         email: "",
         password: "",
         confirmPassword: "",
     });
+    const [useAutoEmail, setUseAutoEmail] = useState(false);
+    const [useDefaultPassword, setUseDefaultPassword] = useState(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-    const createUserMutation = useCreateUser();
+    const createOrganizerMutation = useCreateOrganizer();
 
     // Email validation regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     // Password validation: at least 8 characters, contains uppercase, lowercase, number, and special character
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    // Generate email from organizer name: admin@[organizername].com (no spaces, lowercase)
+    const generateEmailFromOrganizerName = (organizerName: string): string => {
+        if (!organizerName.trim()) return "";
+        const cleanName = organizerName.trim().toLowerCase().replace(/\s+/g, "");
+        return `admin@${cleanName}.com`;
+    };
 
     const validateForm = () => {
         const newErrors: { [key: string]: string } = {};
@@ -33,11 +43,11 @@ export default function AddOrganizersPage() {
             newErrors.organizerName = "Organizer name must be 100 characters or less";
         }
 
-        // Validate name (auto-populated)
-        if (!formData.name.trim()) {
-            newErrors.name = "Name is required";
-        } else if (formData.name.trim().length > 100) {
-            newErrors.name = "Name must be 100 characters or less";
+        // Validate full name
+        if (!formData.fullName.trim()) {
+            newErrors.fullName = "Full name is required";
+        } else if (formData.fullName.trim().length > 100) {
+            newErrors.fullName = "Full name must be 100 characters or less";
         }
 
         // Validate email
@@ -74,27 +84,29 @@ export default function AddOrganizersPage() {
             return;
         }
 
-        createUserMutation.mutate(
+        createOrganizerMutation.mutate(
             {
-                name: formData.name.trim(),
+                name: formData.organizerName.trim(),
+                fullName: formData.fullName.trim(),
                 email: formData.email.trim(),
                 password: formData.password,
-                role: "organizer",
             },
             {
                 onSuccess: (data) => {
                     toast.success("Organizer Created Successfully!", {
-                        description: data.message || `Organizer "${formData.name.trim()}" has been created.`,
+                        description: data.message || `Organizer "${formData.organizerName.trim()}" has been created.`,
                         duration: 5000,
                     });
                     // Reset form
                     setFormData({
                         organizerName: "",
-                        name: "",
+                        fullName: "",
                         email: "",
                         password: "",
                         confirmPassword: "",
                     });
+                    setUseAutoEmail(false);
+                    setUseDefaultPassword(false);
                 },
                 onError: (error) => {
                     toast.error("Failed to Create Organizer", {
@@ -111,19 +123,36 @@ export default function AddOrganizersPage() {
     ) => {
         const { name, value } = e.target;
         
-        // Auto-populate name field when organizer name changes
+        // Auto-populate fields when organizer name changes
         if (name === "organizerName") {
             const autoName = value.trim() ? `${value.trim()} Admin` : "";
+            const autoEmail = useAutoEmail ? generateEmailFromOrganizerName(value) : formData.email;
             setFormData((prev) => ({
                 ...prev,
                 [name]: value,
-                name: autoName,
+                fullName: autoName,
+                email: autoEmail,
             }));
         } else {
             setFormData((prev) => ({
                 ...prev,
                 [name]: value,
             }));
+        }
+
+        // Uncheck default password checkbox if user manually types in password fields
+        if ((name === "password" || name === "confirmPassword") && useDefaultPassword) {
+            if (value !== DEFAULT_PASSWORD) {
+                setUseDefaultPassword(false);
+            }
+        }
+
+        // Uncheck auto email checkbox if user manually types in email field
+        if (name === "email" && useAutoEmail) {
+            const expectedEmail = generateEmailFromOrganizerName(formData.organizerName);
+            if (value !== expectedEmail) {
+                setUseAutoEmail(false);
+            }
         }
         
         // Clear error for this field when user starts typing
@@ -174,14 +203,14 @@ export default function AddOrganizersPage() {
 
                                 {/* Full Name Field (Auto-populated) */}
                                 <FormInput
-                                    id="name"
-                                    name="name"
+                                    id="fullName"
+                                    name="fullName"
                                     type="text"
                                     label="Full Name"
                                     placeholder="Auto-populated from organizer name"
-                                    value={formData.name}
+                                    value={formData.fullName}
                                     onChange={handleChange}
-                                    error={errors.name}
+                                    error={errors.fullName}
                                     required
                                     containerClassName="md:col-span-2"
                                     helperText="Automatically set to 'Organizer Name + Admin'"
@@ -200,6 +229,44 @@ export default function AddOrganizersPage() {
                                     required
                                     containerClassName="md:col-span-2"
                                 />
+
+                                {/* Auto-populate Email Checkbox */}
+                                <div className="md:col-span-2 flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        id="useAutoEmail"
+                                        checked={useAutoEmail}
+                                        onChange={(e) => {
+                                            const checked = e.target.checked;
+                                            setUseAutoEmail(checked);
+                                            if (checked) {
+                                                const autoEmail = generateEmailFromOrganizerName(formData.organizerName);
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    email: autoEmail,
+                                                }));
+                                                // Clear email error when using auto email
+                                                setErrors((prev) => {
+                                                    const newErrors = { ...prev };
+                                                    delete newErrors.email;
+                                                    return newErrors;
+                                                });
+                                            } else {
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    email: "",
+                                                }));
+                                            }
+                                        }}
+                                        className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                    />
+                                    <label
+                                        htmlFor="useAutoEmail"
+                                        className="text-sm font-medium text-foreground cursor-pointer"
+                                    >
+                                        Auto-populate email from organizer name (admin@[name].com)
+                                    </label>
+                                </div>
 
                                 {/* Password Field */}
                                 <FormInput
@@ -231,6 +298,46 @@ export default function AddOrganizersPage() {
                                     error={errors.confirmPassword}
                                     required
                                 />
+
+                                {/* Use Default Password Checkbox */}
+                                <div className="md:col-span-2 flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        id="useDefaultPassword"
+                                        checked={useDefaultPassword}
+                                        onChange={(e) => {
+                                            const checked = e.target.checked;
+                                            setUseDefaultPassword(checked);
+                                            if (checked) {
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    password: DEFAULT_PASSWORD,
+                                                    confirmPassword: DEFAULT_PASSWORD,
+                                                }));
+                                                // Clear password errors when using default password
+                                                setErrors((prev) => {
+                                                    const newErrors = { ...prev };
+                                                    delete newErrors.password;
+                                                    delete newErrors.confirmPassword;
+                                                    return newErrors;
+                                                });
+                                            } else {
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    password: "",
+                                                    confirmPassword: "",
+                                                }));
+                                            }
+                                        }}
+                                        className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                    />
+                                    <label
+                                        htmlFor="useDefaultPassword"
+                                        className="text-sm font-medium text-foreground cursor-pointer"
+                                    >
+                                        Use default password (P@ssword123!)
+                                    </label>
+                                </div>
                             </div>
 
                             {/* Submit Button */}
@@ -241,23 +348,25 @@ export default function AddOrganizersPage() {
                                     onClick={() => {
                                         setFormData({
                                             organizerName: "",
-                                            name: "",
+                                            fullName: "",
                                             email: "",
                                             password: "",
                                             confirmPassword: "",
                                         });
+                                        setUseAutoEmail(false);
+                                        setUseDefaultPassword(false);
                                         setErrors({});
                                     }}
-                                    disabled={createUserMutation.isPending}
+                                    disabled={createOrganizerMutation.isPending}
                                 >
                                     Reset
                                 </Button>
                                 <Button
                                     type="submit"
-                                    disabled={createUserMutation.isPending}
+                                    disabled={createOrganizerMutation.isPending}
                                     size="lg"
                                 >
-                                    {createUserMutation.isPending
+                                    {createOrganizerMutation.isPending
                                         ? "Creating Organizer..."
                                         : "Create Organizer"}
                                 </Button>
