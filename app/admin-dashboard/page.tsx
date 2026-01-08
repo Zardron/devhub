@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useDashboardStatistics } from "@/lib/hooks/api/admin.queries";
-import { Users, Calendar, Ticket, Building2, TrendingUp } from "lucide-react";
+import { Users, Calendar, Ticket, Building2, TrendingUp, TrendingDown } from "lucide-react";
 import {
     LineChart,
     Line,
@@ -23,16 +23,16 @@ import {
 } from "recharts";
 
 const COLORS = {
-    primary: "#8884d8",
-    secondary: "#82ca9d",
-    tertiary: "#ffc658",
+    primary: "#8884d8", // Purple for Events
+    secondary: "#82ca9d", // Green for Bookings
+    tertiary: "#ffc658", // Orange for Users
     accent: "#ff7300",
 };
 
 const ROLE_COLORS = {
-    admin: "#8884d8",
-    user: "#82ca9d",
-    organizer: "#ffc658",
+    admin: "#8884d8", // Light purple for Admins
+    user: "#82ca9d", // Light green for Users
+    organizer: "#ffc658", // Orange for Organizers
 };
 
 const MODE_COLORS = {
@@ -42,6 +42,38 @@ const MODE_COLORS = {
 };
 
 type ChartType = "area" | "line" | "bar";
+
+// Helper function to calculate trend percentage
+// Compares the last period (last month) with the previous period (second to last month)
+function calculateTrend(
+    timeSeries: Array<{ month: string; count: number }> | undefined,
+    currentTotal: number
+): { current: number; previous: number } | null {
+    if (!timeSeries || timeSeries.length < 2) {
+        return null;
+    }
+    
+    // Sort by month to ensure correct order
+    const sorted = [...timeSeries].sort((a, b) => a.month.localeCompare(b.month));
+    
+    if (sorted.length < 2) {
+        return null;
+    }
+    
+    // Get the last two months for comparison
+    const lastMonth = sorted[sorted.length - 1];
+    const previousMonth = sorted[sorted.length - 2];
+    
+    // Compare the counts of the last two months
+    if (previousMonth.count > 0) {
+        return {
+            current: lastMonth.count,
+            previous: previousMonth.count,
+        };
+    }
+    
+    return null;
+}
 
 export default function AdminDashboardPage() {
     const { data: statisticsData, isLoading, error } = useDashboardStatistics();
@@ -112,14 +144,16 @@ export default function AdminDashboardPage() {
         ...(stats.usersOverTime || []).map((item) => item.month),
     ]);
 
-    Array.from(allMonths)
+            Array.from(allMonths)
         .sort()
         .forEach((month) => {
             const eventCount = stats.eventsOverTime?.find((item) => item.month === month)?.count || 0;
             const bookingCount = stats.bookingsOverTime?.find((item) => item.month === month)?.count || 0;
             const userCount = stats.usersOverTime?.find((item) => item.month === month)?.count || 0;
+            // Format as MM/YY - extract month and year from "YYYY-MM" format
+            const [year, monthNum] = month.split("-");
             combinedTimeData.push({
-                month: month.split("-")[1] + "/" + month.split("-")[0].slice(2), // Format as MM/YY
+                month: `${monthNum}/${year.slice(2)}`, // Format as MM/YY (e.g., 12/25 for December 2025, 01/26 for January 2026)
                 events: eventCount,
                 bookings: bookingCount,
                 users: userCount,
@@ -142,24 +176,21 @@ export default function AdminDashboardPage() {
                     value={totals.users}
                     icon={<Users className="h-5 w-5" />}
                     href="/admin-dashboard/all-users"
-                    trend={stats.usersOverTime?.slice(-2)?.[1]?.count || 0}
-                    previousTrend={stats.usersOverTime?.slice(-2)?.[0]?.count || 0}
+                    trend={calculateTrend(stats.usersOverTime, totals.users)}
                 />
                 <StatCard
                     title="Total Events"
                     value={totals.events}
                     icon={<Calendar className="h-5 w-5" />}
                     href="/admin-dashboard/all-events"
-                    trend={stats.eventsOverTime?.slice(-2)?.[1]?.count || 0}
-                    previousTrend={stats.eventsOverTime?.slice(-2)?.[0]?.count || 0}
+                    trend={calculateTrend(stats.eventsOverTime, totals.events)}
                 />
                 <StatCard
                     title="Total Bookings"
                     value={totals.bookings}
                     icon={<Ticket className="h-5 w-5" />}
                     href="/admin-dashboard/all-events"
-                    trend={stats.bookingsOverTime?.slice(-2)?.[1]?.count || 0}
-                    previousTrend={stats.bookingsOverTime?.slice(-2)?.[0]?.count || 0}
+                    trend={calculateTrend(stats.bookingsOverTime, totals.bookings)}
                 />
                 <StatCard
                     title="Organizers"
@@ -172,7 +203,7 @@ export default function AdminDashboardPage() {
             {/* Charts Section */}
             <div className="grid gap-6 md:grid-cols-2">
                 {/* Growth Over Time Chart */}
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-lg bg-card shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-semibold">Growth Over Time (Last 6 Months)</h3>
                         <select
@@ -199,6 +230,7 @@ export default function AdminDashboardPage() {
                                     stackId="1"
                                     stroke={COLORS.primary}
                                     fill={COLORS.primary}
+                                    fillOpacity={0.6}
                                     name="Events"
                                 />
                                 <Area
@@ -207,6 +239,7 @@ export default function AdminDashboardPage() {
                                     stackId="1"
                                     stroke={COLORS.secondary}
                                     fill={COLORS.secondary}
+                                    fillOpacity={0.6}
                                     name="Bookings"
                                 />
                                 <Area
@@ -215,6 +248,7 @@ export default function AdminDashboardPage() {
                                     stackId="1"
                                     stroke={COLORS.tertiary}
                                     fill={COLORS.tertiary}
+                                    fillOpacity={0.6}
                                     name="Users"
                                 />
                             </AreaChart>
@@ -263,7 +297,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* User Role Distribution */}
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-lg bg-card shadow-sm">
                     <h3 className="text-lg font-semibold mb-4">User Role Distribution</h3>
                     {roleData.length > 0 ? (
                         <ResponsiveContainer width="100%" height={300}>
@@ -295,7 +329,7 @@ export default function AdminDashboardPage() {
 
             <div className="grid gap-6 md:grid-cols-2">
                 {/* Events Over Time */}
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-lg bg-card shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-semibold">Events Created Over Time</h3>
                         <select
@@ -353,7 +387,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* Event Mode Distribution */}
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-lg bg-card shadow-sm">
                     <h3 className="text-lg font-semibold mb-4">Event Mode Distribution</h3>
                     {modeData.length > 0 ? (
                         <ResponsiveContainer width="100%" height={300}>
@@ -413,18 +447,19 @@ interface StatCardProps {
     value: number;
     icon: React.ReactNode;
     href?: string;
-    trend?: number;
-    previousTrend?: number;
+    trend?: { current: number; previous: number } | null;
 }
 
-function StatCard({ title, value, icon, href, trend, previousTrend }: StatCardProps) {
+function StatCard({ title, value, icon, href, trend }: StatCardProps) {
     const trendPercentage =
-        trend !== undefined && previousTrend !== undefined && previousTrend > 0
-            ? ((trend - previousTrend) / previousTrend) * 100
+        trend && trend.previous > 0
+            ? ((trend.current - trend.previous) / trend.previous) * 100
             : null;
 
+    const isPositive = trendPercentage !== null && trendPercentage >= 0;
+
     const cardContent = (
-        <div className="p-6 border rounded-lg hover:bg-accent transition-colors">
+        <div className="p-6 border rounded-lg bg-card hover:bg-accent transition-colors">
             <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
                 <div className="text-muted-foreground">{icon}</div>
@@ -433,11 +468,13 @@ function StatCard({ title, value, icon, href, trend, previousTrend }: StatCardPr
                 <p className="text-3xl font-bold">{value.toLocaleString()}</p>
                 {trendPercentage !== null && (
                     <div className="flex items-center gap-1 text-sm">
-                        <TrendingUp
-                            className={`h-4 w-4 ${trendPercentage >= 0 ? "text-green-500" : "text-red-500"}`}
-                        />
-                        <span className={trendPercentage >= 0 ? "text-green-500" : "text-red-500"}>
-                            {trendPercentage >= 0 ? "+" : ""}
+                        {isPositive ? (
+                            <TrendingUp className="h-4 w-4 text-green-500" />
+                        ) : (
+                            <TrendingDown className="h-4 w-4 text-red-500" />
+                        )}
+                        <span className={isPositive ? "text-green-500" : "text-red-500"}>
+                            {isPositive ? "+" : ""}
                             {trendPercentage.toFixed(1)}%
                         </span>
                     </div>
