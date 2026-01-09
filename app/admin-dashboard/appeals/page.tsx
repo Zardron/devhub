@@ -95,9 +95,9 @@ export default function AppealsPage() {
 
     if (isLoading) {
         return (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
                 <div>
-                    <h1 className="text-3xl font-bold">Ban Appeals</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold">Ban Appeals</h1>
                     <p className="text-muted-foreground mt-2">
                         Review and manage user ban appeals
                     </p>
@@ -111,10 +111,10 @@ export default function AppealsPage() {
 
     if (error) {
         return (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
                 <div>
-                    <h1 className="text-3xl font-bold">Ban Appeals</h1>
-                    <p className="text-muted-foreground mt-2">
+                    <h1 className="text-2xl sm:text-3xl font-bold">Ban Appeals</h1>
+                    <p className="text-muted-foreground mt-2 text-sm sm:text-base">
                         Review and manage user ban appeals
                     </p>
                 </div>
@@ -129,9 +129,9 @@ export default function AppealsPage() {
     const reviewedAppeals = appeals.filter((a) => a.status !== 'pending');
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Ban Appeals</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold">Ban Appeals</h1>
                 <p className="text-muted-foreground mt-2">
                     Review and manage user ban appeals
                 </p>
