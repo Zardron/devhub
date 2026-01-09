@@ -121,14 +121,14 @@ const SignUpPage = () => {
                                     <div className="w-10 h-10 rounded-lg bg-transparent border border-blue/30 flex items-center justify-center p-2 shadow-[0_0_20px_rgba(148,234,255,0.2)] group-hover:shadow-[0_0_30px_rgba(148,234,255,0.3)] transition-all duration-300">
                                         <Image
                                             src="/icons/logo.png"
-                                            alt="TechHub Logo"
+                                            alt="TechEventX Logo"
                                             width={24}
                                             height={24}
                                             className="w-6 h-6"
                                         />
                                     </div>
                                     <span className="text-xl font-bold text-foreground font-schibsted-grotesk">
-                                        TechHub
+                                        TechEventX
                                     </span>
                                 </Link>
 
@@ -180,21 +180,21 @@ const SignUpPage = () => {
                                     <div className="w-10 h-10 rounded-lg bg-transparent border border-blue/30 flex items-center justify-center p-2 shadow-[0_0_15px_rgba(148,234,255,0.15)] group-hover:shadow-[0_0_25px_rgba(148,234,255,0.25)] transition-all duration-300">
                                         <Image
                                             src="/icons/logo.png"
-                                            alt="TechHub Logo"
+                                            alt="TechEventX Logo"
                                             width={24}
                                             height={24}
                                             className="w-6 h-6"
                                         />
                                     </div>
                                     <span className="text-xl font-bold text-foreground font-schibsted-grotesk">
-                                        TechHub
+                                        TechEventX
                                     </span>
                                 </Link>
                                 <h1 className="text-4xl font-bold mb-2 text-foreground">
                                     Join the Community
                                 </h1>
                                 <p className="text-light-200 text-sm">
-                                    Create your TechHub account
+                                    Create your TechEventX account
                                 </p>
                             </div>
 
