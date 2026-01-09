@@ -147,7 +147,7 @@ const SideBar = () => {
                             className="object-contain"
                         />
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-semibold text-sidebar-foreground cursor-pointer">TechHub</h3>
+                    <h3 className="text-xl sm:text-2xl font-semibold text-sidebar-foreground cursor-pointer">TechEventX</h3>
                 </Link>
             </div>
 

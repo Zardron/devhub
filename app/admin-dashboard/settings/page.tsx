@@ -18,10 +18,10 @@ import {
 export default function SettingsPage() {
     const [formData, setFormData] = useState({
         // General Settings
-        platformName: "TechHub",
+        platformName: "TechEventX",
         platformDescription: "Your premier destination for tech events and networking",
-        contactEmail: "contact@techhub.com",
-        supportEmail: "support@techhub.com",
+        contactEmail: "contact@techeventx.com",
+        supportEmail: "support@techeventx.com",
         
         // Security Settings
         minPasswordLength: "8",
@@ -36,8 +36,8 @@ export default function SettingsPage() {
         smtpPort: "587",
         smtpUser: "",
         smtpPassword: "",
-        smtpFromEmail: "noreply@techhub.com",
-        smtpFromName: "TechHub",
+        smtpFromEmail: "noreply@techeventx.com",
+        smtpFromName: "TechEventX",
         
         // Notification Settings
         emailNotifications: "true",
@@ -145,10 +145,10 @@ export default function SettingsPage() {
 
     const handleReset = () => {
         setFormData({
-            platformName: "TechHub",
+            platformName: "TechEventX",
             platformDescription: "Your premier destination for tech events and networking",
-            contactEmail: "contact@techhub.com",
-            supportEmail: "support@techhub.com",
+            contactEmail: "contact@techeventx.com",
+            supportEmail: "support@techeventx.com",
             minPasswordLength: "8",
             requireUppercase: "true",
             requireLowercase: "true",
@@ -159,8 +159,8 @@ export default function SettingsPage() {
             smtpPort: "587",
             smtpUser: "",
             smtpPassword: "",
-            smtpFromEmail: "noreply@techhub.com",
-            smtpFromName: "TechHub",
+            smtpFromEmail: "noreply@techeventx.com",
+            smtpFromName: "TechEventX",
             emailNotifications: "true",
             bookingConfirmations: "true",
             eventReminders: "true",
@@ -261,7 +261,7 @@ export default function SettingsPage() {
                                                 name="contactEmail"
                                                 type="email"
                                                 label="Contact Email"
-                                                placeholder="contact@techhub.com"
+                                                placeholder="contact@techeventx.com"
                                                 value={formData.contactEmail}
                                                 onChange={handleChange}
                                                 error={errors.contactEmail}
@@ -273,7 +273,7 @@ export default function SettingsPage() {
                                                 name="supportEmail"
                                                 type="email"
                                                 label="Support Email"
-                                                placeholder="support@techhub.com"
+                                                placeholder="support@techeventx.com"
                                                 value={formData.supportEmail}
                                                 onChange={handleChange}
                                                 error={errors.supportEmail}
@@ -435,7 +435,7 @@ export default function SettingsPage() {
                                                 name="smtpFromEmail"
                                                 type="email"
                                                 label="From Email Address"
-                                                placeholder="noreply@techhub.com"
+                                                placeholder="noreply@techeventx.com"
                                                 value={formData.smtpFromEmail}
                                                 onChange={handleChange}
                                                 error={errors.smtpFromEmail}

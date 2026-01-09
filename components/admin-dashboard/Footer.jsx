@@ -21,7 +21,7 @@ const Footer = () => {
             {/* Copyright */}
             <div className="flex justify-center items-center gap-4 text-center">
                 <p className="text-light-200 text-sm">
-                    © {currentYear} <span className="text-blue font-semibold">TechHub</span> created by <span className="text-primary">Zardron</span>. All rights reserved.
+                    © {currentYear} <span className="text-blue font-semibold">TechEventX</span> created by <span className="text-primary">Zardron</span>. All rights reserved.
                 </p>
             </div>
         </>
