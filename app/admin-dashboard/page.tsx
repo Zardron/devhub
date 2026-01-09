@@ -36,9 +36,9 @@ const ROLE_COLORS = {
 };
 
 const MODE_COLORS = {
-    online: "#8884d8",
-    offline: "#82ca9d",
-    hybrid: "#ff7300",
+    Virtual: "#82ca9d",  // Green for Virtual
+    Onsite: "#8884d8",   // Purple for Onsite
+    Hybrid: "#ff7300",   // Orange for Hybrid
 };
 
 type ChartType = "area" | "line" | "bar";
@@ -75,10 +75,94 @@ function calculateTrend(
     return null;
 }
 
+type TimeRange = "1month" | "3months" | "6months" | "all";
+
 export default function AdminDashboardPage() {
-    const { data: statisticsData, isLoading, error } = useDashboardStatistics();
+    const [timeRange, setTimeRange] = useState<TimeRange>("6months");
+    const { data: statisticsData, isLoading, error } = useDashboardStatistics(timeRange);
     const [growthChartType, setGrowthChartType] = useState<ChartType>("area");
     const [eventsChartType, setEventsChartType] = useState<ChartType>("line");
+
+    // Skeleton loader components
+    const SkeletonCard = () => (
+        <div className="p-6 border rounded-lg bg-card shadow-sm animate-pulse">
+            <div className="flex items-center justify-between mb-4">
+                <div className="h-5 bg-muted rounded w-32"></div>
+                <div className="w-5 h-5 bg-muted rounded"></div>
+            </div>
+            <div className="h-8 bg-muted rounded w-20 mb-2"></div>
+            <div className="flex items-center gap-2">
+                <div className="h-4 bg-muted rounded w-16"></div>
+                <div className="h-4 bg-muted rounded w-4"></div>
+            </div>
+        </div>
+    );
+
+    const SkeletonChart = () => (
+        <div className="p-6 border rounded-lg bg-card shadow-sm animate-pulse">
+            <div className="flex items-center justify-between mb-4">
+                <div className="h-6 bg-muted rounded w-56"></div>
+                <div className="flex items-center gap-2">
+                    <div className="h-8 bg-muted rounded w-28"></div>
+                    <div className="h-8 bg-muted rounded w-24"></div>
+                </div>
+            </div>
+            <div className="h-[300px] bg-muted/10 rounded border border-muted/20 relative overflow-hidden">
+                {/* Chart grid lines */}
+                <div className="absolute inset-0 flex flex-col justify-between p-4">
+                    {[...Array(5)].map((_, i) => (
+                        <div key={i} className="h-px bg-muted/20 w-full"></div>
+                    ))}
+                </div>
+                {/* Chart bars/lines */}
+                <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-2">
+                    {[...Array(6)].map((_, i) => (
+                        <div 
+                            key={i} 
+                            className="flex-1 bg-muted/40 rounded-t" 
+                            style={{ height: `${30 + Math.random() * 50}%` }}
+                        ></div>
+                    ))}
+                </div>
+                {/* X-axis labels */}
+                <div className="absolute bottom-0 left-4 right-4 flex justify-between pb-2">
+                    {[...Array(6)].map((_, i) => (
+                        <div key={i} className="h-3 bg-muted/30 rounded w-12"></div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+
+    const SkeletonPieChart = () => (
+        <div className="p-6 border rounded-lg bg-card shadow-sm animate-pulse">
+            <div className="h-6 bg-muted rounded w-48 mb-4"></div>
+            <div className="h-[300px] bg-muted/10 rounded border border-muted/20 flex items-center justify-center relative">
+                <div className="w-48 h-48 bg-muted/30 rounded-full relative overflow-hidden">
+                    {/* Pie segments simulation */}
+                    <div className="absolute inset-0">
+                        <div className="absolute top-0 left-0 w-1/2 h-full bg-muted/40 rounded-l-full"></div>
+                        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-muted/50 rounded-tr-full"></div>
+                        <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-muted/30 rounded-br-full"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const SkeletonActionCard = () => (
+        <div className="p-6 border rounded-lg bg-card shadow-sm animate-pulse cursor-pointer hover:bg-accent transition-colors">
+            <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-muted rounded flex items-center justify-center">
+                    <div className="w-6 h-6 bg-muted-foreground/20 rounded"></div>
+                </div>
+                <div className="flex-1">
+                    <div className="h-6 bg-muted rounded w-24 mb-2"></div>
+                    <div className="h-4 bg-muted rounded w-40"></div>
+                </div>
+            </div>
+        </div>
+    );
 
     if (isLoading) {
         return (
@@ -89,8 +173,32 @@ export default function AdminDashboardPage() {
                         Welcome to the admin dashboard. Manage your platform from here.
                     </p>
                 </div>
-                <div className="flex items-center justify-center h-64">
-                    <p className="text-muted-foreground">Loading statistics...</p>
+
+                {/* Statistics Cards Skeleton */}
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <SkeletonCard />
+                    <SkeletonCard />
+                    <SkeletonCard />
+                    <SkeletonCard />
+                </div>
+
+                {/* Charts Section Skeleton */}
+                <div className="grid gap-6 md:grid-cols-2">
+                    <SkeletonChart />
+                    <SkeletonPieChart />
+                </div>
+
+                {/* Events Charts Section Skeleton */}
+                <div className="grid gap-6 md:grid-cols-2">
+                    <SkeletonChart />
+                    <SkeletonPieChart />
+                </div>
+
+                {/* Quick Actions Skeleton */}
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <SkeletonActionCard />
+                    <SkeletonActionCard />
+                    <SkeletonActionCard />
                 </div>
             </div>
         );
@@ -124,9 +232,9 @@ export default function AdminDashboardPage() {
 
     // Prepare mode distribution data for pie chart
     const modeData = [
-        { name: "Online", value: stats.modeDistribution?.online || 0, color: MODE_COLORS.online },
-        { name: "Offline", value: stats.modeDistribution?.offline || 0, color: MODE_COLORS.offline },
-        { name: "Hybrid", value: stats.modeDistribution?.hybrid || 0, color: MODE_COLORS.hybrid },
+        { name: "Virtual", value: stats.modeDistribution?.Virtual || 0, color: MODE_COLORS.Virtual },
+        { name: "Onsite", value: stats.modeDistribution?.Onsite || 0, color: MODE_COLORS.Onsite },
+        { name: "Hybrid", value: stats.modeDistribution?.Hybrid || 0, color: MODE_COLORS.Hybrid },
     ].filter((item) => item.value > 0);
 
     // Prepare combined chart data for events, bookings, and users over time
@@ -137,36 +245,61 @@ export default function AdminDashboardPage() {
         users: number;
     }
 
-    const combinedTimeData: TimeDataPoint[] = [];
+    // Use the complete time series from API (all 6 months are guaranteed)
+    // Create a map for quick lookup
+    const eventsMap = new Map((stats.eventsOverTime || []).map(item => [item.month, item.count]));
+    const bookingsMap = new Map((stats.bookingsOverTime || []).map(item => [item.month, item.count]));
+    const usersMap = new Map((stats.usersOverTime || []).map(item => [item.month, item.count]));
+
+    // Get all unique months from the API responses (should be 6 months)
     const allMonths = new Set([
         ...(stats.eventsOverTime || []).map((item) => item.month),
         ...(stats.bookingsOverTime || []).map((item) => item.month),
         ...(stats.usersOverTime || []).map((item) => item.month),
     ]);
 
-            Array.from(allMonths)
+    // Build combined data using all months from API
+    const combinedTimeData: TimeDataPoint[] = Array.from(allMonths)
         .sort()
-        .forEach((month) => {
-            const eventCount = stats.eventsOverTime?.find((item) => item.month === month)?.count || 0;
-            const bookingCount = stats.bookingsOverTime?.find((item) => item.month === month)?.count || 0;
-            const userCount = stats.usersOverTime?.find((item) => item.month === month)?.count || 0;
+        .map((month) => {
+            const eventCount = eventsMap.get(month) || 0;
+            const bookingCount = bookingsMap.get(month) || 0;
+            const userCount = usersMap.get(month) || 0;
             // Format as MM/YY - extract month and year from "YYYY-MM" format
             const [year, monthNum] = month.split("-");
-            combinedTimeData.push({
+            return {
                 month: `${monthNum}/${year.slice(2)}`, // Format as MM/YY (e.g., 12/25 for December 2025, 01/26 for January 2026)
                 events: eventCount,
                 bookings: bookingCount,
                 users: userCount,
-            });
+            };
         });
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-                <p className="text-muted-foreground mt-2">
-                    Welcome to the admin dashboard. Manage your platform from here.
-                </p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+                    <p className="text-muted-foreground mt-2">
+                        Welcome to the admin dashboard. Manage your platform from here.
+                    </p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <label htmlFor="timeRange" className="text-sm font-medium text-muted-foreground">
+                        Time Range:
+                    </label>
+                    <select
+                        id="timeRange"
+                        value={timeRange}
+                        onChange={(e) => setTimeRange(e.target.value as TimeRange)}
+                        className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    >
+                        <option value="1month">Last 1 Month</option>
+                        <option value="3months">Last 3 Months</option>
+                        <option value="6months">Last 6 Months</option>
+                        <option value="all">All Time</option>
+                    </select>
+                </div>
             </div>
 
             {/* Statistics Cards */}
@@ -205,7 +338,7 @@ export default function AdminDashboardPage() {
                 {/* Growth Over Time Chart */}
                 <div className="p-6 border rounded-lg bg-card shadow-sm">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold">Growth Over Time (Last 6 Months)</h3>
+                        <h3 className="text-lg font-semibold">Growth Over Time</h3>
                         <select
                             value={growthChartType}
                             onChange={(e) => setGrowthChartType(e.target.value as ChartType)}
@@ -342,48 +475,54 @@ export default function AdminDashboardPage() {
                             <option value="bar">Bar Chart</option>
                         </select>
                     </div>
-                    <ResponsiveContainer width="100%" height={300}>
-                        {eventsChartType === "line" ? (
-                            <LineChart data={combinedTimeData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="month" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Line
-                                    type="monotone"
-                                    dataKey="events"
-                                    stroke={COLORS.primary}
-                                    strokeWidth={2}
-                                    name="Events"
-                                />
-                            </LineChart>
-                        ) : eventsChartType === "area" ? (
-                            <AreaChart data={combinedTimeData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="month" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Area
-                                    type="monotone"
-                                    dataKey="events"
-                                    stroke={COLORS.primary}
-                                    fill={COLORS.primary}
-                                    name="Events"
-                                />
-                            </AreaChart>
-                        ) : (
-                            <BarChart data={combinedTimeData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="month" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Bar dataKey="events" fill={COLORS.primary} name="Events" />
-                            </BarChart>
-                        )}
-                    </ResponsiveContainer>
+                    {combinedTimeData.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={300}>
+                            {eventsChartType === "line" ? (
+                                <LineChart data={combinedTimeData}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="month" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Line
+                                        type="monotone"
+                                        dataKey="events"
+                                        stroke={COLORS.primary}
+                                        strokeWidth={2}
+                                        name="Events"
+                                    />
+                                </LineChart>
+                            ) : eventsChartType === "area" ? (
+                                <AreaChart data={combinedTimeData}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="month" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="events"
+                                        stroke={COLORS.primary}
+                                        fill={COLORS.primary}
+                                        name="Events"
+                                    />
+                                </AreaChart>
+                            ) : (
+                                <BarChart data={combinedTimeData}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="month" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Bar dataKey="events" fill={COLORS.primary} name="Events" />
+                                </BarChart>
+                            )}
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+                            No data available
+                        </div>
+                    )}
                 </div>
 
                 {/* Event Mode Distribution */}
