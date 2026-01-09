@@ -4,7 +4,7 @@ import { v2 as cloudinary } from "cloudinary";
 // Handle Image Upload to Cloudinary
 export async function handleImageUpload(
     file: File | null,
-    folder: string = 'TechHub'
+    folder: string = 'TechEventX'
 ): Promise<{ success: true; url: string } | { success: false; response: NextResponse }> {
     if (!file) {
         return {

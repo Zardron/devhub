@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
                 );
             }
 
-            const uploadResult = await handleImageUpload(file, 'TechHub');
+            const uploadResult = await handleImageUpload(file, 'TechEventX');
 
             if (!uploadResult.success) {
                 return uploadResult.response;
