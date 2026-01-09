@@ -45,19 +45,19 @@ export interface StatisticsResponse {
     usersOverTime: DashboardStatistics['usersOverTime'];
 }
 
-export const useDashboardStatistics = () => {
+export const useDashboardStatistics = (timeRange: string = "6months") => {
     const { token } = useAuthStore();
     const router = useRouter();
 
     return useQuery<StatisticsResponse>({
-        queryKey: ['admin', 'statistics'],
+        queryKey: ['admin', 'statistics', timeRange],
         queryFn: async () => {
             if (!token) {
                 router.push('/sign-in');
                 throw new Error('Not authenticated');
             }
 
-            const response = await fetch(`${BASE_URL}/api/admin/statistics`, {
+            const response = await fetch(`${BASE_URL}/api/admin/statistics?timeRange=${timeRange}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
