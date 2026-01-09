@@ -9,6 +9,7 @@ import { IUser } from "@/database/user.model";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuthStore } from "@/lib/store/auth.store";
+import { useQueryClient } from "@tanstack/react-query";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -35,6 +36,7 @@ export default function AllOrganizersPage() {
     const deleteUserMutation = useDeleteUser();
     const banUserMutation = useBanUser();
     const { token } = useAuthStore();
+    const queryClient = useQueryClient();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [banDialogOpen, setBanDialogOpen] = useState(false);
     const [selectedOrganizer, setSelectedOrganizer] = useState<OrganizerDisplay | null>(null);
@@ -44,6 +46,9 @@ export default function AllOrganizersPage() {
     const [loadingUsers, setLoadingUsers] = useState(false);
     const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
     const [banActionType, setBanActionType] = useState<'ban' | 'unban' | null>(null);
+    const [associatedUsersCount, setAssociatedUsersCount] = useState<number>(0);
+    const [loadingUsersCount, setLoadingUsersCount] = useState(false);
+    const [isDeletingOrganizer, setIsDeletingOrganizer] = useState(false);
 
     // Get actual organizer accounts from database
     const organizers = useMemo(() => {
@@ -70,9 +75,38 @@ export default function AllOrganizersPage() {
         return result.sort((a, b) => a.name.localeCompare(b.name));
     }, [data]);
 
-    const handleDelete = (organizer: OrganizerDisplay) => {
+    const handleDelete = async (organizer: OrganizerDisplay) => {
         setSelectedOrganizer(organizer);
-        setDeleteDialogOpen(true);
+        setLoadingUsersCount(true);
+        setAssociatedUsersCount(0);
+
+        try {
+            if (!organizer.organizerId) {
+                toast.error("No organizer ID found");
+                setLoadingUsersCount(false);
+                return;
+            }
+
+            // Fetch associated users count
+            const response = await fetch(`/api/admin/organizers/${organizer.organizerId}/users`, {
+                headers: {
+                    'Authorization': `Bearer ${token || ''}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch associated users');
+            }
+
+            const result = await response.json();
+            const users = result.data || [];
+            setAssociatedUsersCount(users.length);
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "An error occurred while fetching user count");
+        } finally {
+            setLoadingUsersCount(false);
+            setDeleteDialogOpen(true);
+        }
     };
 
     const handleViewUsers = async (organizer: OrganizerDisplay) => {
@@ -108,19 +142,41 @@ export default function AllOrganizersPage() {
     };
 
     const confirmDelete = async () => {
-        if (!selectedOrganizer || !selectedOrganizer.userId) return;
+        if (!selectedOrganizer || !selectedOrganizer.organizerId) return;
 
-        const deletePromise = deleteUserMutation.mutateAsync(selectedOrganizer.userId)
-            .then(() => {
-                setDeleteDialogOpen(false);
-                setSelectedOrganizer(null);
+        setIsDeletingOrganizer(true);
+
+        try {
+            const response = await fetch(`/api/admin/organizers/${selectedOrganizer.organizerId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token || ''}`,
+                },
             });
 
-        toast.promise(deletePromise, {
-            loading: 'Deleting organizer...',
-            success: `Organizer "${selectedOrganizer.name}" has been deleted.`,
-            error: (error) => error instanceof Error ? error.message : "An error occurred while deleting the organizer.",
-        });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to delete organizer');
+            }
+
+            const result = await response.json();
+            const deletedCount = result.data?.deletedUsersCount || 0;
+
+            setDeleteDialogOpen(false);
+            setSelectedOrganizer(null);
+            setAssociatedUsersCount(0);
+
+            // Invalidate and refetch users list to update the UI
+            queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+
+            toast.success(
+                `Organizer "${selectedOrganizer.name}" and ${deletedCount} associated user${deletedCount !== 1 ? 's' : ''} have been deleted.`
+            );
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "An error occurred while deleting the organizer.");
+        } finally {
+            setIsDeletingOrganizer(false);
+        }
     };
 
     const handleDisableUser = (user: IUser) => {
@@ -264,23 +320,38 @@ export default function AllOrganizersPage() {
                 if (!open) {
                     setDeleteDialogOpen(false);
                     setSelectedOrganizer(null);
+                    setAssociatedUsersCount(0);
                 }
             }}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete Organizer</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to delete <strong>{selectedOrganizer?.name}</strong>? This action cannot be undone and will permanently remove the organizer account.
+                            {loadingUsersCount ? (
+                                "Loading user information..."
+                            ) : (
+                                <>
+                                    Are you sure you want to delete <strong>{selectedOrganizer?.name}</strong>?
+                                    {associatedUsersCount > 0 && (
+                                        <span className="block mt-2 text-red-600 dark:text-red-400 font-semibold">
+                                            This will also delete {associatedUsersCount} associated user{associatedUsersCount !== 1 ? 's' : ''}.
+                                        </span>
+                                    )}
+                                    <span className="block mt-2">
+                                        This action cannot be undone and will permanently remove the organizer account{associatedUsersCount > 0 ? ' and all associated users' : ''}.
+                                    </span>
+                                </>
+                            )}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel disabled={isDeletingOrganizer}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={confirmDelete}
                             className="bg-red-600 hover:bg-red-700"
-                            disabled={deleteUserMutation.isPending}
+                            disabled={isDeletingOrganizer || loadingUsersCount}
                         >
-                            {deleteUserMutation.isPending ? "Deleting..." : "Delete"}
+                            {isDeletingOrganizer ? "Deleting..." : "Delete"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
