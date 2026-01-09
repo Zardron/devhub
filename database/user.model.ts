@@ -7,6 +7,7 @@ export interface IUser extends Document {
     name: string;
     role: 'admin' | 'user' | 'organizer';
     organizerId?: mongoose.Types.ObjectId; // Reference to Organizer if role is 'organizer'
+    stripeCustomerId?: string; // Stripe customer ID for payment processing
     banned?: boolean;
     deleted?: boolean;
     createdAt: Date;
@@ -64,6 +65,12 @@ const userSchema = new Schema<IUser>(
         organizerId: {
             type: Schema.Types.ObjectId,
             ref: 'Organizer',
+        },
+        stripeCustomerId: {
+            type: String,
+            trim: true,
+            sparse: true,
+            index: true,
         },
         banned: {
             type: Boolean,

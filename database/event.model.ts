@@ -1,4 +1,4 @@
-import mongoose, { Schema, Model, Document } from 'mongoose';
+import mongoose, { Schema, Model, Document, Types } from 'mongoose';
 
 export interface IEvent extends Document {
     title: string;
@@ -13,8 +13,21 @@ export interface IEvent extends Document {
     mode: string;
     audience: string;
     agenda: string[];
-    organizer: string;
+    organizer: string; // Organizer name (kept for backward compatibility)
+    organizerId?: Types.ObjectId; // Reference to User with organizer role
     tags: string[];
+    // Pricing & Capacity
+    isFree: boolean;
+    price?: number; // Price in cents (if single price)
+    currency: string;
+    capacity?: number; // Maximum attendees (null = unlimited)
+    availableTickets?: number; // Calculated field
+    waitlistEnabled: boolean;
+    // Status
+    status: 'draft' | 'published' | 'cancelled' | 'postponed' | 'completed';
+    publishedAt?: Date;
+    // Metadata
+    views: number;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -174,6 +187,11 @@ const eventSchema = new Schema<IEvent>(
                 message: 'Organizer cannot be empty',
             },
         },
+        organizerId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            index: true,
+        },
         tags: {
             type: [String],
             required: [true, 'Tags is required'],
@@ -181,6 +199,48 @@ const eventSchema = new Schema<IEvent>(
                 validator: (v: string[]) => Array.isArray(v) && v.length > 0 && v.every(item => item.trim().length > 0),
                 message: 'Tags must be a non-empty array of strings',
             },
+        },
+        // Pricing & Capacity
+        isFree: {
+            type: Boolean,
+            default: true,
+        },
+        price: {
+            type: Number,
+            min: [0, 'Price cannot be negative'],
+        },
+        currency: {
+            type: String,
+            default: 'php',
+            uppercase: true,
+        },
+        capacity: {
+            type: Number,
+            min: [1, 'Capacity must be at least 1'],
+        },
+        availableTickets: {
+            type: Number,
+            min: [0, 'Available tickets cannot be negative'],
+        },
+        waitlistEnabled: {
+            type: Boolean,
+            default: false,
+        },
+        // Status
+        status: {
+            type: String,
+            enum: ['draft', 'published', 'cancelled', 'postponed', 'completed'],
+            default: 'draft',
+            index: true,
+        },
+        publishedAt: {
+            type: Date,
+        },
+        // Metadata
+        views: {
+            type: Number,
+            default: 0,
+            min: [0, 'Views cannot be negative'],
         },
     },
     {
@@ -211,8 +271,30 @@ const eventSchema = new Schema<IEvent>(
     }
 });
 
-// Unique index on slug for fast lookups
+// Indexes
 eventSchema.index({ slug: 1 }, { unique: true });
+eventSchema.index({ organizerId: 1, status: 1 });
+eventSchema.index({ status: 1, date: 1 });
+eventSchema.index({ createdAt: -1 });
+
+// Calculate available tickets before save
+(eventSchema as any).pre('save', async function (this: IEvent) {
+    if (this.capacity && this.isModified('capacity')) {
+        // Calculate available tickets (will be updated when bookings are made)
+        const Booking = mongoose.models.Booking;
+        if (Booking) {
+            const bookingCount = await Booking.countDocuments({ eventId: this._id });
+            this.availableTickets = Math.max(0, (this.capacity || 0) - bookingCount);
+        } else {
+            this.availableTickets = this.capacity;
+        }
+    }
+    
+    // Set publishedAt when status changes to published
+    if (this.isModified('status') && this.status === 'published' && !this.publishedAt) {
+        this.publishedAt = new Date();
+    }
+});
 
 export default mongoose.models.Event || mongoose.model<IEvent>('Event', eventSchema) as Model<IEvent>;
 
