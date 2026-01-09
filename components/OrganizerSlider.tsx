@@ -3,14 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import OrganizerLogo from "./OrganizerLogo";
-import { SAMPLE_ORGANIZERS } from "@/lib/constants";
 
 interface OrganizerSliderProps {
     organizers: string[];
 }
-
-// Use sample organizers from constants
-const DUMMY_ORGANIZERS = SAMPLE_ORGANIZERS;
 
 const OrganizerSlider = ({ organizers }: OrganizerSliderProps) => {
     const [isPaused, setIsPaused] = useState(false);
@@ -25,11 +21,8 @@ const OrganizerSlider = ({ organizers }: OrganizerSliderProps) => {
         isPausedRef.current = isPaused;
     }, [isPaused]);
 
-    // Combine actual organizers with dummy ones to ensure we have enough items for a slider
-    const allOrganizers = [
-        ...organizers,
-        ...DUMMY_ORGANIZERS.filter(org => !organizers.includes(org))
-    ].slice(0, 12);
+    // Use only actual organizers
+    const allOrganizers = organizers.slice(0, 12);
 
     // Duplicate organizers for seamless infinite scroll
     const duplicatedOrganizers = [...allOrganizers, ...allOrganizers, ...allOrganizers];
