@@ -143,7 +143,7 @@ class MailgunService implements EmailService {
 }
 
 // Factory function to get email service
-function getEmailService(): EmailService {
+export function getEmailService(): EmailService {
     const provider = process.env.EMAIL_PROVIDER || 'sendgrid';
     
     switch (provider.toLowerCase()) {

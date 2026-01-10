@@ -1,14 +1,46 @@
 import mongoose, { Mongoose } from 'mongoose';
 
 const getMongoURI = (): string => {
-    if (process.env.MONGODB_URI) return process.env.MONGODB_URI;
+    if (process.env.MONGODB_URI) {
+        const uri = process.env.MONGODB_URI.trim();
+        // Log connection string without password for debugging
+        const maskedUri = uri.replace(/:([^:@]+)@/, ':****@');
+        console.log('🔗 MongoDB: Using MONGODB_URI:', maskedUri);
+        return uri;
+    }
 
     const { MONGO_DB_SRV, MONGO_DB_USER, MONGO_DB_PASSWORD, MONGO_DB_NAME } = process.env;
     if (!MONGO_DB_SRV || !MONGO_DB_USER || !MONGO_DB_PASSWORD || !MONGO_DB_NAME) {
         throw new Error('Missing MongoDB env vars: MONGODB_URI or MONGO_DB_*');
     }
 
-    return `${MONGO_DB_SRV}${MONGO_DB_USER}:${encodeURIComponent(MONGO_DB_PASSWORD)}${MONGO_DB_NAME}`;
+    // Construct MongoDB connection string: mongodb+srv://username:password@cluster.mongodb.net/database
+    // MONGO_DB_SRV should be like: cluster0.xxxxx.mongodb.net (without mongodb+srv:// prefix)
+    let srv = MONGO_DB_SRV.trim();
+    
+    // Remove mongodb+srv:// if present (we'll add it back)
+    if (srv.startsWith('mongodb+srv://')) {
+        srv = srv.replace('mongodb+srv://', '');
+    }
+    
+    // Remove trailing slash if present
+    srv = srv.replace(/\/$/, '');
+    
+    // Validate that it looks like a MongoDB cluster hostname
+    if (!srv.includes('.mongodb.net')) {
+        console.warn('⚠️  Warning: MONGO_DB_SRV does not contain ".mongodb.net" - this may cause connection issues');
+        console.warn('   Expected format: cluster0.xxxxx.mongodb.net');
+        console.warn('   Got:', srv);
+    }
+    
+    // Construct full URI: mongodb+srv://user:pass@host/database
+    const uri = `mongodb+srv://${MONGO_DB_USER}:${encodeURIComponent(MONGO_DB_PASSWORD)}@${srv}/${MONGO_DB_NAME}`;
+    
+    // Log connection string without password for debugging
+    const maskedUri = uri.replace(/:([^:@]+)@/, ':****@');
+    console.log('🔗 MongoDB: Constructed URI:', maskedUri);
+    
+    return uri;
 };
 
 // Cache the connection promise to prevent multiple simultaneous connections
@@ -27,14 +59,47 @@ async function connectDB(): Promise<Mongoose> {
         }
 
         // Create new connection promise
-        connectionPromise = mongoose.connect(getMongoURI())
+        const mongoURI = getMongoURI();
+        
+        // Extract hostname for validation
+        try {
+            const url = new URL(mongoURI.replace('mongodb+srv://', 'https://'));
+            const hostname = url.hostname;
+            console.log('🔍 MongoDB: Attempting to connect to hostname:', hostname);
+        } catch (e) {
+            // Ignore URL parsing errors
+        }
+        
+        connectionPromise = mongoose.connect(mongoURI, {
+            serverSelectionTimeoutMS: 15000, // 15 seconds timeout
+            socketTimeoutMS: 45000, // 45 seconds socket timeout
+            connectTimeoutMS: 15000, // 15 seconds connection timeout
+            retryWrites: true,
+            retryReads: true,
+        })
             .then((conn) => {
                 console.log('✅ MongoDB: Connected successfully');
                 return conn;
             })
             .catch((error) => {
                 connectionPromise = null; // Reset on error so we can retry
-                console.error('❌ MongoDB: Connection failed', error);
+                console.error('❌ MongoDB: Connection failed');
+                console.error('   Error code:', error.code);
+                console.error('   Error message:', error.message);
+                
+                // Provide helpful error messages
+                if (error.code === 'ENOTFOUND' || error.message?.includes('ENOTFOUND')) {
+                    console.error('   💡 This is a DNS resolution error. Possible causes:');
+                    console.error('      - MongoDB cluster is still deploying (check Atlas dashboard)');
+                    console.error('      - Invalid MongoDB cluster hostname');
+                    console.error('      - Network connectivity issues');
+                    console.error('      - MongoDB cluster may have been deleted or renamed');
+                    console.error('   💡 Solutions:');
+                    console.error('      1. Wait for cluster deployment to complete in MongoDB Atlas');
+                    console.error('      2. Get a fresh connection string from Atlas "Connect" button');
+                    console.error('      3. Verify your MONGODB_URI in .env file');
+                }
+                
                 throw error;
             });
 

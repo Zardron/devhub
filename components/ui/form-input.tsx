@@ -3,7 +3,7 @@ import { Input } from "./input";
 import { cn } from "@/lib/utils";
 
 export interface FormInputProps extends React.ComponentProps<"input"> {
-    label: string;
+    label?: string;
     error?: string;
     helperText?: string;
     required?: boolean;
@@ -28,17 +28,19 @@ const FormInput = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, FormI
         },
         ref
     ) => {
-        const inputId = id || `input-${label.toLowerCase().replace(/\s+/g, "-")}`;
+        const inputId = id || `input-${(label || "input").toLowerCase().replace(/\s+/g, "-")}`;
 
         return (
             <div className={cn("space-y-2", containerClassName)}>
-                <label
-                    htmlFor={inputId}
-                    className="text-sm font-medium text-foreground block"
-                >
-                    {label}
-                    {required && <span className="text-destructive ml-1">*</span>}
-                </label>
+                {label && (
+                    <label
+                        htmlFor={inputId}
+                        className="text-sm font-medium text-foreground block"
+                    >
+                        {label}
+                        {required && <span className="text-destructive ml-1">*</span>}
+                    </label>
+                )}
                 {multiline ? (
                     <textarea
                         ref={ref as React.ForwardedRef<HTMLTextAreaElement>}
