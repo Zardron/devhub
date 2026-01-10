@@ -34,8 +34,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
             );
         }
 
-        // Find all bookings for this user's email
-        const bookings = await Booking.find({ email: user.email })
+        // Find all bookings for this user (by userId, fallback to email for backward compatibility)
+        const bookings = await Booking.find({ 
+            $or: [
+                { userId: user._id },
+                { email: user.email } // Fallback for old bookings without userId
+            ]
+        })
             .populate('eventId')
             .sort({ createdAt: -1 });
 
@@ -93,7 +98,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
         // Get event slug from request body
         const body = await req.json();
-        const { eventSlug } = body;
+        const { eventSlug, paymentIntentId, promoCode } = body;
 
         if (!eventSlug) {
             return NextResponse.json(
@@ -112,10 +117,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             );
         }
 
-        // Check if user already booked this event
+        // Check if user already booked this event (by userId, fallback to email)
         const existingBooking = await Booking.findOne({
             eventId: event._id,
-            email: user.email
+            $or: [
+                { userId: user._id },
+                { email: user.email } // Fallback for old bookings
+            ]
         });
 
         if (existingBooking) {
@@ -160,9 +168,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         }
 
         // Check if event requires payment
-        const body = await req.json();
-        const { paymentIntentId, promoCode } = body;
-
         if (!event.isFree && event.price && !paymentIntentId) {
             return NextResponse.json(
                 { message: "Payment required for this event" },
@@ -233,6 +238,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         // Create booking
         const booking = new Booking({
             eventId: event._id,
+            userId: user._id,
             email: user.email
         });
 

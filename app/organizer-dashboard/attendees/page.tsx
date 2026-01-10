@@ -7,6 +7,7 @@ import { FormSelect } from "@/components/ui/form-select";
 import { formatDateToReadable } from "@/lib/formatters";
 import { Users, Download, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
 
 export default function AttendeesPage() {
     const { data: eventsData } = useOrganizerEvents();
@@ -16,26 +17,45 @@ export default function AttendeesPage() {
     const { data: attendeesData, isLoading } = useOrganizerAttendees(selectedEventId);
     const attendees = attendeesData?.data?.attendees || [];
 
-    const handleExport = () => {
-        if (!attendees.length) return;
+    const handleExport = async () => {
+        if (!attendees.length) {
+            toast.error("No attendees to export");
+            return;
+        }
 
-        const csv = [
-            ["Name", "Email", "Ticket Number", "Status", "Booked At"].join(","),
-            ...attendees.map((a: any) => [
-                a.name || "",
-                a.email,
-                a.ticketNumber || "",
-                a.ticketStatus || "active",
-                new Date(a.bookedAt).toLocaleString(),
-            ].join(",")),
-        ].join("\n");
+        try {
+            const { useAuthStore } = await import("@/lib/store/auth.store");
+            const { token } = useAuthStore.getState();
+            
+            if (!token) {
+                toast.error("Not authenticated");
+                return;
+            }
 
-        const blob = new Blob([csv], { type: "text/csv" });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `attendees-${selectedEventId}-${Date.now()}.csv`;
-        a.click();
+            const url = selectedEventId 
+                ? `/api/organizer/attendees/export?eventId=${selectedEventId}`
+                : `/api/organizer/attendees/export`;
+
+            const response = await fetch(url, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to export attendees");
+            }
+
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = downloadUrl;
+            a.download = `attendees-${selectedEventId || 'all'}-${Date.now()}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(downloadUrl);
+            
+            toast.success("Attendees exported successfully");
+        } catch (error: any) {
+            toast.error(error.message || "Failed to export attendees");
+        }
     };
 
     return (

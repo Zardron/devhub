@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useState, useEffect } from "react";
 import Image from "next/image";
 import BookEvent from "@/components/BookEvent";
 import { IEvent } from "@/database/event.model";
@@ -8,6 +8,11 @@ import EventCard from "@/components/EventCard";
 import { formatDateToReadable } from "@/lib/utils";
 import { formatDateTo12Hour } from "@/lib/formatters";
 import { useEventBySlug, useEvents } from "@/lib/hooks/api/events.queries";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "@/lib/store/auth.store";
+import { Heart, Share2 } from "lucide-react";
+import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
 
 const InfoBadge = ({ icon, label, value }: { icon: string, label: string, value: string }) => {
     return (
@@ -47,6 +52,91 @@ const EventDetailsPage = ({ params }: { params: Promise<{ slug: string }> }) => 
     const { slug } = use(params);
     const { data: eventData, isLoading, error } = useEventBySlug(slug);
     const { data: allEventsData } = useEvents();
+    const { token } = useAuthStore();
+    const queryClient = useQueryClient();
+    const [isFavorited, setIsFavorited] = useState(false);
+
+    // Check if event is favorited
+    const { data: favoritesData } = useQuery({
+        queryKey: ["user", "favorites"],
+        queryFn: async () => {
+            if (!token) return null;
+            const response = await fetch("/api/users/favorites", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!response.ok) return null;
+            return response.json();
+        },
+        enabled: !!token && !!eventData?.event,
+    });
+
+    // Update favorite status
+    useEffect(() => {
+        if (favoritesData?.data?.favorites && eventData?.event) {
+            const favorited = favoritesData.data.favorites.some(
+                (f: any) => f.id === eventData.event.id
+            );
+            setIsFavorited(favorited);
+        }
+    }, [favoritesData, eventData]);
+
+    // Toggle favorite mutation
+    const toggleFavoriteMutation = useMutation({
+        mutationFn: async (eventId: string) => {
+            if (!token) throw new Error("Not authenticated");
+            if (isFavorited) {
+                const response = await fetch(`/api/users/favorites?eventId=${eventId}`, {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.message || "Failed to remove favorite");
+                }
+            } else {
+                const response = await fetch("/api/users/favorites", {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ eventId }),
+                });
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.message || "Failed to add favorite");
+                }
+            }
+            return response.json();
+        },
+        onSuccess: () => {
+            setIsFavorited(!isFavorited);
+            queryClient.invalidateQueries({ queryKey: ["user", "favorites"] });
+            toast.success(isFavorited ? "Removed from favorites" : "Added to favorites");
+        },
+        onError: (error: any) => {
+            toast.error(error.message || "Failed to update favorite");
+        },
+    });
+
+    const handleShare = () => {
+        if (!event) return;
+        const url = `${window.location.origin}/events/${slug}`;
+        if (navigator.share) {
+            navigator.share({
+                title: event.title,
+                text: event.description,
+                url: url,
+            }).catch(() => {
+                // Fallback to clipboard
+                navigator.clipboard.writeText(url);
+                toast.success("Link copied to clipboard!");
+            });
+        } else {
+            navigator.clipboard.writeText(url);
+            toast.success("Link copied to clipboard!");
+        }
+    };
 
     if (isLoading) {
         return (

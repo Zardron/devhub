@@ -1,8 +1,14 @@
 "use client";
 
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useAuthStore } from "@/lib/store/auth.store";
 import { useOrganizerStats } from "@/lib/hooks/api/organizer.queries";
 import { useOrganizerEvents } from "@/lib/hooks/api/organizer.queries";
-import { Calendar, Users, DollarSign, TrendingUp, Ticket } from "lucide-react";
+import { FormInput } from "@/components/ui/form-input";
+import { Button } from "@/components/ui/button";
+import { Calendar, Users, DollarSign, TrendingUp, Ticket, Download } from "lucide-react";
+import toast from "react-hot-toast";
 import {
     LineChart,
     Line,
@@ -22,8 +28,32 @@ import {
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300'];
 
 export default function AnalyticsPage() {
+    const { token } = useAuthStore();
+    const [dateRange, setDateRange] = useState({
+        startDate: "",
+        endDate: "",
+    });
+    const [useCustomRange, setUseCustomRange] = useState(false);
+
     const { data: statsData } = useOrganizerStats();
     const { data: eventsData } = useOrganizerEvents();
+    
+    // Fetch analytics with custom date range
+    const { data: analyticsData } = useQuery({
+        queryKey: ["organizer", "analytics", dateRange.startDate, dateRange.endDate],
+        queryFn: async () => {
+            if (!token) throw new Error("Not authenticated");
+            const url = useCustomRange && dateRange.startDate && dateRange.endDate
+                ? `/api/organizer/analytics?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`
+                : "/api/organizer/analytics";
+            const response = await fetch(url, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!response.ok) throw new Error("Failed to fetch analytics");
+            return response.json();
+        },
+        enabled: !!token && (!useCustomRange || (dateRange.startDate && dateRange.endDate)),
+    });
     
     const stats = statsData?.data || {
         totalEvents: 0,
@@ -34,6 +64,44 @@ export default function AnalyticsPage() {
     };
 
     const events = eventsData?.data?.events || [];
+
+    // Export analytics data
+    const handleExport = () => {
+        const analytics = analyticsData?.data || {};
+        const csvRows = [];
+        
+        csvRows.push(['Analytics Report']);
+        csvRows.push(['Generated', new Date().toISOString()]);
+        if (useCustomRange && dateRange.startDate && dateRange.endDate) {
+            csvRows.push(['Date Range', `${dateRange.startDate} to ${dateRange.endDate}`]);
+        }
+        csvRows.push(['']);
+        csvRows.push(['Summary']);
+        csvRows.push(['Total Events', stats.totalEvents]);
+        csvRows.push(['Upcoming Events', stats.upcomingEvents]);
+        csvRows.push(['Total Bookings', stats.totalBookings]);
+        csvRows.push(['Total Revenue', (stats.totalRevenue / 100).toFixed(2)]);
+        csvRows.push(['Monthly Revenue', (stats.monthlyRevenue / 100).toFixed(2)]);
+        csvRows.push(['']);
+        
+        if (analytics.monthlyRevenue) {
+            csvRows.push(['Monthly Revenue Breakdown']);
+            csvRows.push(['Month', 'Revenue'].join(','));
+            analytics.monthlyRevenue.forEach((item: any) => {
+                csvRows.push([item.month, (item.revenue / 100).toFixed(2)].join(','));
+            });
+        }
+
+        const csvContent = csvRows.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `analytics-${Date.now()}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        toast.success("Analytics data exported successfully");
+    };
 
     // Prepare chart data
     const eventsByStatus = events.reduce((acc: any, event: any) => {
@@ -58,9 +126,47 @@ export default function AnalyticsPage() {
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold">Analytics</h1>
-                <p className="text-muted-foreground mt-2">Track your event performance and revenue</p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold">Analytics</h1>
+                    <p className="text-muted-foreground mt-2">Track your event performance and revenue</p>
+                </div>
+                <Button variant="outline" onClick={handleExport}>
+                    <Download className="w-4 h-4 mr-2" />
+                    Export
+                </Button>
+            </div>
+
+            {/* Date Range Picker */}
+            <div className="p-4 border rounded-lg bg-card">
+                <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={useCustomRange}
+                            onChange={(e) => setUseCustomRange(e.target.checked)}
+                            className="w-4 h-4 rounded"
+                        />
+                        <span>Use Custom Date Range</span>
+                    </label>
+                    {useCustomRange && (
+                        <div className="flex items-center gap-2">
+                            <FormInput
+                                type="date"
+                                value={dateRange.startDate}
+                                onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
+                                className="w-40"
+                            />
+                            <span>to</span>
+                            <FormInput
+                                type="date"
+                                value={dateRange.endDate}
+                                onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
+                                className="w-40"
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Key Metrics */}

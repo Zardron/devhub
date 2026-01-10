@@ -3,14 +3,74 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useOrganizerEvents } from "@/lib/hooks/api/organizer.queries";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "@/lib/store/auth.store";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, Eye, Calendar, MapPin, Users, DollarSign } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Calendar, MapPin, Users, DollarSign, Copy, Download } from "lucide-react";
 import { formatDateToReadable } from "@/lib/formatters";
 import toast from "react-hot-toast";
 
 export default function OrganizerEventsPage() {
+    const { token } = useAuthStore();
+    const queryClient = useQueryClient();
     const { data, isLoading, error } = useOrganizerEvents();
     const events = data?.data?.events || [];
+
+    // Duplicate event mutation
+    const duplicateMutation = useMutation({
+        mutationFn: async (eventId: string) => {
+            if (!token) throw new Error("Not authenticated");
+            const response = await fetch(`/api/organizer/events/${eventId}/duplicate`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || "Failed to duplicate event");
+            }
+            return response.json();
+        },
+        onSuccess: () => {
+            toast.success("Event duplicated successfully");
+            queryClient.invalidateQueries({ queryKey: ["organizer", "events"] });
+        },
+        onError: (error: any) => {
+            toast.error(error.message || "Failed to duplicate event");
+        },
+    });
+
+    // Export events
+    const handleExport = async () => {
+        try {
+            if (!token) {
+                toast.error("Not authenticated");
+                return;
+            }
+
+            const response = await fetch("/api/organizer/events/export", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to export events");
+            }
+
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = downloadUrl;
+            a.download = `events-${Date.now()}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(downloadUrl);
+            
+            toast.success("Events exported successfully");
+        } catch (error: any) {
+            toast.error(error.message || "Failed to export events");
+        }
+    };
 
     const handleDelete = async (eventId: string, eventTitle: string) => {
         if (!confirm(`Are you sure you want to delete "${eventTitle}"? This action cannot be undone.`)) {
@@ -67,12 +127,18 @@ export default function OrganizerEventsPage() {
                         Manage all your events ({events.length} total)
                     </p>
                 </div>
-                <Link href="/organizer-dashboard/events/create">
-                    <Button>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Create Event
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={handleExport}>
+                        <Download className="w-4 h-4 mr-2" />
+                        Export
                     </Button>
-                </Link>
+                    <Link href="/organizer-dashboard/events/create">
+                        <Button>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Create Event
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             {events.length === 0 ? (
@@ -148,6 +214,15 @@ export default function OrganizerEventsPage() {
                                             <Edit className="w-4 h-4" />
                                         </Button>
                                     </Link>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => duplicateMutation.mutate(event.id)}
+                                        disabled={duplicateMutation.isPending}
+                                        title="Duplicate Event"
+                                    >
+                                        <Copy className="w-4 h-4" />
+                                    </Button>
                                     <Button
                                         variant="outline"
                                         size="sm"

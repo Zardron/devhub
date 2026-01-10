@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Calendar, Users, DollarSign, TrendingUp, Ticket, Clock } from "lucide-react";
 import { useOrganizerStats } from "@/lib/hooks/api/organizer.queries";
 import Link from "next/link";
+import OrganizerWelcomeBanner from "@/components/organizer-dashboard/WelcomeBanner";
+import OrganizerWelcome from "./welcome/page";
 
 export default function OrganizerDashboardPage() {
     const { data: stats, isLoading } = useOrganizerStats();
@@ -61,6 +63,9 @@ export default function OrganizerDashboardPage() {
 
     return (
         <div className="space-y-6">
+            {/* Welcome Banner */}
+            <OrganizerWelcomeBanner />
+
             <div>
                 <h1 className="text-3xl font-bold">Dashboard</h1>
                 <p className="text-muted-foreground mt-2">
