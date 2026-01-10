@@ -3,12 +3,15 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/auth.store";
-import { Calendar, MapPin, Clock, QrCode, Download, ArrowLeft } from "lucide-react";
+import { Calendar, MapPin, Clock, QrCode, Download, ArrowLeft, UserPlus, FileText, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FormInput } from "@/components/ui/form-input";
 import { formatDateToReadable, formatDateTo12Hour } from "@/lib/formatters";
 import Image from "next/image";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 
 interface TicketData {
     id: string;
@@ -32,6 +35,46 @@ export default function BookingTicketPage() {
     const { token } = useAuthStore();
     const [ticket, setTicket] = useState<TicketData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [showTransferForm, setShowTransferForm] = useState(false);
+    const [recipientEmail, setRecipientEmail] = useState("");
+
+    const transferMutation = useMutation({
+        mutationFn: async (email: string) => {
+            if (!token) throw new Error("Not authenticated");
+            
+            // Get ticket from booking
+            const ticketResponse = await fetch(`/api/bookings/${bookingId}/ticket`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const ticketData = await ticketResponse.json();
+            const ticketNumber = ticketData.data.ticket.ticketNumber;
+
+            const response = await fetch(`/api/tickets/${ticketNumber}/transfer`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ recipientEmail: email }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || "Failed to transfer ticket");
+            }
+
+            return response.json();
+        },
+        onSuccess: () => {
+            toast.success("Ticket transferred successfully");
+            setShowTransferForm(false);
+            setRecipientEmail("");
+            fetchTicket(); // Refresh ticket data
+        },
+        onError: (error: any) => {
+            toast.error(error.message || "Failed to transfer ticket");
+        },
+    });
 
     useEffect(() => {
         if (bookingId && token) {
@@ -167,10 +210,170 @@ export default function BookingTicketPage() {
                                     <p className="font-mono font-bold text-lg">{ticket.ticketNumber}</p>
                                 </div>
 
-                                <Button onClick={() => router.push(`/tickets/${ticket.ticketNumber}`)} variant="outline" className="w-full">
-                                    <Download className="w-4 h-4 mr-2" />
-                                    View Full Ticket
-                                </Button>
+                                <div className="space-y-2">
+                                    <Button onClick={() => router.push(`/tickets/${ticket.ticketNumber}`)} variant="outline" className="w-full">
+                                        <Download className="w-4 h-4 mr-2" />
+                                        View Full Ticket
+                                    </Button>
+                                    
+                                    <Button 
+                                        onClick={async () => {
+                                            try {
+                                                const response = await fetch(`/api/bookings/${bookingId}/calendar`, {
+                                                    headers: { Authorization: `Bearer ${token}` },
+                                                });
+                                                if (!response.ok) throw new Error("Failed to generate calendar file");
+                                                const blob = await response.blob();
+                                                const url = window.URL.createObjectURL(blob);
+                                                const a = document.createElement("a");
+                                                a.href = url;
+                                                a.download = `event-${ticket.event.title.replace(/\s+/g, '-')}.ics`;
+                                                a.click();
+                                                window.URL.revokeObjectURL(url);
+                                                toast.success("Calendar file downloaded");
+                                            } catch (error: any) {
+                                                toast.error(error.message || "Failed to download calendar");
+                                            }
+                                        }}
+                                        variant="outline" 
+                                        className="w-full"
+                                    >
+                                        <CalendarIcon className="w-4 h-4 mr-2" />
+                                        Add to Calendar
+                                    </Button>
+
+                                    <Button 
+                                        onClick={async () => {
+                                            try {
+                                                const response = await fetch(`/api/bookings/${bookingId}/invoice`, {
+                                                    headers: { Authorization: `Bearer ${token}` },
+                                                });
+                                                if (!response.ok) throw new Error("Failed to generate invoice");
+                                                const data = await response.json();
+                                                // Generate PDF-like HTML invoice
+                                                const invoice = data.data.invoice;
+                                                const htmlContent = `
+                                                    <!DOCTYPE html>
+                                                    <html>
+                                                    <head>
+                                                        <title>Invoice ${invoice.invoiceNumber}</title>
+                                                        <style>
+                                                            body { font-family: Arial, sans-serif; padding: 20px; }
+                                                            .header { border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 20px; }
+                                                            .invoice-details { float: right; text-align: right; }
+                                                            .customer-details { margin: 20px 0; }
+                                                            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                                                            th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+                                                            th { background-color: #f2f2f2; }
+                                                            .total { text-align: right; font-weight: bold; font-size: 1.2em; margin-top: 20px; }
+                                                        </style>
+                                                    </head>
+                                                    <body>
+                                                        <div class="header">
+                                                            <h1>INVOICE</h1>
+                                                            <div class="invoice-details">
+                                                                <p><strong>Invoice #:</strong> ${invoice.invoiceNumber}</p>
+                                                                <p><strong>Date:</strong> ${invoice.date}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="customer-details">
+                                                            <h3>Bill To:</h3>
+                                                            <p>${invoice.customer.name}</p>
+                                                            <p>${invoice.customer.email}</p>
+                                                        </div>
+                                                        <h3>Event Details:</h3>
+                                                        <p><strong>${invoice.event.title}</strong></p>
+                                                        <p>${invoice.event.date} at ${invoice.event.time}</p>
+                                                        <p>${invoice.event.location}</p>
+                                                        <table>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Description</th>
+                                                                    <th>Quantity</th>
+                                                                    <th>Unit Price</th>
+                                                                    <th>Total</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                ${invoice.items.map((item: any) => `
+                                                                    <tr>
+                                                                        <td>${item.description}</td>
+                                                                        <td>${item.quantity}</td>
+                                                                        <td>₱${item.unitPrice.toFixed(2)}</td>
+                                                                        <td>₱${item.total.toFixed(2)}</td>
+                                                                    </tr>
+                                                                `).join('')}
+                                                            </tbody>
+                                                        </table>
+                                                        ${invoice.discount > 0 ? `<p style="text-align: right;">Discount: -₱${invoice.discount.toFixed(2)}</p>` : ''}
+                                                        <div class="total">
+                                                            <p>Total: ₱${invoice.total.toFixed(2)}</p>
+                                                            <p>Payment Method: ${invoice.paymentMethod}</p>
+                                                            <p>Status: ${invoice.status}</p>
+                                                        </div>
+                                                    </body>
+                                                    </html>
+                                                `;
+                                                const printWindow = window.open('', '_blank');
+                                                if (printWindow) {
+                                                    printWindow.document.write(htmlContent);
+                                                    printWindow.document.close();
+                                                    printWindow.print();
+                                                }
+                                            } catch (error: any) {
+                                                toast.error(error.message || "Failed to generate invoice");
+                                            }
+                                        }}
+                                        variant="outline" 
+                                        className="w-full"
+                                    >
+                                        <FileText className="w-4 h-4 mr-2" />
+                                        Download Invoice
+                                    </Button>
+                                    
+                                    {ticket.status === 'active' && (
+                                        <Button 
+                                            onClick={() => setShowTransferForm(true)}
+                                            variant="outline" 
+                                            className="w-full"
+                                        >
+                                            <UserPlus className="w-4 h-4 mr-2" />
+                                            Transfer Ticket
+                                        </Button>
+                                    )}
+                                </div>
+
+                                {showTransferForm && (
+                                    <div className="mt-4 p-4 border rounded-lg bg-muted/50 space-y-4">
+                                        <h3 className="font-semibold">Transfer Ticket</h3>
+                                        <FormInput
+                                            label="Recipient Email"
+                                            type="email"
+                                            value={recipientEmail}
+                                            onChange={(e) => setRecipientEmail(e.target.value)}
+                                            placeholder="user@example.com"
+                                            required
+                                        />
+                                        <div className="flex gap-2">
+                                            <Button
+                                                onClick={() => transferMutation.mutate(recipientEmail)}
+                                                disabled={transferMutation.isPending || !recipientEmail}
+                                                className="flex-1"
+                                            >
+                                                {transferMutation.isPending ? "Transferring..." : "Transfer"}
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                onClick={() => {
+                                                    setShowTransferForm(false);
+                                                    setRecipientEmail("");
+                                                }}
+                                            >
+                                                Cancel
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

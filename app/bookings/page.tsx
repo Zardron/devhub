@@ -3,9 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, ChevronLeft, ChevronRight, Clock, MapPin, Monitor, List } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Clock, MapPin, Monitor, List, X } from "lucide-react";
 import { formatDateToReadable, formatDateTo12Hour } from "@/lib/formatters";
 import { useBookings } from "@/lib/hooks/api/bookings.queries";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "@/lib/store/auth.store";
+import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
 
 const BookingsPage = () => {
     const { data: bookingsData, isLoading: loading, error } = useBookings();
@@ -13,6 +17,50 @@ const BookingsPage = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [showAllBookings, setShowAllBookings] = useState(false);
+    const [filterStatus, setFilterStatus] = useState<'all' | 'upcoming' | 'past' | 'cancelled'>('all');
+    const { token } = useAuthStore();
+    const queryClient = useQueryClient();
+    const [cancellingId, setCancellingId] = useState<string | null>(null);
+
+    const cancelBookingMutation = useMutation({
+        mutationFn: async (bookingId: string) => {
+            if (!token) throw new Error("Not authenticated");
+            
+            const response = await fetch(`/api/bookings/${bookingId}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || "Failed to cancel booking");
+            }
+
+            return response.json();
+        },
+        onSuccess: () => {
+            toast.success("Booking cancelled successfully");
+            queryClient.invalidateQueries({ queryKey: ["bookings"] });
+        },
+        onError: (error: any) => {
+            toast.error(error.message || "Failed to cancel booking");
+        },
+    });
+
+    const handleCancelBooking = async (bookingId: string, eventTitle: string) => {
+        if (!confirm(`Are you sure you want to cancel your booking for "${eventTitle}"?`)) {
+            return;
+        }
+
+        setCancellingId(bookingId);
+        try {
+            await cancelBookingMutation.mutateAsync(bookingId);
+        } finally {
+            setCancellingId(null);
+        }
+    };
 
     // Calendar functions
     const getDaysInMonth = (date: Date) => {
@@ -212,24 +260,48 @@ const BookingsPage = () => {
                                                 : 'Select a date'
                                         }
                                     </h3>
-                                    {!showAllBookings && bookings.length > 0 && (
-                                        <button
-                                            onClick={() => {
-                                                setShowAllBookings(true);
-                                                setSelectedDate(null);
-                                            }}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg bg-blue/10 text-blue hover:bg-blue/20 transition-colors"
-                                            title="Show all bookings"
-                                        >
-                                            <List className="w-3.5 h-3.5" />
-                                            <span>All</span>
-                                        </button>
-                                    )}
+                                    <div className="flex items-center gap-2">
+                                        {showAllBookings && (
+                                            <select
+                                                value={filterStatus}
+                                                onChange={(e) => setFilterStatus(e.target.value as any)}
+                                                className="px-3 py-1.5 text-xs rounded-lg bg-blue/10 text-blue border border-blue/20 focus:outline-none focus:ring-2 focus:ring-blue/50"
+                                            >
+                                                <option value="all">All</option>
+                                                <option value="upcoming">Upcoming</option>
+                                                <option value="past">Past</option>
+                                                <option value="cancelled">Cancelled</option>
+                                            </select>
+                                        )}
+                                        {!showAllBookings && bookings.length > 0 && (
+                                            <button
+                                                onClick={() => {
+                                                    setShowAllBookings(true);
+                                                    setSelectedDate(null);
+                                                }}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg bg-blue/10 text-blue hover:bg-blue/20 transition-colors"
+                                                title="Show all bookings"
+                                            >
+                                                <List className="w-3.5 h-3.5" />
+                                                <span>All</span>
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                                 {showAllBookings ? (
                                     bookings.length > 0 ? (
                                         <div className="space-y-4 max-h-[calc(100vh-250px)] overflow-y-auto">
-                                            {bookings.map(booking => (
+                                            {bookings
+                                                .filter((booking: any) => {
+                                                    if (filterStatus === 'all') return true;
+                                                    const eventDate = new Date(booking.event.date);
+                                                    const now = new Date();
+                                                    if (filterStatus === 'upcoming') return eventDate >= now;
+                                                    if (filterStatus === 'past') return eventDate < now;
+                                                    if (filterStatus === 'cancelled') return booking.status === 'cancelled';
+                                                    return true;
+                                                })
+                                                .map((booking: any) => (
                                                 <Link
                                                     key={booking.id}
                                                     href={`/events/${booking.event.slug}`}
@@ -310,6 +382,7 @@ const BookingsPage = () => {
                                                         </div>
                                                     </div>
                                                 </Link>
+                                                </div>
                                             ))}
                                         </div>
                                     ) : (
@@ -377,13 +450,23 @@ const BookingsPage = () => {
                                         </div>
                                     </div>
                                     </Link>
-                                    <div className="p-5 pt-0">
+                                    <div className="p-5 pt-0 flex items-center justify-between">
                                         <Link
                                             href={`/bookings/${booking.id}/ticket`}
                                             className="text-sm text-blue hover:underline"
                                         >
                                             View Ticket →
                                         </Link>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleCancelBooking(booking.id, booking.event.title)}
+                                            disabled={cancellingId === booking.id}
+                                            className="text-red-500 hover:text-red-600 hover:bg-red-500/10 border-red-500/20"
+                                        >
+                                            <X className="w-4 h-4 mr-1" />
+                                            {cancellingId === booking.id ? "Cancelling..." : "Cancel"}
+                                        </Button>
                                     </div>
                                 </div>
                             ))}
