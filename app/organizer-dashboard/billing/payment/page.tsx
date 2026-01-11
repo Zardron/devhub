@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/lib/store/auth.store";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,22 +26,114 @@ export default function PaymentPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { token } = useAuthStore();
+  const queryClient = useQueryClient();
   const paymentIntentId = searchParams.get("intent");
   const paymentStatusParam = searchParams.get("status");
+  // PayMongo might include source ID in the redirect URL
+  const sourceId = searchParams.get("source") || searchParams.get("id");
   const [paymentStatus, setPaymentStatus] = useState<
     "pending" | "processing" | "succeeded" | "failed"
   >("pending");
+  
+  // Track if we've already shown the success toast to prevent duplicates
+  const successToastShown = useRef(false);
+
+  // Reset success toast flag when component mounts or payment intent changes
+  useEffect(() => {
+    successToastShown.current = false;
+  }, [paymentIntentId]);
+  
+  // Define checkPaymentStatus function that can be used by both useEffects
+  // Use a ref to store the interval ID so we can clear it
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const checkPaymentStatus = async () => {
+    if (!paymentIntentId || !token) return;
+    
+    try {
+      // Add redirect parameter if we're checking after returning from PayMongo
+      const url = new URL(`/api/payments/intent/${paymentIntentId}/status`, window.location.origin);
+      if (paymentStatusParam === 'success') {
+        url.searchParams.set('redirect', 'success');
+        // Also pass source ID if available from PayMongo redirect
+        if (sourceId) {
+          url.searchParams.set('sourceId', sourceId);
+        }
+      }
+      
+      const response = await fetch(url.toString(), {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Handle both response structures: { status } or { data: { status } }
+        const status = data.status || data.data?.status || data.subscriptionStatus;
+        
+        // Also check subscriptionStatus as fallback
+        const finalStatus = status || (data.subscriptionStatus === 'active' ? 'succeeded' : status);
+
+        if (finalStatus === "succeeded" || finalStatus === "active" || data.subscriptionStatus === 'active') {
+          setPaymentStatus("succeeded");
+          
+          // Clear interval if it exists
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
+          
+          // Only show toast once, even if this function is called multiple times
+          if (!successToastShown.current) {
+            successToastShown.current = true;
+            toast.success(
+              "Payment successful! Your subscription is now active."
+            );
+            
+            // Invalidate subscription query to refresh billing page and navbar
+            queryClient.invalidateQueries({ queryKey: ["subscription"] });
+            
+            // Redirect after a short delay to allow query invalidation
+            setTimeout(() => {
+              router.push("/organizer-dashboard/billing");
+            }, 1500);
+          }
+        } else if (status === "failed" || status === "canceled" || status === "cancelled") {
+          setPaymentStatus("failed");
+          // Clear interval on failure too
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
+        } else if (status === "processing" || status === "pending" || status === "incomplete" || status === "awaiting_payment_method") {
+          setPaymentStatus("processing");
+          // Log for debugging
+          console.log('Payment status:', status, 'Subscription status:', data.subscriptionStatus);
+        }
+      }
+    } catch (error) {
+      console.error("Error checking payment status:", error);
+    }
+  };
 
   // Handle payment status from redirect
   useEffect(() => {
     if (paymentStatusParam === "success") {
+      // When PayMongo redirects back with success, payment has been completed
+      // Check status immediately and multiple times to catch the update
       setPaymentStatus("processing");
-      // Payment status will be checked by the periodic check below
+      if (paymentIntentId && token) {
+        // Check immediately
+        checkPaymentStatus();
+        // Check again after delays to catch PayMongo's status update
+        setTimeout(() => checkPaymentStatus(), 2000);
+        setTimeout(() => checkPaymentStatus(), 5000);
+        setTimeout(() => checkPaymentStatus(), 10000);
+      }
     } else if (paymentStatusParam === "cancel") {
       setPaymentStatus("failed");
       toast.error("Payment was cancelled");
     }
-  }, [paymentStatusParam]);
+  }, [paymentStatusParam, paymentIntentId, token, sourceId]);
 
   // Fetch payment intent details
   const { data: paymentIntentData, isLoading } = useQuery({
@@ -59,7 +151,21 @@ export default function PaymentPage() {
         throw new Error("Failed to fetch payment intent");
       }
 
-      return response.json();
+      const data = await response.json();
+      
+      // Check if payment is already succeeded
+      const subscription = data.subscription || data.data?.subscription;
+      if (subscription?.status === 'active') {
+        setPaymentStatus("succeeded");
+      } else {
+        // Also check payment intent status
+        const paymentIntent = data.paymentIntent || data.data?.paymentIntent;
+        if (paymentIntent?.attributes?.status === 'succeeded') {
+          setPaymentStatus("succeeded");
+        }
+      }
+
+      return data;
     },
     enabled: !!token && !!paymentIntentId,
   });
@@ -151,38 +257,6 @@ export default function PaymentPage() {
     }
   };
 
-  // Check payment status function
-  const checkPaymentStatus = async () => {
-    if (!paymentIntentId || !token) return;
-
-    try {
-      const response = await fetch(
-        `/api/payments/intent/${paymentIntentId}/status`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        const status = data.status || data.data?.status;
-
-        if (status === "succeeded") {
-          setPaymentStatus("succeeded");
-          toast.success("Payment successful! Your subscription is now active.");
-          setTimeout(() => {
-            router.push("/organizer-dashboard/billing");
-          }, 2000);
-        } else if (status === "failed" || status === "canceled") {
-          setPaymentStatus("failed");
-        } else if (status === "processing") {
-          setPaymentStatus("processing");
-        }
-      }
-    } catch (error) {
-      console.error("Error checking payment status:", error);
-    }
-  };
 
   // Complete payment mutation
   const completePaymentMutation = useMutation({
@@ -266,47 +340,29 @@ export default function PaymentPage() {
 
   // Check payment status periodically
   useEffect(() => {
-    if (!paymentIntentId || !token) return;
+    if (!paymentIntentId || !token || paymentStatus === "succeeded") return;
 
-    const checkPaymentStatus = async () => {
-      try {
-        const response = await fetch(
-          `/api/payments/intent/${paymentIntentId}/status`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          const status = data.status || data.data?.status;
-
-          if (status === "succeeded") {
-            setPaymentStatus("succeeded");
-            toast.success(
-              "Payment successful! Your subscription is now active."
-            );
-            // Redirect after a short delay
-            setTimeout(() => {
-              router.push("/organizer-dashboard/billing");
-            }, 2000);
-          } else if (status === "failed" || status === "canceled") {
-            setPaymentStatus("failed");
-          } else if (status === "processing") {
-            setPaymentStatus("processing");
-          }
-        }
-      } catch (error) {
-        console.error("Error checking payment status:", error);
+    // Check immediately and then more frequently (every 2 seconds) to catch payment completion faster
+    checkPaymentStatus();
+    intervalRef.current = setInterval(() => {
+      checkPaymentStatus();
+    }, 2000);
+    
+    // Cleanup interval on unmount or when dependencies change
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
 
-    // Check immediately and then every 3 seconds
-    checkPaymentStatus();
-    const interval = setInterval(checkPaymentStatus, 3000);
-
-    return () => clearInterval(interval);
-  }, [paymentIntentId, token, router]);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [paymentIntentId, token, router, paymentStatus]);
 
   if (!paymentIntentId) {
     return (
@@ -577,11 +633,13 @@ export default function PaymentPage() {
         )}
       </div>
 
-      <div className="w-1/2 border rounded-lg bg-card p-6 space-y-4 mt-17">
+      <div className="w-1/2 border rounded-lg bg-card p-6 space-y-4 ">
         {paymentStatus === "processing" && (
-          <div className="flex items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-            <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
-            <p className="text-sm text-blue-500">Processing your payment...</p>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+              <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+              <p className="text-sm text-blue-500">Processing your payment...</p>
+            </div>
           </div>
         )}
 
