@@ -46,10 +46,30 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
             deleted: { $ne: true }
         }).sort({ name: 1 });
 
+        // Get all organizer IDs
+        const organizerIds = organizers.map(org => org._id);
+
+        // Find all users associated with these organizers
+        const users = await User.find({
+            organizerId: { $in: organizerIds },
+            role: 'organizer',
+            deleted: { $ne: true }
+        }).select('email organizerId').lean();
+
+        // Create a map of organizerId -> email (use first user found, or empty string)
+        const organizerEmailMap = new Map<string, string>();
+        users.forEach(user => {
+            const orgId = user.organizerId?.toString();
+            if (orgId && !organizerEmailMap.has(orgId)) {
+                organizerEmailMap.set(orgId, user.email);
+            }
+        });
+
         // Format organizers for response
         const organizerData = organizers.map(org => ({
             id: org._id.toString(),
             name: org.name,
+            email: organizerEmailMap.get(org._id.toString()) || '',
             description: org.description,
             logo: org.logo,
             website: org.website,

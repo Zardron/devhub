@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { PlusIcon, Trash2, Eye } from "lucide-react";
 import Link from "next/link";
-import { useGetAllUsers } from "@/lib/hooks/api/user.queries";
+import { useGetAllOrganizers, OrganizerData } from "@/lib/hooks/api/organizers.queries";
 import { DataTable, type Column } from "@/components/DataTable";
 import { IUser } from "@/database/user.model";
 import { Button } from "@/components/ui/button";
@@ -27,12 +27,11 @@ interface OrganizerDisplay {
     name: string;
     email: string;
     createdAt: Date;
-    userId?: string; // For actual user accounts
-    organizerId?: string; // Organizer ID from user's organizerId field
+    organizerId: string; // Organizer ID
 }
 
 export default function AllOrganizersPage() {
-    const { data, isLoading, error, isError } = useGetAllUsers();
+    const { data, isLoading, error, isError } = useGetAllOrganizers();
     const deleteUserMutation = useDeleteUser();
     const banUserMutation = useBanUser();
     const { token } = useAuthStore();
@@ -50,26 +49,17 @@ export default function AllOrganizersPage() {
     const [loadingUsersCount, setLoadingUsersCount] = useState(false);
     const [isDeletingOrganizer, setIsDeletingOrganizer] = useState(false);
 
-    // Get actual organizer accounts from database
+    // Get organizers from database
     const organizers = useMemo(() => {
-        const result: OrganizerDisplay[] = [];
+        if (!data?.data) return [];
 
-        // Add actual organizer user accounts from database
-        if (data?.data) {
-            const userOrganizers = data.data
-                .filter((user: IUser) => 
-                    user.role === 'organizer' && 
-                    user.email.toLowerCase().includes('admin')
-                )
-                .map((user: IUser) => ({
-                    name: user.name,
-                    email: user.email,
-                    createdAt: user.createdAt,
-                    userId: user._id.toString(),
-                    organizerId: user.organizerId?.toString(),
-                }));
-            result.push(...userOrganizers);
-        }
+        // Map organizer data to display format
+        const result: OrganizerDisplay[] = data.data.map((org: OrganizerData) => ({
+            name: org.name,
+            email: org.email || '',
+            createdAt: org.createdAt,
+            organizerId: org.id,
+        }));
 
         // Sort by name
         return result.sort((a, b) => a.name.localeCompare(b.name));
@@ -161,16 +151,17 @@ export default function AllOrganizersPage() {
 
             const result = await response.json();
             const deletedCount = result.data?.deletedUsersCount || 0;
+            const organizerName = selectedOrganizer.name;
 
             setDeleteDialogOpen(false);
             setSelectedOrganizer(null);
             setAssociatedUsersCount(0);
 
-            // Invalidate and refetch users list to update the UI
-            queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+            // Invalidate and refetch organizers list to update the UI
+            queryClient.invalidateQueries({ queryKey: ['admin', 'organizers'] });
 
             toast.success(
-                `Organizer "${selectedOrganizer.name}" and ${deletedCount} associated user${deletedCount !== 1 ? 's' : ''} have been deleted.`
+                `Organizer "${organizerName}" and ${deletedCount} associated user${deletedCount !== 1 ? 's' : ''} have been deleted.`
             );
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "An error occurred while deleting the organizer.");

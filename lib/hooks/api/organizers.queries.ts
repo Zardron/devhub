@@ -8,6 +8,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || (typeof window !== 'undefin
 export interface OrganizerData {
     id: string;
     name: string;
+    email?: string;
     description?: string;
     logo?: string;
     website?: string;
