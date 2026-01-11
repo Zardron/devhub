@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import Link from "next/link";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 
@@ -83,7 +83,7 @@ export default function PricingPage() {
 
                 {/* Pricing Cards */}
                 {Array.isArray(sortedPlans) && sortedPlans.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 items-stretch">
                         {sortedPlans.map((plan: any, index: number) => {
                             const isPopular = plan.isPopular;
                             const isEnterprise = plan.name?.toLowerCase() === 'enterprise';
@@ -154,8 +154,8 @@ export default function PricingPage() {
                                         </div>
 
                                         {/* Features List */}
-                                        <ul className="space-y-3 mb-8 grow">
-                                            {/* Core Features - Always shown */}
+                                        <ul className="space-y-3 mb-8 flex-1">
+                                            {/* Core Features - Always checked */}
                                             <li className="flex items-start gap-3">
                                                 <Check className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
                                                 <span className="text-sm text-light-200">
@@ -173,7 +173,7 @@ export default function PricingPage() {
                                                 </span>
                                             </li>
                                             
-                                            {/* Standard Features - Conditional */}
+                                            {/* Features with checkmarks */}
                                             {plan.features?.analytics && (
                                                 <li className="flex items-start gap-3">
                                                     <Check className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
@@ -198,8 +198,6 @@ export default function PricingPage() {
                                                     <span className="text-sm text-light-200">API Access</span>
                                                 </li>
                                             )}
-                                            
-                                            {/* Enterprise Features */}
                                             {plan.features?.whiteLabel && (
                                                 <li className="flex items-start gap-3">
                                                     <Check className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
@@ -207,7 +205,7 @@ export default function PricingPage() {
                                                 </li>
                                             )}
                                             
-                                            {/* Base Features - Always shown */}
+                                            {/* Base Features - Always checked */}
                                             <li className="flex items-start gap-3">
                                                 <Check className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
                                                 <span className="text-sm text-light-200">Secure Payment Processing</span>
@@ -220,6 +218,38 @@ export default function PricingPage() {
                                                 <Check className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
                                                 <span className="text-sm text-light-200">Email Notifications</span>
                                             </li>
+                                            
+                                            {/* Features with X marks */}
+                                            {!plan.features?.analytics && (
+                                                <li className="flex items-start gap-3">
+                                                    <X className="w-5 h-5 text-light-200/40 shrink-0 mt-0.5" />
+                                                    <span className="text-sm text-light-200">Analytics & Insights</span>
+                                                </li>
+                                            )}
+                                            {!plan.features?.customBranding && (
+                                                <li className="flex items-start gap-3">
+                                                    <X className="w-5 h-5 text-light-200/40 shrink-0 mt-0.5" />
+                                                    <span className="text-sm text-light-200">Custom Branding</span>
+                                                </li>
+                                            )}
+                                            {!plan.features?.prioritySupport && (
+                                                <li className="flex items-start gap-3">
+                                                    <X className="w-5 h-5 text-light-200/40 shrink-0 mt-0.5" />
+                                                    <span className="text-sm text-light-200">Priority Support</span>
+                                                </li>
+                                            )}
+                                            {!plan.features?.apiAccess && (
+                                                <li className="flex items-start gap-3">
+                                                    <X className="w-5 h-5 text-light-200/40 shrink-0 mt-0.5" />
+                                                    <span className="text-sm text-light-200">API Access</span>
+                                                </li>
+                                            )}
+                                            {!plan.features?.whiteLabel && (
+                                                <li className="flex items-start gap-3">
+                                                    <X className="w-5 h-5 text-light-200/40 shrink-0 mt-0.5" />
+                                                    <span className="text-sm text-light-200">White Label Solution</span>
+                                                </li>
+                                            )}
                                         </ul>
 
                                         {/* CTA Button */}

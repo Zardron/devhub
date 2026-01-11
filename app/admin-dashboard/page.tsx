@@ -1,13 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useDashboardStatistics } from "@/lib/hooks/api/admin.queries";
-import { Users, Calendar, Ticket, Building2, TrendingUp, TrendingDown, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useMutation } from "@tanstack/react-query";
-import { useAuthStore } from "@/lib/store/auth.store";
-import toast from "react-hot-toast";
+import { Users, Calendar, Ticket, Building2, TrendingUp, TrendingDown, Filter } from "lucide-react";
+import { FormInput } from "@/components/ui/form-input";
 import {
     LineChart,
     Line,
@@ -79,37 +76,31 @@ function calculateTrend(
     return null;
 }
 
-type TimeRange = "1month" | "3months" | "6months" | "all";
+type TimeRange = "7days" | "30days" | "90days" | "1month" | "3months" | "6months" | "year" | "all" | "custom";
 
 export default function AdminDashboardPage() {
     const [timeRange, setTimeRange] = useState<TimeRange>("6months");
-    const { token } = useAuthStore();
-
-    // Seed plans mutation
-    const seedPlansMutation = useMutation({
-        mutationFn: async () => {
-            if (!token) throw new Error("Not authenticated");
-            const response = await fetch("/api/admin/seed-plans", {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            });
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.message || "Failed to seed plans");
-            }
-            return response.json();
-        },
-        onSuccess: (data) => {
-            toast.success(data.message || "Plans seeded successfully!");
-        },
-        onError: (error: any) => {
-            toast.error(error.message || "Failed to seed plans");
-        },
+    const [dateRange, setDateRange] = useState({
+        startDate: "",
+        endDate: "",
     });
-    const { data: statisticsData, isLoading, error } = useDashboardStatistics(timeRange);
+
+    // Map frontend timeRange to API timeRange
+    const apiTimeRange = useMemo(() => {
+        if (timeRange === 'custom') {
+            return 'all'; // API will handle custom via startDate/endDate if supported
+        }
+        // Map new options to existing API values
+        if (timeRange === '7days' || timeRange === '30days' || timeRange === '90days') {
+            return '1month'; // Use 1month for short ranges
+        }
+        if (timeRange === 'year') {
+            return '6months'; // Use 6months for year (or could extend API)
+        }
+        return timeRange as "1month" | "3months" | "6months" | "all";
+    }, [timeRange]);
+
+    const { data: statisticsData, isLoading, error } = useDashboardStatistics(apiTimeRange);
     const [growthChartType, setGrowthChartType] = useState<ChartType>("area");
     const [eventsChartType, setEventsChartType] = useState<ChartType>("bar");
 
@@ -307,39 +298,84 @@ export default function AdminDashboardPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
-                    <p className="text-muted-foreground mt-2 text-sm sm:text-base">
-                        Welcome to the admin dashboard. Manage your platform from here.
-                    </p>
+            <div>
+                <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
+                <p className="text-muted-foreground mt-2 text-sm sm:text-base">
+                    Welcome to the admin dashboard. Manage your platform from here.
+                </p>
+            </div>
+
+            {/* Global Timeline Picker */}
+            <div className="p-4 border rounded-lg bg-card">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <Filter className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">Time Range:</span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                        {(['7days', '30days', '90days', '1month', '3months', '6months', 'year', 'all'] as TimeRange[]).map((range) => (
+                            <button
+                                key={range}
+                                onClick={() => {
+                                    setTimeRange(range);
+                                    if (range !== 'custom') {
+                                        setDateRange({ startDate: "", endDate: "" });
+                                    }
+                                }}
+                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                                    timeRange === range
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'bg-muted hover:bg-muted/80 text-muted-foreground'
+                                }`}
+                            >
+                                {range === '7days' ? '7 Days' :
+                                 range === '30days' ? '30 Days' :
+                                 range === '90days' ? '90 Days' :
+                                 range === '1month' ? '1 Month' :
+                                 range === '3months' ? '3 Months' :
+                                 range === '6months' ? '6 Months' :
+                                 range === 'year' ? 'This Year' :
+                                 'All Time'}
+                            </button>
+                        ))}
+                        <button
+                            onClick={() => setTimeRange('custom')}
+                            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                                timeRange === 'custom'
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-muted hover:bg-muted/80 text-muted-foreground'
+                            }`}
+                        >
+                            Custom
+                        </button>
+                    </div>
+                    {timeRange === 'custom' && (
+                        <div className="flex items-center gap-2 ml-auto">
+                            <FormInput
+                                type="date"
+                                value={dateRange.startDate}
+                                onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
+                                className="w-40"
+                                placeholder="Start Date"
+                            />
+                            <span className="text-sm text-muted-foreground">to</span>
+                            <FormInput
+                                type="date"
+                                value={dateRange.endDate}
+                                onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
+                                className="w-40"
+                                placeholder="End Date"
+                            />
+                        </div>
+                    )}
                 </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                    <Button
-                        onClick={() => seedPlansMutation.mutate()}
-                        disabled={seedPlansMutation.isPending}
-                        variant="outline"
-                        size="sm"
-                        className="gap-2"
-                    >
-                        <Sparkles className="h-4 w-4" />
-                        {seedPlansMutation.isPending ? "Seeding..." : "Seed Plans"}
-                    </Button>
-                    <label htmlFor="timeRange" className="text-xs sm:text-sm font-medium text-muted-foreground whitespace-nowrap">
-                        Time Range:
-                    </label>
-                    <select
-                        id="timeRange"
-                        value={timeRange}
-                        onChange={(e) => setTimeRange(e.target.value as TimeRange)}
-                        className="h-9 rounded-md border border-input bg-background px-2 sm:px-3 py-1 text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                    >
-                        <option value="1month">Last 1 Month</option>
-                        <option value="3months">Last 3 Months</option>
-                        <option value="6months">Last 6 Months</option>
-                        <option value="all">All Time</option>
-                    </select>
-                </div>
+                {timeRange !== 'all' && (
+                    <div className="mt-3 text-xs text-muted-foreground">
+                        {timeRange === 'custom' && dateRange.startDate && dateRange.endDate
+                            ? `Showing data from ${new Date(dateRange.startDate).toLocaleDateString()} to ${new Date(dateRange.endDate).toLocaleDateString()}`
+                            : `Showing data for selected time range`}
+                    </div>
+                )}
             </div>
 
             {/* Statistics Cards */}

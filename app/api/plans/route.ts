@@ -132,12 +132,14 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
                 { isActive: { $exists: false } },
                 { isActive: null }
             ]
-        });
+        }).lean();
         
         // If still no plans found, get all plans
         if (plans.length === 0) {
-            plans = await Plan.find({});
+            plans = await Plan.find({}).lean();
         }
+        
+        console.log(`Found ${plans.length} plans in database`); // Debug log
 
         // Define order for plans: Free, Basic, Pro, Enterprise
         const planOrder = ['Free', 'Basic', 'Pro', 'Enterprise'];
@@ -183,6 +185,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
             },
             limits: plan.limits || {},
             isPopular: plan.isPopular || false,
+            isActive: plan.isActive !== false, // Default to true if not explicitly false
         }));
 
         return handleSuccessResponse("Plans retrieved successfully", { plans: plansData });

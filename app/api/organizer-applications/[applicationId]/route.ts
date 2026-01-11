@@ -135,25 +135,14 @@ export async function PATCH(
                 );
             }
             
-            // Update user role and organizerId without triggering password validation
-            await User.findByIdAndUpdate(
-                applicantId,
-                {
-                    role: 'organizer',
-                    organizerId: organizer._id,
-                },
-                { new: true, runValidators: false } // Skip validators to avoid password validation
-            );
-            
-            console.log(`✅ Organizer "${organizer.name}" created/updated and linked to user ${applicant.email}`);
-
             // Automatically assign Free plan to the new organizer
+            let freePlan;
             try {
                 const Plan = (await import("@/database/plan.model")).default;
                 const Subscription = (await import("@/database/subscription.model")).default;
 
                 // Find or create Free plan
-                let freePlan = await Plan.findOne({ name: 'Free', isActive: true });
+                freePlan = await Plan.findOne({ name: 'Free', isActive: true });
                 
                 if (!freePlan) {
                     // Create Free plan if it doesn't exist
@@ -206,6 +195,19 @@ export async function PATCH(
                 // Don't fail the approval if subscription creation fails
                 // The organizer can still subscribe manually later
             }
+            
+            // Update user role, organizerId, and planId without triggering password validation
+            await User.findByIdAndUpdate(
+                applicantId,
+                {
+                    role: 'organizer',
+                    organizerId: organizer._id,
+                    planId: freePlan ? freePlan._id.toString() : undefined,
+                },
+                { new: true, runValidators: false } // Skip validators to avoid password validation
+            );
+            
+            console.log(`✅ Organizer "${organizer.name}" created/updated and linked to user ${applicant.email} with Free plan`);
 
             // Update application status
             application.status = 'approved';
