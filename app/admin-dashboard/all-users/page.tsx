@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { PlusIcon, Ban, Trash2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useGetAllUsers, useDeleteUser, useBanUser } from "@/lib/hooks/api/user.queries";
@@ -32,6 +32,29 @@ export default function AllUsersPage() {
     const [banActionType, setBanActionType] = useState<'ban' | 'unban' | null>(null);
 
     const users = data?.data || [];
+
+    // Sort users: admin always at top, then others sorted by name
+    const sortedUsers = useMemo(() => {
+        const usersArray = [...users];
+        return usersArray.sort((a, b) => {
+            // Admin users always come first
+            if (a.role === 'admin' && b.role !== 'admin') return -1;
+            if (a.role !== 'admin' && b.role === 'admin') return 1;
+            // If both are admin or both are not admin, sort by name
+            return a.name.localeCompare(b.name);
+        });
+    }, [users]);
+
+    // Get unique organizer names for the filter
+    const organizerNames = useMemo(() => {
+        const uniqueOrganizers = new Set<string>();
+        sortedUsers.forEach((user: IUser & { organizerName?: string | null }) => {
+            if (user.organizerName && user.organizerName !== "-" && user.organizerName.trim() !== "") {
+                uniqueOrganizers.add(user.organizerName);
+            }
+        });
+        return Array.from(uniqueOrganizers).sort();
+    }, [sortedUsers]);
 
     const handleDelete = (user: IUser) => {
         setSelectedUser(user);
@@ -83,11 +106,11 @@ export default function AllUsersPage() {
         return currentUser?.id === userId;
     };
 
-    const columns: Column<IUser>[] = [
+    const columns: Column<IUser & { organizerName?: string | null }>[] = [
         {
             key: "name",
             header: "Name",
-            render: (value: string, row: IUser) => {
+            render: (value: string, row: IUser & { organizerName?: string | null }) => {
                 return (
                     <div className="flex items-center gap-2">
                         <span>{value}</span>
@@ -119,6 +142,14 @@ export default function AllUsersPage() {
                         {value.charAt(0).toUpperCase() + value.slice(1)}
                     </span>
                 );
+            },
+        },
+        {
+            key: "organizerName",
+            header: "Organizer Name",
+            render: (value: string | null | undefined, row: IUser & { organizerName?: string | null }) => {
+                if (!value && !row.organizerName) return "-";
+                return <span>{value || row.organizerName || "-"}</span>;
             },
         },
         {
@@ -157,11 +188,11 @@ export default function AllUsersPage() {
 
             <div className="border rounded-lg p-3 sm:p-6 overflow-x-auto">
                 <DataTable
-                    data={users}
+                    data={sortedUsers}
                     columns={columns}
                     searchable={true}
-                    searchPlaceholder="Search by name or email..."
-                    searchKeys={["name", "email"]}
+                    searchPlaceholder="Search across all columns..."
+                    searchKeys={["name", "email", "role", "organizerName", "createdAt"]}
                     filters={[
                         {
                             key: "role",
@@ -172,10 +203,18 @@ export default function AllUsersPage() {
                                 { value: "organizer", label: "Organizer" },
                             ],
                         },
+                        {
+                            key: "organizerName",
+                            label: "Organizer",
+                            options: organizerNames.map((name) => ({
+                                value: name,
+                                label: name,
+                            })),
+                        },
                     ]}
                     loading={isLoading}
                     emptyMessage="No users found"
-                    actions={(row: IUser) => {
+                    actions={(row: IUser & { organizerName?: string | null }) => {
                         const userId = row._id.toString();
                         const canModify = !isCurrentUser(userId);
 
