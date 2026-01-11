@@ -108,16 +108,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         }
         
         if (paymentIntent.attributes.status === 'succeeded') {
-            // Payment already succeeded - update planId from metadata if it's an upgrade
+            // Payment already succeeded - update planId from metadata
             const metadata = paymentIntent.attributes.metadata || {};
-            const pendingPlanId = metadata.planId;
+            const purchasedPlanId = metadata.planId;
             
-            if (pendingPlanId) {
-                const currentPlanId = subscription.planId?.toString();
-                // Only update planId if it's different (for upgrades)
-                if (currentPlanId !== pendingPlanId) {
-                    subscription.planId = pendingPlanId as any;
-                }
+            // Always update planId from metadata to ensure it matches what was purchased
+            // This ensures the user gets the plan they actually paid for
+            if (purchasedPlanId) {
+                subscription.planId = purchasedPlanId as any;
+            } else if (!subscription.planId) {
+                // Fallback: if no planId in metadata and subscription doesn't have one,
+                // we should log a warning (this shouldn't happen in normal flow)
+                console.warn('Payment succeeded but no planId in metadata for subscription:', subscription._id);
             }
             
             subscription.status = 'active';
@@ -143,16 +145,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 const updatedIntent = await getPaymentIntent(paymentIntentId);
                 
                 if (updatedIntent?.attributes?.status === 'succeeded') {
-                    // Update planId from metadata if it's an upgrade
+                    // Update planId from metadata to ensure it matches what was purchased
                     const metadata = updatedIntent.attributes.metadata || {};
-                    const pendingPlanId = metadata.planId;
+                    const purchasedPlanId = metadata.planId;
                     
-                    if (pendingPlanId) {
-                        const currentPlanId = subscription.planId?.toString();
-                        // Only update planId if it's different (for upgrades)
-                        if (currentPlanId !== pendingPlanId) {
-                            subscription.planId = pendingPlanId as any;
-                        }
+                    // Always update planId from metadata to ensure it matches what was purchased
+                    // This ensures the user gets the plan they actually paid for
+                    if (purchasedPlanId) {
+                        subscription.planId = purchasedPlanId as any;
+                    } else if (!subscription.planId) {
+                        // Fallback: if no planId in metadata and subscription doesn't have one,
+                        // we should log a warning (this shouldn't happen in normal flow)
+                        console.warn('Payment succeeded but no planId in metadata for subscription:', subscription._id);
                     }
                     
                     subscription.status = 'active';
