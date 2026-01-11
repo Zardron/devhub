@@ -70,32 +70,82 @@ export async function PATCH(
         }
 
         if (action === 'approve') {
-            // Check if organizer name is still available
+            // Get applicant ID and fetch user data first
+            const applicantId = typeof application.userId === 'object' 
+                ? (application.userId as any)._id 
+                : application.userId;
+            
+            // Fetch applicant to get email and other fields needed for notifications/emails
+            const applicant = await User.findById(applicantId);
+            if (!applicant) {
+                return NextResponse.json(
+                    { message: "Applicant user not found" },
+                    { status: 404 }
+                );
+            }
+            
+            // Check if organizer name is already taken by another user
             const existingOrganizer = await Organizer.findOne({
-                name: application.organizerName,
+                name: application.organizerName.trim(),
                 deleted: { $ne: true }
             });
 
+            let organizer;
+            
             if (existingOrganizer) {
+                // Check if this organizer belongs to a different user
+                const organizerOwner = await User.findOne({
+                    organizerId: existingOrganizer._id,
+                    deleted: { $ne: true }
+                });
+                
+                if (organizerOwner && organizerOwner._id.toString() !== applicantId.toString()) {
+                    // Organizer name is taken by a different user
+                    return NextResponse.json(
+                        { message: "Organizer name is already taken" },
+                        { status: 409 }
+                    );
+                }
+                
+                // If organizer belongs to this user or is orphaned, update it with application data
+                if (!organizerOwner || organizerOwner._id.toString() === applicantId.toString()) {
+                    existingOrganizer.description = application.description.trim();
+                    if (application.website?.trim()) {
+                        existingOrganizer.website = application.website.trim();
+                    }
+                    existingOrganizer.deleted = false; // Restore if it was soft-deleted
+                    await existingOrganizer.save();
+                    organizer = existingOrganizer;
+                }
+            } else {
+                // Create new organizer from application data
+                organizer = await Organizer.create({
+                    name: application.organizerName.trim(),
+                    description: application.description.trim(),
+                    website: application.website?.trim() || undefined,
+                    logo: undefined, // Can be added later
+                });
+            }
+            
+            // Ensure organizer is created
+            if (!organizer) {
                 return NextResponse.json(
-                    { message: "Organizer name is already taken" },
-                    { status: 409 }
+                    { message: "Failed to create organizer" },
+                    { status: 500 }
                 );
             }
-
-            // Create organizer
-            const organizer = await Organizer.create({
-                name: application.organizerName,
-                description: application.description,
-                website: application.website,
-                logo: undefined, // Can be added later
-            });
-
-            // Update user to organizer role
-            const applicant = application.userId as any;
-            applicant.role = 'organizer';
-            applicant.organizerId = organizer._id;
-            await applicant.save();
+            
+            // Update user role and organizerId without triggering password validation
+            await User.findByIdAndUpdate(
+                applicantId,
+                {
+                    role: 'organizer',
+                    organizerId: organizer._id,
+                },
+                { new: true, runValidators: false } // Skip validators to avoid password validation
+            );
+            
+            console.log(`✅ Organizer "${organizer.name}" created/updated and linked to user ${applicant.email}`);
 
             // Automatically assign Free plan to the new organizer
             try {
@@ -170,8 +220,8 @@ export async function PATCH(
                     userId: applicant._id,
                     type: 'organizer_application_approved',
                     title: 'Organizer Application Approved',
-                    message: `Congratulations! Your application to become "${organizer.name}" has been approved. You've been automatically assigned the Free plan. You can now access the organizer dashboard and start creating events!`,
-                    link: '/organizer-dashboard',
+                    message: `Congratulations! Your application to become "${organizer.name}" has been approved. You've been automatically assigned the Free plan. Please sign out and sign back in to access the organizer dashboard and start creating events!`,
+                    link: '/my-applications',
                     metadata: {
                         organizerId: organizer._id.toString(),
                         applicationId: application._id.toString(),
