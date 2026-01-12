@@ -12,9 +12,12 @@ interface Props {
     time: string;
     date: string;
     description: string;
+    isFree?: boolean;
+    price?: number;
+    currency?: string;
 }
 
-const EventCard = ({ slug, title, image, location, time, date, description }: Props) => {
+const EventCard = ({ slug, title, image, location, time, date, description, isFree = true, price, currency = 'PHP' }: Props) => {
     return (
         <Link 
             href={`/events/${slug}`} 
@@ -32,6 +35,14 @@ const EventCard = ({ slug, title, image, location, time, date, description }: Pr
                     priority 
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {/* Price Badge - Top Right Corner */}
+                <div className={`absolute top-3 right-3 px-3 py-1.5 rounded-lg border backdrop-blur-sm font-bold text-xs ${
+                    isFree 
+                        ? "bg-green-500/20 border-green-500/40 text-green-400" 
+                        : "bg-primary/20 border-primary/40 text-primary"
+                }`}>
+                    {isFree ? "FREE" : `₱${((price || 0) / 100).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+                </div>
             </div>
 
             {/* Content */}

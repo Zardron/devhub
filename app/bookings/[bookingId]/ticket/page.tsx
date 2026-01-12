@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useAuthStore } from "@/lib/store/auth.store";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/lib/hooks/use-auth";
 import { Calendar, MapPin, Clock, QrCode, Download, ArrowLeft, UserPlus, FileText, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form-input";
@@ -10,7 +10,6 @@ import { formatDateToReadable, formatDateTo12Hour } from "@/lib/formatters";
 import Image from "next/image";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 interface TicketData {
@@ -31,8 +30,10 @@ interface TicketData {
 export default function BookingTicketPage() {
     const params = useParams();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const bookingId = params.bookingId as string;
-    const { token } = useAuthStore();
+    const ticketNumberFromQuery = searchParams.get("ticketNumber");
+    const { token, isInitializing } = useAuth();
     const [ticket, setTicket] = useState<TicketData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [showTransferForm, setShowTransferForm] = useState(false);
@@ -42,12 +43,11 @@ export default function BookingTicketPage() {
         mutationFn: async (email: string) => {
             if (!token) throw new Error("Not authenticated");
             
-            // Get ticket from booking
-            const ticketResponse = await fetch(`/api/bookings/${bookingId}/ticket`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            const ticketData = await ticketResponse.json();
-            const ticketNumber = ticketData.data.ticket.ticketNumber;
+            // Get ticket number from current ticket state or fetch it
+            const ticketNumber = ticket?.ticketNumber || ticketNumberFromQuery;
+            if (!ticketNumber) {
+                throw new Error("Ticket number is required");
+            }
 
             const response = await fetch(`/api/tickets/${ticketNumber}/transfer`, {
                 method: "POST",
@@ -69,7 +69,12 @@ export default function BookingTicketPage() {
             toast.success("Ticket transferred successfully");
             setShowTransferForm(false);
             setRecipientEmail("");
-            fetchTicket(); // Refresh ticket data
+            // Refresh ticket data using the appropriate method
+            if (ticketNumberFromQuery) {
+                fetchTicketByNumber();
+            } else if (bookingId) {
+                fetchTicket();
+            }
         },
         onError: (error: any) => {
             toast.error(error.message || "Failed to transfer ticket");
@@ -77,12 +82,68 @@ export default function BookingTicketPage() {
     });
 
     useEffect(() => {
-        if (bookingId && token) {
-            fetchTicket();
+        // Wait for auth initialization to complete
+        if (isInitializing) {
+            return;
         }
-    }, [bookingId, token]);
+
+        if (!token) {
+            toast.error("Please login to view your ticket");
+            router.push("/sign-in");
+            return;
+        }
+        
+        // If ticketNumber is in query params, use it to fetch ticket directly
+        // Otherwise, use bookingId if available
+        if (ticketNumberFromQuery && token) {
+            fetchTicketByNumber();
+        } else if (bookingId && token) {
+            fetchTicket();
+        } else if (!bookingId && !ticketNumberFromQuery) {
+            toast.error("Booking ID or Ticket Number is required");
+            setIsLoading(false);
+        }
+    }, [bookingId, ticketNumberFromQuery, token, isInitializing, router]);
+
+    const fetchTicketByNumber = async () => {
+        if (!ticketNumberFromQuery || !token) return;
+        
+        try {
+            const response = await fetch(`/api/tickets/${ticketNumberFromQuery}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                if (response.status === 401 || response.status === 403) {
+                    toast.error("Please login to view your ticket");
+                    router.push("/sign-in");
+                    return;
+                }
+                throw new Error(data.message || "Failed to fetch ticket");
+            }
+
+            const data = await response.json();
+            const ticketData = data.data.ticket;
+            setTicket({
+                id: ticketData.id,
+                ticketNumber: ticketData.ticketNumber,
+                qrCode: ticketData.qrCode,
+                status: ticketData.status,
+                event: ticketData.event,
+            });
+        } catch (error: any) {
+            toast.error(error.message || "Failed to load ticket");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const fetchTicket = async () => {
+        if (!bookingId || !token) return;
+        
         try {
             const response = await fetch(`/api/bookings/${bookingId}/ticket`, {
                 headers: {
@@ -91,7 +152,13 @@ export default function BookingTicketPage() {
             });
 
             if (!response.ok) {
-                throw new Error("Failed to fetch ticket");
+                const data = await response.json();
+                if (response.status === 401 || response.status === 403) {
+                    toast.error("Please login to view your ticket");
+                    router.push("/sign-in");
+                    return;
+                }
+                throw new Error(data.message || "Failed to fetch ticket");
             }
 
             const data = await response.json();
@@ -103,7 +170,7 @@ export default function BookingTicketPage() {
         }
     };
 
-    if (isLoading) {
+    if (isInitializing || isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-muted-foreground">Loading ticket...</div>
@@ -211,45 +278,50 @@ export default function BookingTicketPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Button onClick={() => router.push(`/tickets/${ticket.ticketNumber}`)} variant="outline" className="w-full">
+                                    <Button onClick={() => {
+                                        const bookingIdToUse = bookingId || (ticket as any).bookingId;
+                                        window.open(`/bookings?id=${bookingIdToUse}&ticketNumber=${ticket.ticketNumber}`, '_blank', 'noopener,noreferrer');
+                                    }} variant="outline" className="w-full">
                                         <Download className="w-4 h-4 mr-2" />
                                         View Full Ticket
                                     </Button>
                                     
-                                    <Button 
-                                        onClick={async () => {
-                                            try {
-                                                const response = await fetch(`/api/bookings/${bookingId}/calendar`, {
-                                                    headers: { Authorization: `Bearer ${token}` },
-                                                });
-                                                if (!response.ok) throw new Error("Failed to generate calendar file");
-                                                const blob = await response.blob();
-                                                const url = window.URL.createObjectURL(blob);
-                                                const a = document.createElement("a");
-                                                a.href = url;
-                                                a.download = `event-${ticket.event.title.replace(/\s+/g, '-')}.ics`;
-                                                a.click();
-                                                window.URL.revokeObjectURL(url);
-                                                toast.success("Calendar file downloaded");
-                                            } catch (error: any) {
-                                                toast.error(error.message || "Failed to download calendar");
-                                            }
-                                        }}
-                                        variant="outline" 
-                                        className="w-full"
-                                    >
-                                        <CalendarIcon className="w-4 h-4 mr-2" />
-                                        Add to Calendar
-                                    </Button>
+                                    {bookingId && (
+                                        <>
+                                            <Button 
+                                                onClick={async () => {
+                                                    try {
+                                                        const response = await fetch(`/api/bookings/${bookingId}/calendar`, {
+                                                            headers: { Authorization: `Bearer ${token}` },
+                                                        });
+                                                        if (!response.ok) throw new Error("Failed to generate calendar file");
+                                                        const blob = await response.blob();
+                                                        const url = window.URL.createObjectURL(blob);
+                                                        const a = document.createElement("a");
+                                                        a.href = url;
+                                                        a.download = `event-${ticket.event.title.replace(/\s+/g, '-')}.ics`;
+                                                        a.click();
+                                                        window.URL.revokeObjectURL(url);
+                                                        toast.success("Calendar file downloaded");
+                                                    } catch (error: any) {
+                                                        toast.error(error.message || "Failed to download calendar");
+                                                    }
+                                                }}
+                                                variant="outline" 
+                                                className="w-full"
+                                            >
+                                                <CalendarIcon className="w-4 h-4 mr-2" />
+                                                Add to Calendar
+                                            </Button>
 
-                                    <Button 
-                                        onClick={async () => {
-                                            try {
-                                                const response = await fetch(`/api/bookings/${bookingId}/invoice`, {
-                                                    headers: { Authorization: `Bearer ${token}` },
-                                                });
-                                                if (!response.ok) throw new Error("Failed to generate invoice");
-                                                const data = await response.json();
+                                            <Button 
+                                                onClick={async () => {
+                                                    try {
+                                                        const response = await fetch(`/api/bookings/${bookingId}/invoice`, {
+                                                            headers: { Authorization: `Bearer ${token}` },
+                                                        });
+                                                        if (!response.ok) throw new Error("Failed to generate invoice");
+                                                        const data = await response.json();
                                                 // Generate PDF-like HTML invoice
                                                 const invoice = data.data.invoice;
                                                 const htmlContent = `
@@ -330,6 +402,8 @@ export default function BookingTicketPage() {
                                         <FileText className="w-4 h-4 mr-2" />
                                         Download Invoice
                                     </Button>
+                                        </>
+                                    )}
                                     
                                     {ticket.status === 'active' && (
                                         <Button 

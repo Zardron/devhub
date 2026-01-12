@@ -39,7 +39,9 @@ function getNotificationIcon(type: string) {
         case 'organizer_application_approved':
         case 'organizer_application_rejected':
             return <UserPlus className="w-5 h-5" />;
-        case 'booking_confirmation':
+        case 'user_booking_confirmation':
+        case 'user_book_pending':
+        case 'organizer_booking_pending':
         case 'event_reminder':
         case 'event_update':
         case 'event_cancelled':
@@ -63,8 +65,11 @@ function getNotificationColor(type: string) {
             return 'bg-green-500/10 text-green-500 border-green-500/20';
         case 'organizer_application_rejected':
             return 'bg-red-500/10 text-red-500 border-red-500/20';
-        case 'booking_confirmation':
+        case 'user_booking_confirmation':
             return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
+        case 'user_book_pending':
+        case 'organizer_booking_pending':
+            return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
         case 'event_reminder':
             return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
         case 'event_update':
@@ -183,7 +188,7 @@ export default function NotificationCenter() {
                                                 }
                                                 setIsOpen(false);
                                                 if (notification.link) {
-                                                    window.location.href = notification.link;
+                                                    window.open(notification.link, '_blank', 'noopener,noreferrer');
                                                 }
                                             }}
                                         >

@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useState, useEffect, useRef } from "react"
-import { Menu, X, User, ChevronDown, Calendar, LogOut, LayoutDashboardIcon, CreditCard, Heart, Bell, FileText } from "lucide-react"
+import { Menu, X, User, ChevronDown, Calendar, LogOut, LayoutDashboardIcon, CreditCard, Heart, Bell, FileText, Ticket } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/lib/hooks/use-auth"
 import ThemeToggle from "./ThemeToggle"
@@ -360,6 +360,14 @@ const Navbar = () => {
                                                 <Calendar className="w-4 h-4" />
                                                 My Bookings
                                             </Link>
+                                            <Link
+                                                href="/bookings"
+                                                onClick={() => setIsMenuOpen(false)}
+                                                className="flex items-center gap-3 px-4 py-3 text-sm text-foreground/90 hover:bg-blue/10 hover:text-blue transition-colors duration-200"
+                                            >
+                                                <Ticket className="w-4 h-4" />
+                                                My Tickets
+                                            </Link>
                                         </>
                                     ) : (
                                         <>
@@ -370,6 +378,14 @@ const Navbar = () => {
                                             >
                                                 <Calendar className="w-4 h-4" />
                                                 My Bookings
+                                            </Link>
+                                            <Link
+                                                href="/bookings"
+                                                onClick={() => setIsMenuOpen(false)}
+                                                className="flex items-center gap-3 px-4 py-3 text-sm text-foreground/90 hover:bg-blue/10 hover:text-blue transition-colors duration-200"
+                                            >
+                                                <Ticket className="w-4 h-4" />
+                                                My Tickets
                                             </Link>
                                             <Link
                                                 href="/payments"

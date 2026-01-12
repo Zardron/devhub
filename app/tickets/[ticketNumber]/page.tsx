@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useAuthStore } from "@/lib/store/auth.store";
-import { Calendar, MapPin, Clock, QrCode, Download, CheckCircle } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useAuth } from "@/lib/hooks/use-auth";
+import { Calendar, MapPin, Clock, QrCode, Download, CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDateToReadable, formatDateTo12Hour } from "@/lib/formatters";
 import Image from "next/image";
@@ -29,16 +29,32 @@ interface TicketData {
 
 export default function TicketPage() {
     const params = useParams();
+    const router = useRouter();
     const ticketNumber = params.ticketNumber as string;
-    const { token } = useAuthStore();
+    const { token, isInitializing } = useAuth();
     const [ticket, setTicket] = useState<TicketData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isDownloading, setIsDownloading] = useState(false);
 
     useEffect(() => {
+        // Wait for auth initialization to complete
+        if (isInitializing) {
+            return;
+        }
+
+        if (!token) {
+            toast.error("Please login to view your ticket");
+            router.push("/sign-in");
+            return;
+        }
+        
         if (ticketNumber && token) {
             fetchTicket();
+        } else if (!ticketNumber) {
+            toast.error("Ticket number is required");
+            setIsLoading(false);
         }
-    }, [ticketNumber, token]);
+    }, [ticketNumber, token, isInitializing, router]);
 
     const fetchTicket = async () => {
         try {
@@ -49,24 +65,70 @@ export default function TicketPage() {
             });
 
             if (!response.ok) {
-                throw new Error("Failed to fetch ticket");
+                const data = await response.json();
+                if (response.status === 401 || response.status === 403) {
+                    toast.error("Please login to view your ticket");
+                    router.push("/sign-in");
+                    return;
+                }
+                throw new Error(data.message || "Failed to fetch ticket");
             }
 
             const data = await response.json();
-            setTicket(data.data.ticket);
+            // handleSuccessResponse spreads the data object, so ticket is directly in data.ticket
+            const ticketData = data.ticket || data.data?.ticket;
+            setTicket(ticketData);
+            
+            // Redirect to /bookings?id=[bookingId]&ticketNumber=[ticketNumber]
+            if (ticketData.bookingId) {
+                router.push(`/bookings?id=${ticketData.bookingId}&ticketNumber=${ticketNumber}`);
+            } else {
+                // If bookingId is not available, still redirect but fetch it from the ticket
+                toast.error("Booking ID not found. Redirecting...");
+                setIsLoading(false);
+            }
         } catch (error: any) {
             toast.error(error.message || "Failed to load ticket");
-        } finally {
             setIsLoading(false);
         }
     };
 
-    const handleDownload = () => {
-        // TODO: Implement PDF download
-        toast.info("PDF download coming soon");
+    const handleDownload = async () => {
+        if (!ticket || !token) {
+            toast.error("Ticket information is not available");
+            return;
+        }
+        
+        setIsDownloading(true);
+        try {
+            const response = await fetch(
+                `/api/tickets/${ticket.ticketNumber}/download`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || "Failed to generate ticket PDF");
+            }
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `ticket-${ticket.ticketNumber}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            toast.success("Ticket downloaded successfully");
+        } catch (error: any) {
+            toast.error(error.message || "Failed to download ticket");
+        } finally {
+            setIsDownloading(false);
+        }
     };
 
-    if (isLoading) {
+    if (isInitializing || isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-muted-foreground">Loading ticket...</div>
@@ -86,7 +148,7 @@ export default function TicketPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background py-12 px-4">
+        <div className="min-h-screen py-12 px-4">
             <div className="max-w-4xl mx-auto">
                 <div className="bg-card border rounded-2xl shadow-lg overflow-hidden">
                     {/* Header */}
@@ -193,9 +255,23 @@ export default function TicketPage() {
                                         </div>
                                     )}
 
-                                    <Button onClick={handleDownload} variant="outline" className="w-full">
-                                        <Download className="w-4 h-4 mr-2" />
-                                        Download PDF
+                                    <Button 
+                                        onClick={handleDownload} 
+                                        variant="outline" 
+                                        className="w-full"
+                                        disabled={isDownloading}
+                                    >
+                                        {isDownloading ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                Generating PDF...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Download className="w-4 h-4 mr-2" />
+                                                Download PDF
+                                            </>
+                                        )}
                                     </Button>
                                 </div>
                             </div>

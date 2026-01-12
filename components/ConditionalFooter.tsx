@@ -1,11 +1,20 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import Footer from "@/components/Footer";
 
 export default function ConditionalFooter() {
     const pathname = usePathname();
-    const hideFooter = pathname === "/sign-up" || pathname === "/sign-in" || pathname === "/appeal-ban" || pathname.startsWith("/admin-dashboard") || pathname.startsWith("/organizer-dashboard");
+    const searchParams = useSearchParams();
+    const ticketNumber = searchParams.get("ticketNumber");
+    
+    const hideFooter = 
+        pathname === "/sign-up" || 
+        pathname === "/sign-in" || 
+        pathname === "/appeal-ban" || 
+        pathname.startsWith("/admin-dashboard") || 
+        pathname.startsWith("/organizer-dashboard") ||
+        (pathname === "/bookings" && ticketNumber !== null);
 
     if (hideFooter) {
         return null;

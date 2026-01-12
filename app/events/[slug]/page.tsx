@@ -10,9 +10,7 @@ import { formatDateTo12Hour } from "@/lib/formatters";
 import { useEventBySlug, useEvents } from "@/lib/hooks/api/events.queries";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/lib/store/auth.store";
-import { Heart, Share2 } from "lucide-react";
 import toast from "react-hot-toast";
-import { Button } from "@/components/ui/button";
 
 const InfoBadge = ({ icon, label, value }: { icon: string, label: string, value: string }) => {
     return (
@@ -155,7 +153,9 @@ const EventDetailsPage = ({ params }: { params: Promise<{ slug: string }> }) => 
     }
 
     const { event } = eventData;
-    const { title, description, overview, image, venue, location, date, time, mode, audience, agenda, organizer, tags } = event;
+    console.log("🟢 PAGE: Event data:", event);
+    console.log("🟢 PAGE: Organizer field:", event?.organizer);
+    const { title, description, overview, image, venue, location, date, time, mode, audience, agenda, organizer, tags, isFree, price, currency } = event;
     
     // Extract organizer name (handle cases where organizer field contains descriptions)
     const getOrganizerName = (organizerText: string): string => {
@@ -213,10 +213,24 @@ const EventDetailsPage = ({ params }: { params: Promise<{ slug: string }> }) => 
                                 {description}
                             </p>
 
-                            {/* Location Badge */}
-                            <div className="flex items-center gap-2 px-5 py-3 rounded-xl bg-dark-200/50 border border-border-dark/50 w-fit">
-                                <Image src="/icons/pin.svg" alt="Location" width={18} height={18} className="opacity-90" />
-                                <span className="text-light-100 font-medium">{location}</span>
+                            {/* Location & Price Badges */}
+                            <div className="flex flex-wrap items-center gap-3">
+                                <div className="flex items-center gap-2 px-5 py-3 rounded-xl bg-dark-200/50 border border-border-dark/50 w-fit">
+                                    <Image src="/icons/pin.svg" alt="Location" width={18} height={18} className="opacity-90" />
+                                    <span className="text-light-100 font-medium">{location}</span>
+                                </div>
+                                {/* Price Badge */}
+                                <div className={`flex items-center gap-2 px-5 py-3 rounded-xl border w-fit ${
+                                    isFree 
+                                        ? "bg-green-500/10 border-green-500/30" 
+                                        : "bg-primary/10 border-primary/30"
+                                }`}>
+                                    <span className={`text-sm font-bold ${
+                                        isFree ? "text-green-400" : "text-primary"
+                                    }`}>
+                                        {isFree ? "FREE" : `₱${((price || 0) / 100).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -247,7 +261,7 @@ const EventDetailsPage = ({ params }: { params: Promise<{ slug: string }> }) => 
                         {/* Left Column - Main Content */}
                         <div className="lg:col-span-2 space-y-8">
                             {/* Quick Info Cards */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                                 <InfoBadge
                                     icon="/icons/calendar.svg"
                                     label="Date"
@@ -262,6 +276,11 @@ const EventDetailsPage = ({ params }: { params: Promise<{ slug: string }> }) => 
                                     icon="/icons/mode.svg"
                                     label="Mode"
                                     value={mode}
+                                />
+                                <InfoBadge
+                                    icon="/icons/audience.svg"
+                                    label="Price"
+                                    value={isFree ? "Free" : `₱${((price || 0) / 100).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
                                 />
                             </div>
 
@@ -323,6 +342,17 @@ const EventDetailsPage = ({ params }: { params: Promise<{ slug: string }> }) => 
                                         <div>
                                             <p className="text-xs text-light-200 uppercase tracking-wider mb-1">Organizer</p>
                                             <p className="text-base font-semibold text-light-100">{organizerName}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-4 p-4 rounded-xl bg-dark-200/20 hover:bg-dark-200/30 transition-colors duration-200">
+                                        <Image src="/icons/audience.svg" alt="Price" width={20} height={20} className="mt-1 opacity-80" />
+                                        <div>
+                                            <p className="text-xs text-light-200 uppercase tracking-wider mb-1">Price</p>
+                                            <p className={`text-base font-semibold ${
+                                                isFree ? "text-green-400" : "text-primary"
+                                            }`}>
+                                                {isFree ? "Free" : `₱${((price || 0) / 100).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

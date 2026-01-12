@@ -18,7 +18,7 @@ const Navbar = ({ sideBarCollapsed, setSideBarCollapsed }: { sideBarCollapsed: b
     const { token } = useAuthStore()
 
     // Fetch plans
-    const { data: plansData } = useQuery({
+    const { data: plansData, isLoading: isLoadingPlans } = useQuery({
         queryKey: ["plans"],
         queryFn: async () => {
             const response = await fetch("/api/plans");
@@ -28,7 +28,7 @@ const Navbar = ({ sideBarCollapsed, setSideBarCollapsed }: { sideBarCollapsed: b
     });
 
     // Fetch current subscription
-    const { data: subscriptionData } = useQuery({
+    const { data: subscriptionData, isLoading: isLoadingSubscription } = useQuery({
         queryKey: ["subscription"],
         queryFn: async () => {
             if (!token) throw new Error("Not authenticated");
@@ -42,7 +42,7 @@ const Navbar = ({ sideBarCollapsed, setSideBarCollapsed }: { sideBarCollapsed: b
     });
 
     // Fetch organizer stats to get event count
-    const { data: statsData } = useOrganizerStats();
+    const { data: statsData, isLoading: isLoadingStats } = useOrganizerStats();
 
     // Fix: handleSuccessResponse spreads the data object, so plans are directly in plansData.plans
     const plans = plansData?.plans || plansData?.data?.plans || [];
@@ -52,9 +52,10 @@ const Navbar = ({ sideBarCollapsed, setSideBarCollapsed }: { sideBarCollapsed: b
     // Get plan name to display
     const planName = currentPlan?.name || "Free Plan";
 
-    // Calculate remaining events
+    // Calculate event usage
     const maxEvents = currentPlan?.features?.maxEvents;
-    const totalEvents = statsData?.data?.totalEvents || 0;
+    // handleSuccessResponse spreads the data object, so totalEvents is at root level
+    const totalEvents = (statsData as any)?.totalEvents || (statsData as any)?.data?.totalEvents || 0;
     const remainingEvents = maxEvents === null || maxEvents === undefined 
         ? null 
         : Math.max(0, maxEvents - totalEvents);
@@ -174,10 +175,16 @@ const Navbar = ({ sideBarCollapsed, setSideBarCollapsed }: { sideBarCollapsed: b
             <div className="flex items-center gap-2 ml-2 flex-shrink-0 min-w-0">
                 {/* Plan Badge and Upgrade Button */}
                 <div className="flex items-center gap-2 mr-2">
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20 whitespace-nowrap">
-                        {planName}
-                    </span>
-                    {isUpgradable ? (
+                    {isLoadingPlans || isLoadingSubscription ? (
+                        <div className="h-7 w-20 bg-muted/50 rounded-full animate-pulse" />
+                    ) : (
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20 whitespace-nowrap">
+                            {planName}
+                        </span>
+                    )}
+                    {isLoadingPlans || isLoadingSubscription ? (
+                        <div className="h-7 w-16 bg-muted/50 rounded-md animate-pulse" />
+                    ) : isUpgradable ? (
                         <Link href="/organizer-dashboard/billing">
                             <Button variant="outline" size="sm" className="h-7 text-xs whitespace-nowrap">
                                 <ArrowUp className="w-3 h-3 mr-1" />
@@ -187,7 +194,16 @@ const Navbar = ({ sideBarCollapsed, setSideBarCollapsed }: { sideBarCollapsed: b
                     ) : null}
                 </div>
                 {/* Remaining Events Display */}
-                {remainingEvents !== null && (
+                {isLoadingStats || isLoadingSubscription ? (
+                    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 border border-border/50 mr-2">
+                        <Calendar className="w-4 h-4 text-muted-foreground shrink-0 animate-pulse" />
+                        <div className="flex items-center gap-1.5">
+                            <div className="h-3 w-12 bg-muted/50 rounded animate-pulse" />
+                            <div className="h-4 w-8 bg-muted/50 rounded animate-pulse" />
+                            <div className="h-3 w-8 bg-muted/50 rounded animate-pulse" />
+                        </div>
+                    </div>
+                ) : remainingEvents !== null ? (
                     <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 border border-border/50 mr-2">
                         <Calendar className="w-4 h-4 text-muted-foreground shrink-0" />
                         <div className="flex items-center gap-1.5">
@@ -204,7 +220,7 @@ const Navbar = ({ sideBarCollapsed, setSideBarCollapsed }: { sideBarCollapsed: b
                             <span className="text-xs text-muted-foreground whitespace-nowrap">/ {maxEvents}</span>
                         </div>
                     </div>
-                )}
+                ) : null}
                 <NotificationCenter />
                 <div className="relative">
                     <button
