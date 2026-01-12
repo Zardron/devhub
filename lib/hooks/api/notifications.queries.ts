@@ -24,18 +24,24 @@ export interface NotificationsResponse {
 }
 
 export const useNotifications = (unreadOnly: boolean = false) => {
-    const { token } = useAuthStore();
+    const { token, user } = useAuthStore();
 
     return useQuery<NotificationsResponse>({
-        queryKey: ["notifications", unreadOnly],
+        queryKey: ["notifications", unreadOnly, user?.role],
         queryFn: async () => {
             if (!token) {
                 throw new Error("Not authenticated");
             }
 
-            const url = unreadOnly
-                ? "/api/users/notifications?unreadOnly=true"
+            // Use organizer-specific endpoint if user is an organizer or admin
+            const isOrganizer = user?.role === 'organizer' || user?.role === 'admin';
+            const baseUrl = isOrganizer 
+                ? "/api/organizer/notifications"
                 : "/api/users/notifications";
+
+            const url = unreadOnly
+                ? `${baseUrl}?unreadOnly=true`
+                : baseUrl;
 
             const response = await fetch(url, {
                 headers: {
@@ -55,7 +61,7 @@ export const useNotifications = (unreadOnly: boolean = false) => {
 };
 
 export const useMarkNotificationAsRead = () => {
-    const { token } = useAuthStore();
+    const { token, user } = useAuthStore();
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -64,7 +70,12 @@ export const useMarkNotificationAsRead = () => {
                 throw new Error("Not authenticated");
             }
 
-            const response = await fetch("/api/users/notifications", {
+            const isOrganizer = user?.role === 'organizer' || user?.role === 'admin';
+            const url = isOrganizer 
+                ? "/api/organizer/notifications"
+                : "/api/users/notifications";
+
+            const response = await fetch(url, {
                 method: "PATCH",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -87,7 +98,7 @@ export const useMarkNotificationAsRead = () => {
 };
 
 export const useMarkAllNotificationsAsRead = () => {
-    const { token } = useAuthStore();
+    const { token, user } = useAuthStore();
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -96,7 +107,12 @@ export const useMarkAllNotificationsAsRead = () => {
                 throw new Error("Not authenticated");
             }
 
-            const response = await fetch("/api/users/notifications", {
+            const isOrganizer = user?.role === 'organizer' || user?.role === 'admin';
+            const url = isOrganizer 
+                ? "/api/organizer/notifications"
+                : "/api/users/notifications";
+
+            const response = await fetch(url, {
                 method: "PATCH",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -119,7 +135,7 @@ export const useMarkAllNotificationsAsRead = () => {
 };
 
 export const useDeleteNotification = () => {
-    const { token } = useAuthStore();
+    const { token, user } = useAuthStore();
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -128,7 +144,12 @@ export const useDeleteNotification = () => {
                 throw new Error("Not authenticated");
             }
 
-            const response = await fetch(`/api/users/notifications?notificationId=${notificationId}`, {
+            const isOrganizer = user?.role === 'organizer' || user?.role === 'admin';
+            const baseUrl = isOrganizer 
+                ? "/api/organizer/notifications"
+                : "/api/users/notifications";
+
+            const response = await fetch(`${baseUrl}?notificationId=${notificationId}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -149,7 +170,7 @@ export const useDeleteNotification = () => {
 };
 
 export const useDeleteAllNotifications = () => {
-    const { token } = useAuthStore();
+    const { token, user } = useAuthStore();
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -158,7 +179,12 @@ export const useDeleteAllNotifications = () => {
                 throw new Error("Not authenticated");
             }
 
-            const response = await fetch("/api/users/notifications?deleteAll=true", {
+            const isOrganizer = user?.role === 'organizer' || user?.role === 'admin';
+            const baseUrl = isOrganizer 
+                ? "/api/organizer/notifications"
+                : "/api/users/notifications";
+
+            const response = await fetch(`${baseUrl}?deleteAll=true`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,
