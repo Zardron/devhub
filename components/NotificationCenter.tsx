@@ -202,7 +202,7 @@ export default function NotificationCenter() {
                                                         deleteNotificationMutation.mutate(notification.id);
                                                     }
                                                 }}
-                                                className="absolute text-red-400 top-2 right-3 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive rounded-full cursor-pointer"
+                                                className="absolute text-red-400 top-2.5 right-2.5 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive rounded-full cursor-pointer"
                                                 disabled={deleteNotificationMutation.isPending}
                                                 title="Delete"
                                             >
@@ -210,7 +210,7 @@ export default function NotificationCenter() {
                                             </Button>
                                             <div className="flex items-start gap-3">
                                                 {/* Icon */}
-                                                <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center border ${
+                                                <div className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center border ${
                                                     getNotificationColor(notification.type)
                                                 }`}>
                                                     {getNotificationIcon(notification.type)}
@@ -225,7 +225,7 @@ export default function NotificationCenter() {
                                                             {notification.title}
                                                         </h4>
                                                         {!notification.read && (
-                                                            <span className="flex-shrink-0 w-2 h-2 bg-primary rounded-full mt-1.5 animate-pulse" />
+                                                            <span className="shrink-0 w-2 h-2 bg-primary rounded-full mt-1.5 mr-[2px] animate-pulse group-hover:hidden" />
                                                         )}
                                                     </div>
                                                     <p className="text-sm text-muted-foreground mb-2 leading-relaxed">
@@ -234,7 +234,7 @@ export default function NotificationCenter() {
                                                     {notification.type === 'organizer_application_approved' && !notification.read && (
                                                         <div className="mt-2 p-2.5 bg-amber-500/15 border border-amber-500/30 rounded-md">
                                                             <div className="flex items-start gap-2">
-                                                                <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                                                                <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                                                                 <div>
                                                                     <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 mb-0.5">
                                                                         Please sign out and sign back in
