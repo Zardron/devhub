@@ -102,7 +102,7 @@ export default function FinancialsPage() {
                 {/* Summary Cards Skeleton */}
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     {[...Array(4)].map((_, i) => (
-                        <div key={i} className="p-6 border rounded-lg bg-card animate-pulse">
+                        <div key={i} className="p-6 border rounded-md bg-card animate-pulse">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="h-4 bg-muted rounded w-32"></div>
                                 <div className="w-4 h-4 bg-muted rounded"></div>
@@ -116,7 +116,7 @@ export default function FinancialsPage() {
                 {/* Additional Stats Skeleton */}
                 <div className="grid gap-4 md:grid-cols-3">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="p-6 border rounded-lg bg-card animate-pulse">
+                        <div key={i} className="p-6 border rounded-md bg-card animate-pulse">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="h-4 bg-muted rounded w-32"></div>
                                 <div className="w-4 h-4 bg-muted rounded"></div>
@@ -128,13 +128,13 @@ export default function FinancialsPage() {
                 </div>
 
                 {/* Chart Skeleton */}
-                <div className="p-6 border rounded-lg bg-card animate-pulse">
+                <div className="p-6 border rounded-md bg-card animate-pulse">
                     <div className="h-6 bg-muted rounded w-56 mb-4"></div>
                     <div className="h-[300px] bg-muted/10 rounded border border-muted/20"></div>
                 </div>
 
                 {/* Table Skeleton */}
-                <div className="p-6 border rounded-lg bg-card animate-pulse">
+                <div className="p-6 border rounded-md bg-card animate-pulse">
                     <div className="h-6 bg-muted rounded w-48 mb-4"></div>
                     <div className="space-y-3">
                         <div className="h-12 bg-muted/50 rounded"></div>
@@ -184,7 +184,7 @@ export default function FinancialsPage() {
 
             {/* Summary Cards */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Platform Revenue</p>
                         <DollarSign className="w-4 h-4 text-muted-foreground" />
@@ -192,7 +192,7 @@ export default function FinancialsPage() {
                     <p className="text-2xl font-bold text-green-500">{formatPrice(summary.totalPlatformRevenue)}</p>
                     <p className="text-xs text-muted-foreground mt-1">From transaction fees</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Subscription Revenue</p>
                         <CreditCard className="w-4 h-4 text-muted-foreground" />
@@ -200,7 +200,7 @@ export default function FinancialsPage() {
                     <p className="text-2xl font-bold text-blue-500">{formatPrice(summary.subscriptionRevenue)}</p>
                     <p className="text-xs text-muted-foreground mt-1">From subscriptions</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Total Revenue</p>
                         <TrendingUp className="w-4 h-4 text-muted-foreground" />
@@ -208,7 +208,7 @@ export default function FinancialsPage() {
                     <p className="text-2xl font-bold">{formatPrice(summary.totalRevenue)}</p>
                     <p className="text-xs text-muted-foreground mt-1">Platform + Subscriptions</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Net Revenue</p>
                         <TrendingDown className="w-4 h-4 text-muted-foreground" />
@@ -220,7 +220,7 @@ export default function FinancialsPage() {
 
             {/* Additional Stats */}
             <div className="grid gap-4 md:grid-cols-3">
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Organizer Revenue</p>
                         <Users className="w-4 h-4 text-muted-foreground" />
@@ -228,7 +228,7 @@ export default function FinancialsPage() {
                     <p className="text-2xl font-bold">{formatPrice(summary.totalOrganizerRevenue)}</p>
                     <p className="text-xs text-muted-foreground mt-1">Paid to organizers</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Total Transactions</p>
                         <CreditCard className="w-4 h-4 text-muted-foreground" />
@@ -236,7 +236,7 @@ export default function FinancialsPage() {
                     <p className="text-2xl font-bold">{summary.transactionCount}</p>
                     <p className="text-xs text-muted-foreground mt-1">Completed transactions</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Total Refunded</p>
                         <TrendingDown className="w-4 h-4 text-red-500" />
@@ -248,7 +248,7 @@ export default function FinancialsPage() {
 
             {/* Monthly Breakdown Chart */}
             {monthlyBreakdown.length > 0 && (
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <h2 className="text-xl font-semibold mb-4">Monthly Revenue Breakdown</h2>
                     <ResponsiveContainer width="100%" height={300}>
                         <LineChart data={monthlyBreakdown}>
@@ -266,7 +266,7 @@ export default function FinancialsPage() {
 
             {/* Top Events by Revenue */}
             {topEvents.length > 0 && (
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <h2 className="text-xl font-semibold mb-4">Top Events by Revenue</h2>
                     <div className="overflow-x-auto">
                         <table className="w-full">

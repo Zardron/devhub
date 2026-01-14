@@ -169,7 +169,7 @@ export default function AddOrganizersPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Form Section */}
                 <div className="lg:col-span-2">
-                    <div className="border rounded-lg bg-card shadow-sm">
+                    <div className="border rounded-md bg-card shadow-sm">
                         <div className="p-6 border-b">
                             <h2 className="text-lg font-semibold">Organizer Information</h2>
                             <p className="text-sm text-muted-foreground mt-1">
@@ -369,7 +369,7 @@ export default function AddOrganizersPage() {
 
                 {/* Info Card Section */}
                 <div className="lg:col-span-1">
-                    <div className="border rounded-lg bg-card shadow-sm sticky top-4">
+                    <div className="border rounded-md bg-card shadow-sm sticky top-4">
                         <div className="p-6 border-b">
                             <h2 className="text-lg font-semibold">Organizer Role</h2>
                             <p className="text-sm text-muted-foreground mt-1">

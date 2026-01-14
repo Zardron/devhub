@@ -104,7 +104,7 @@ export default function AppealsPage() {
                 {/* Statistics Skeleton */}
                 <div className="grid gap-4 md:grid-cols-3">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="p-4 border rounded-lg bg-card animate-pulse">
+                        <div key={i} className="p-4 border rounded-md bg-card animate-pulse">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <div className="h-4 bg-muted rounded w-32 mb-2"></div>
@@ -119,7 +119,7 @@ export default function AppealsPage() {
                 {/* Appeal Cards Skeleton */}
                 <div className="space-y-4">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="border rounded-lg p-4 space-y-4 animate-pulse">
+                        <div key={i} className="border rounded-md p-4 space-y-4 animate-pulse">
                             <div className="flex items-start justify-between">
                                 <div className="flex items-start gap-4 flex-1">
                                     <div className="w-10 h-10 bg-muted rounded-full"></div>
@@ -181,7 +181,7 @@ export default function AppealsPage() {
 
             {/* Statistics */}
             <div className="grid gap-4 md:grid-cols-3">
-                <div className="p-4 border rounded-lg bg-card">
+                <div className="p-4 border rounded-md bg-card">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-muted-foreground">Total Banned Users</p>
@@ -190,7 +190,7 @@ export default function AppealsPage() {
                         <Ban className="h-8 w-8 text-red-500" />
                     </div>
                 </div>
-                <div className="p-4 border rounded-lg bg-card">
+                <div className="p-4 border rounded-md bg-card">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-muted-foreground">Pending Appeals</p>
@@ -199,7 +199,7 @@ export default function AppealsPage() {
                         <Clock className="h-8 w-8 text-yellow-500" />
                     </div>
                 </div>
-                <div className="p-4 border rounded-lg bg-card">
+                <div className="p-4 border rounded-md bg-card">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-muted-foreground">Total Appeals</p>
@@ -248,7 +248,7 @@ export default function AppealsPage() {
             {bannedUsers.length > 0 && (
                 <div className="space-y-4">
                     <h2 className="text-xl font-semibold">Banned Users Without Appeals</h2>
-                    <div className="border rounded-lg">
+                    <div className="border rounded-md">
                         <div className="divide-y">
                             {bannedUsers.map((user) => (
                                 <div
@@ -284,7 +284,7 @@ export default function AppealsPage() {
 
             {/* Empty State */}
             {appeals.length === 0 && bannedUsers.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-12 border rounded-lg">
+                <div className="flex flex-col items-center justify-center py-12 border rounded-md">
                     <Ban className="h-12 w-12 text-muted-foreground mb-4" />
                     <p className="text-lg font-medium mb-2">No Banned Users or Appeals</p>
                     <p className="text-sm text-muted-foreground">
@@ -318,7 +318,7 @@ export default function AppealsPage() {
                             />
                         </div>
                         {selectedAppeal && (
-                            <div className="p-3 bg-muted rounded-lg">
+                            <div className="p-3 bg-muted rounded-md">
                                 <p className="text-sm font-medium mb-2">Appeal Reason:</p>
                                 <p className="text-sm text-muted-foreground">{selectedAppeal.reason}</p>
                             </div>
@@ -356,7 +356,7 @@ function AppealCard({
     const StatusIcon = STATUS_ICONS[appeal.status];
 
     return (
-        <div className="border rounded-lg p-4 space-y-4">
+        <div className="border rounded-md p-4 space-y-4">
             <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4 flex-1">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">

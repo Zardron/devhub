@@ -97,7 +97,7 @@ export default function OrganizerApplicationsPage() {
                 {/* Statistics Skeleton */}
                 <div className="grid gap-4 md:grid-cols-3">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="p-6 border rounded-lg bg-card animate-pulse">
+                        <div key={i} className="p-6 border rounded-md bg-card animate-pulse">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="h-4 bg-muted rounded w-24"></div>
                                 <div className="w-5 h-5 bg-muted rounded"></div>
@@ -110,7 +110,7 @@ export default function OrganizerApplicationsPage() {
                 {/* Application Cards Skeleton */}
                 <div className="space-y-4">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="p-6 border rounded-lg bg-card animate-pulse">
+                        <div key={i} className="p-6 border rounded-md bg-card animate-pulse">
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex-1 space-y-2">
                                     <div className="flex items-center gap-3">
@@ -159,21 +159,21 @@ export default function OrganizerApplicationsPage() {
 
             {/* Statistics */}
             <div className="grid gap-4 md:grid-cols-3">
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <h3 className="text-sm font-medium text-muted-foreground">Pending</h3>
                         <Clock className="w-5 h-5 text-yellow-500" />
                     </div>
                     <p className="text-3xl font-bold">{pendingApplications.length}</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <h3 className="text-sm font-medium text-muted-foreground">Approved</h3>
                         <CheckCircle className="w-5 h-5 text-green-500" />
                     </div>
                     <p className="text-3xl font-bold">{approvedApplications.length}</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <h3 className="text-sm font-medium text-muted-foreground">Rejected</h3>
                         <XCircle className="w-5 h-5 text-red-500" />
@@ -185,7 +185,7 @@ export default function OrganizerApplicationsPage() {
             {/* Applications List */}
             <div className="space-y-4">
                 {applications.length === 0 ? (
-                    <div className="p-12 text-center border rounded-lg bg-card">
+                    <div className="p-12 text-center border rounded-md bg-card">
                         <AlertCircle className="w-16 h-16 mx-auto text-muted-foreground/20 mb-4" />
                         <p className="text-muted-foreground">No applications found</p>
                     </div>
@@ -193,7 +193,7 @@ export default function OrganizerApplicationsPage() {
                     applications.map((application: any) => (
                         <div
                             key={application.id}
-                            className={`p-6 border rounded-lg bg-card ${
+                            className={`p-6 border rounded-md bg-card ${
                                 application.status === 'pending' ? 'border-yellow-500/20' :
                                 application.status === 'approved' ? 'border-green-500/20' :
                                 'border-red-500/20'
@@ -269,7 +269,7 @@ export default function OrganizerApplicationsPage() {
             {/* Review Modal */}
             {showReviewModal && selectedApplication && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-card border rounded-lg p-6 max-w-md w-full mx-4">
+                    <div className="bg-card border rounded-md p-6 max-w-md w-full mx-4">
                         <h2 className="text-xl font-bold mb-4">
                             {reviewAction === 'approve' ? 'Approve Application' : 'Reject Application'}
                         </h2>

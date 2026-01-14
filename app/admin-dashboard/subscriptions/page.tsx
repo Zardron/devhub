@@ -74,7 +74,7 @@ export default function SubscriptionsPage() {
                 {/* Statistics Cards Skeleton */}
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                     {[...Array(5)].map((_, i) => (
-                        <div key={i} className="p-6 border rounded-lg bg-card animate-pulse">
+                        <div key={i} className="p-6 border rounded-md bg-card animate-pulse">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="h-4 bg-muted rounded w-20"></div>
                                 <div className="w-4 h-4 bg-muted rounded"></div>
@@ -92,7 +92,7 @@ export default function SubscriptionsPage() {
                 </div>
 
                 {/* Table Skeleton */}
-                <div className="border rounded-lg bg-card overflow-hidden animate-pulse">
+                <div className="border rounded-md bg-card overflow-hidden animate-pulse">
                     <div className="overflow-x-auto">
                         <div className="h-12 bg-muted/50"></div>
                         {[...Array(5)].map((_, i) => (
@@ -123,35 +123,35 @@ export default function SubscriptionsPage() {
 
             {/* Statistics Cards */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Total</p>
                         <CreditCard className="w-4 h-4 text-muted-foreground" />
                     </div>
                     <p className="text-2xl font-bold">{stats.total}</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Active</p>
                         <Check className="w-4 h-4 text-green-500" />
                     </div>
                     <p className="text-2xl font-bold text-green-500">{stats.active}</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Trialing</p>
                         <AlertCircle className="w-4 h-4 text-blue-500" />
                     </div>
                     <p className="text-2xl font-bold text-blue-500">{stats.trialing}</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Canceled</p>
                         <X className="w-4 h-4 text-gray-500" />
                     </div>
                     <p className="text-2xl font-bold text-gray-500">{stats.canceled}</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Past Due</p>
                         <AlertCircle className="w-4 h-4 text-red-500" />
@@ -200,7 +200,7 @@ export default function SubscriptionsPage() {
             </div>
 
             {/* Subscriptions Table */}
-            <div className="border rounded-lg bg-card overflow-hidden">
+            <div className="border rounded-md bg-card overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead className="bg-muted/50">

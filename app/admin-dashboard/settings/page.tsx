@@ -276,7 +276,7 @@ export default function SettingsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Form Section */}
                 <div className="lg:col-span-2">
-                    <div className="border rounded-lg bg-card shadow-sm">
+                    <div className="border rounded-md bg-card shadow-sm">
                         {/* Tabs */}
                         <div className="border-b">
                             <div className="flex overflow-x-auto">
@@ -742,7 +742,7 @@ export default function SettingsPage() {
 
                 {/* Info Panel */}
                 <div className="lg:col-span-1">
-                    <div className="border rounded-lg bg-card shadow-sm sticky top-4">
+                    <div className="border rounded-md bg-card shadow-sm sticky top-4">
                         <div className="p-6 border-b">
                             <h2 className="text-lg font-semibold">Settings Guide</h2>
                             <p className="text-sm text-muted-foreground mt-1">

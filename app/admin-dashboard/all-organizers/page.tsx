@@ -261,7 +261,7 @@ export default function AllOrganizersPage() {
                 <div className="flex items-center gap-3">
                     <Link
                         href="/admin-dashboard/add-organizers"
-                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors cursor-pointer text-sm sm:text-base"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors cursor-pointer text-sm sm:text-base"
                     >
                         <PlusIcon className="w-4 h-4" />
                         <span className="hidden sm:inline">Add Organizer</span>
@@ -270,7 +270,7 @@ export default function AllOrganizersPage() {
                 </div>
             </div>
 
-            <div className="border rounded-lg p-3 sm:p-6 overflow-x-auto">
+            <div className="border rounded-md p-3 sm:p-6 overflow-x-auto">
                 <DataTable
                     data={organizers}
                     columns={columns}
@@ -422,7 +422,7 @@ export default function AllOrganizersPage() {
                                 <div className="text-muted-foreground">No users found for this organizer</div>
                             </div>
                         ) : (
-                            <div className="border rounded-lg overflow-hidden">
+                            <div className="border rounded-md overflow-hidden">
                                 <table className="w-full">
                                     <thead className="bg-muted">
                                         <tr>

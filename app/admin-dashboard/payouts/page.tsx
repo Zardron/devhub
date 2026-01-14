@@ -108,7 +108,7 @@ export default function AdminPayoutsPage() {
                 {/* Statistics Skeleton */}
                 <div className="grid gap-4 md:grid-cols-4">
                     {[...Array(4)].map((_, i) => (
-                        <div key={i} className="p-6 border rounded-lg bg-card animate-pulse">
+                        <div key={i} className="p-6 border rounded-md bg-card animate-pulse">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="h-4 bg-muted rounded w-24"></div>
                                 <div className="w-4 h-4 bg-muted rounded"></div>
@@ -122,7 +122,7 @@ export default function AdminPayoutsPage() {
                 {/* Payouts List Skeleton */}
                 <div className="space-y-4">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="p-6 border rounded-lg bg-card animate-pulse">
+                        <div key={i} className="p-6 border rounded-md bg-card animate-pulse">
                             <div className="flex items-start justify-between">
                                 <div className="flex-1 space-y-4">
                                     <div className="flex items-center gap-3">
@@ -183,7 +183,7 @@ export default function AdminPayoutsPage() {
 
             {/* Statistics */}
             <div className="grid gap-4 md:grid-cols-4">
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Pending</p>
                         <Clock className="w-4 h-4 text-yellow-500" />
@@ -191,14 +191,14 @@ export default function AdminPayoutsPage() {
                     <p className="text-2xl font-bold">{stats.pending}</p>
                     <p className="text-xs text-muted-foreground mt-1">{formatPrice(stats.totalPendingAmount)}</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Processing</p>
                         <RefreshCw className="w-4 h-4 text-blue-500" />
                     </div>
                     <p className="text-2xl font-bold">{stats.processing}</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Completed</p>
                         <Check className="w-4 h-4 text-green-500" />
@@ -206,7 +206,7 @@ export default function AdminPayoutsPage() {
                     <p className="text-2xl font-bold">{stats.completed}</p>
                     <p className="text-xs text-muted-foreground mt-1">{formatPrice(stats.totalCompletedAmount)}</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Failed</p>
                         <X className="w-4 h-4 text-red-500" />
@@ -217,7 +217,7 @@ export default function AdminPayoutsPage() {
 
             {/* Payouts List */}
             {payouts.length === 0 ? (
-                <div className="p-12 text-center border rounded-lg bg-card">
+                <div className="p-12 text-center border rounded-md bg-card">
                     <DollarSign className="w-16 h-16 mx-auto text-muted-foreground/20 mb-4" />
                     <p className="text-muted-foreground">No payout requests found</p>
                 </div>
@@ -226,7 +226,7 @@ export default function AdminPayoutsPage() {
                     {payouts.map((payout: any) => (
                         <div
                             key={payout.id}
-                            className="p-6 border rounded-lg bg-card"
+                            className="p-6 border rounded-md bg-card"
                         >
                             <div className="flex items-start justify-between">
                                 <div className="flex-1">
@@ -286,7 +286,7 @@ export default function AdminPayoutsPage() {
                                     </div>
 
                                     {selectedPayout === payout.id && (
-                                        <div className="mt-4 p-4 bg-muted/50 rounded-lg space-y-4">
+                                        <div className="mt-4 p-4 bg-muted/50 rounded-md space-y-4">
                                             <FormInput
                                                 label="Failure Reason"
                                                 value={failureReason}

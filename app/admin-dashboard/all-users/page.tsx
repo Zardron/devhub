@@ -178,7 +178,7 @@ export default function AllUsersPage() {
                 </div>
                 <Link
                     href="/admin-dashboard/add-users"
-                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors cursor-pointer text-sm sm:text-base"
+                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors cursor-pointer text-sm sm:text-base"
                 >
                     <PlusIcon className="w-4 h-4" />
                     <span className="hidden sm:inline">Add User</span>
@@ -186,7 +186,7 @@ export default function AllUsersPage() {
                 </Link>
             </div>
 
-            <div className="border rounded-lg p-3 sm:p-6 overflow-x-auto">
+            <div className="border rounded-md p-3 sm:p-6 overflow-x-auto">
                 <DataTable
                     data={sortedUsers}
                     columns={columns}

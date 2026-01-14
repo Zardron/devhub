@@ -106,7 +106,7 @@ export default function AdminDashboardPage() {
 
     // Skeleton loader components
     const SkeletonCard = () => (
-        <div className="p-6 border rounded-lg bg-card hover:bg-accent transition-colors animate-pulse">
+        <div className="p-6 border rounded-md bg-card hover:bg-accent transition-colors animate-pulse">
             <div className="flex items-center justify-between mb-2">
                 <div className="h-4 bg-muted rounded w-24 sm:w-32"></div>
                 <div className="w-5 h-5 bg-muted rounded"></div>
@@ -122,7 +122,7 @@ export default function AdminDashboardPage() {
     );
 
     const SkeletonChart = () => (
-        <div className="p-3 sm:p-6 border rounded-lg bg-card shadow-sm animate-pulse">
+        <div className="p-3 sm:p-6 border rounded-md bg-card shadow-sm animate-pulse">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-4">
                 <div className="h-5 sm:h-6 bg-muted rounded w-40 sm:w-56"></div>
                 <div className="h-8 bg-muted rounded w-28"></div>
@@ -155,7 +155,7 @@ export default function AdminDashboardPage() {
     );
 
     const SkeletonPieChart = () => (
-        <div className="p-3 sm:p-6 border rounded-lg bg-card shadow-sm animate-pulse">
+        <div className="p-3 sm:p-6 border rounded-md bg-card shadow-sm animate-pulse">
             <div className="h-5 sm:h-6 bg-muted rounded w-40 sm:w-48 mb-4"></div>
             <div className="h-[250px] sm:h-[300px] bg-muted/10 rounded border border-muted/20 flex items-center justify-center relative">
                 <div className="w-48 h-48 bg-muted/30 rounded-full relative overflow-hidden">
@@ -171,7 +171,7 @@ export default function AdminDashboardPage() {
     );
 
     const SkeletonActionCard = () => (
-        <div className="p-6 border rounded-lg bg-card shadow-sm animate-pulse cursor-pointer hover:bg-accent transition-colors">
+        <div className="p-6 border rounded-md bg-card shadow-sm animate-pulse cursor-pointer hover:bg-accent transition-colors">
             <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-muted rounded flex items-center justify-center">
                     <div className="w-6 h-6 bg-muted-foreground/20 rounded"></div>
@@ -195,7 +195,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* Time Range Selector Skeleton */}
-                <div className="p-4 border rounded-lg bg-card animate-pulse">
+                <div className="p-4 border rounded-md bg-card animate-pulse">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                         <div className="flex items-center gap-2">
                             <div className="w-4 h-4 bg-muted rounded"></div>
@@ -321,7 +321,7 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Global Timeline Picker */}
-            <div className="p-4 border rounded-lg bg-card">
+            <div className="p-4 border rounded-md bg-card">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     <div className="flex items-center gap-2">
                         <Filter className="w-4 h-4 text-muted-foreground" />
@@ -427,7 +427,7 @@ export default function AdminDashboardPage() {
             {/* Charts Section */}
             <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
                 {/* Growth Over Time Chart */}
-                <div className="p-3 sm:p-6 border rounded-lg bg-card shadow-sm">
+                <div className="p-3 sm:p-6 border rounded-md bg-card shadow-sm">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-4">
                         <h3 className="text-base sm:text-lg font-semibold">Growth Over Time</h3>
                         <select
@@ -523,7 +523,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* User Role Distribution */}
-                <div className="p-3 sm:p-6 border rounded-lg bg-card shadow-sm">
+                <div className="p-3 sm:p-6 border rounded-md bg-card shadow-sm">
                     <h3 className="text-base sm:text-lg font-semibold mb-4">User Role Distribution</h3>
                     {roleData.length > 0 ? (
                         <div className="h-[250px] sm:h-[300px]">
@@ -557,7 +557,7 @@ export default function AdminDashboardPage() {
 
             <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
                 {/* Events Over Time */}
-                <div className="p-3 sm:p-6 border rounded-lg bg-card shadow-sm">
+                <div className="p-3 sm:p-6 border rounded-md bg-card shadow-sm">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-4">
                         <h3 className="text-base sm:text-lg font-semibold">Events Created Over Time</h3>
                         <select
@@ -623,7 +623,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* Event Mode Distribution */}
-                <div className="p-3 sm:p-6 border rounded-lg bg-card shadow-sm">
+                <div className="p-3 sm:p-6 border rounded-md bg-card shadow-sm">
                     <h3 className="text-base sm:text-lg font-semibold mb-4">Event Mode Distribution</h3>
                     {modeData.length > 0 ? (
                         <div className="h-[250px] sm:h-[300px]">
@@ -697,7 +697,7 @@ function StatCard({ title, value, icon, href, trend }: StatCardProps) {
     const isPositive = trendPercentage !== null && trendPercentage >= 0;
 
     const cardContent = (
-        <div className="p-6 border rounded-lg bg-card hover:bg-accent transition-colors">
+        <div className="p-6 border rounded-md bg-card hover:bg-accent transition-colors">
             <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
                 <div className="text-muted-foreground">{icon}</div>
@@ -742,7 +742,7 @@ function DashboardCard({
     return (
         <Link
             href={href}
-            className="block p-6 border rounded-lg hover:bg-accent transition-colors cursor-pointer"
+            className="block p-6 border rounded-md hover:bg-accent transition-colors cursor-pointer"
         >
             <div className="flex items-center gap-3 mb-2">
                 {icon}

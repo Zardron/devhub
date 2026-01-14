@@ -157,7 +157,7 @@ export default function PlansPage() {
                 {/* Plans Grid Skeleton */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[...Array(6)].map((_, i) => (
-                        <div key={i} className="p-6 border rounded-lg bg-card animate-pulse">
+                        <div key={i} className="p-6 border rounded-md bg-card animate-pulse">
                             <div className="flex items-start justify-between mb-4">
                                 <div>
                                     <div className="h-6 bg-muted rounded w-32 mb-2"></div>
@@ -218,7 +218,7 @@ export default function PlansPage() {
             </div>
 
             {showForm && (
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <h2 className="text-xl font-semibold mb-4">
                         {editingPlan ? "Edit Plan" : "Create New Plan"}
                     </h2>
@@ -314,7 +314,7 @@ export default function PlansPage() {
             )}
 
             {plans.length === 0 ? (
-                <div className="p-12 text-center border rounded-lg bg-card">
+                <div className="p-12 text-center border rounded-md bg-card">
                     <CreditCard className="w-16 h-16 mx-auto text-muted-foreground/20 mb-4" />
                     <p className="text-muted-foreground">No plans created yet</p>
                 </div>
@@ -323,7 +323,7 @@ export default function PlansPage() {
                     {plans.map((plan: any) => (
                         <div
                             key={plan.id}
-                            className={`p-6 border rounded-lg bg-card ${plan.isPopular ? 'border-primary ring-2 ring-primary/20' : ''}`}
+                            className={`p-6 border rounded-md bg-card ${plan.isPopular ? 'border-primary ring-2 ring-primary/20' : ''}`}
                         >
                             <div className="flex items-start justify-between mb-4">
                                 <div>

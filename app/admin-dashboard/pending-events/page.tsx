@@ -88,9 +88,9 @@ export default function PendingEventsPage() {
                 {/* Event Cards Skeleton */}
                 <div className="space-y-4">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="p-6 border rounded-lg bg-card animate-pulse">
+                        <div key={i} className="p-6 border rounded-md bg-card animate-pulse">
                             <div className="flex gap-6">
-                                <div className="relative w-48 h-32 rounded-lg bg-muted shrink-0"></div>
+                                <div className="relative w-48 h-32 rounded-md bg-muted shrink-0"></div>
                                 <div className="flex-1 space-y-4">
                                     <div className="flex items-start justify-between">
                                         <div className="space-y-2">
@@ -140,7 +140,7 @@ export default function PendingEventsPage() {
             </div>
 
             {events.length === 0 ? (
-                <div className="p-12 text-center border rounded-lg bg-card">
+                <div className="p-12 text-center border rounded-md bg-card">
                     <Check className="w-16 h-16 mx-auto text-muted-foreground/20 mb-4" />
                     <p className="text-muted-foreground">No pending events for approval</p>
                 </div>
@@ -149,10 +149,10 @@ export default function PendingEventsPage() {
                     {events.map((event: any) => (
                         <div
                             key={event.id}
-                            className="p-6 border rounded-lg bg-card"
+                            className="p-6 border rounded-md bg-card"
                         >
                             <div className="flex gap-6">
-                                <div className="relative w-48 h-32 rounded-lg overflow-hidden shrink-0">
+                                <div className="relative w-48 h-32 rounded-md overflow-hidden shrink-0">
                                     <Image
                                         src={event.image}
                                         alt={event.title}
