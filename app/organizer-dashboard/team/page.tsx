@@ -121,7 +121,7 @@ export default function TeamPage() {
                 </div>
 
                 {/* Team Members List Skeleton */}
-                <div className="border rounded-lg bg-card overflow-hidden animate-pulse">
+                <div className="border rounded-md bg-card overflow-hidden animate-pulse">
                     <div className="p-6 border-b">
                         <div className="h-6 bg-muted rounded w-48"></div>
                     </div>
@@ -175,7 +175,7 @@ export default function TeamPage() {
 
             {/* Add Team Member Form */}
             {showAddForm && (
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <h2 className="text-xl font-semibold mb-4">Add New Team Member</h2>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <FormInput
@@ -222,7 +222,7 @@ export default function TeamPage() {
             )}
 
             {/* Team Members List */}
-            <div className="border rounded-lg bg-card overflow-hidden">
+            <div className="border rounded-md bg-card overflow-hidden">
                 <div className="p-6 border-b">
                     <div className="flex items-center gap-2">
                         <Users className="w-5 h-5" />

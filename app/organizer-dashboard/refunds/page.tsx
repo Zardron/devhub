@@ -93,7 +93,7 @@ export default function RefundsPage() {
                 {/* Refund Request Cards Skeleton */}
                 <div className="space-y-4">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="p-6 border rounded-lg bg-card animate-pulse">
+                        <div key={i} className="p-6 border rounded-md bg-card animate-pulse">
                             <div className="flex items-start justify-between">
                                 <div className="flex-1 space-y-4">
                                     <div className="flex items-center gap-3">
@@ -138,7 +138,7 @@ export default function RefundsPage() {
             </div>
 
             {refundRequests.length === 0 ? (
-                <div className="p-12 text-center border rounded-lg bg-card">
+                <div className="p-12 text-center border rounded-md bg-card">
                     <RefreshCw className="w-16 h-16 mx-auto text-muted-foreground/20 mb-4" />
                     <p className="text-muted-foreground">No refund requests at this time</p>
                 </div>
@@ -147,7 +147,7 @@ export default function RefundsPage() {
                     {refundRequests.map((request: any) => (
                         <div
                             key={request.id}
-                            className="p-6 border rounded-lg bg-card"
+                            className="p-6 border rounded-md bg-card"
                         >
                             <div className="flex items-start justify-between">
                                 <div className="flex-1">
@@ -184,7 +184,7 @@ export default function RefundsPage() {
                                     </div>
 
                                     {selectedTransaction === request.id && (
-                                        <div className="mt-4 p-4 bg-muted/50 rounded-lg space-y-4">
+                                        <div className="mt-4 p-4 bg-muted/50 rounded-md space-y-4">
                                             <FormInput
                                                 label="Refund Amount"
                                                 type="number"

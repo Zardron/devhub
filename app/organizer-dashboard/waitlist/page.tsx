@@ -46,7 +46,7 @@ export default function WaitlistPage() {
                 {/* Waitlist Entry Cards Skeleton */}
                 <div className="space-y-4">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="p-6 border rounded-lg bg-card animate-pulse">
+                        <div key={i} className="p-6 border rounded-md bg-card animate-pulse">
                             <div className="flex items-start justify-between">
                                 <div className="flex-1 space-y-3">
                                     <div className="flex items-center gap-3">
@@ -105,7 +105,7 @@ export default function WaitlistPage() {
             </div>
 
             {waitlist.length === 0 ? (
-                <div className="p-12 text-center border rounded-lg bg-card">
+                <div className="p-12 text-center border rounded-md bg-card">
                     <Users className="w-16 h-16 mx-auto text-muted-foreground/20 mb-4" />
                     <p className="text-muted-foreground">No waitlist entries found</p>
                 </div>
@@ -114,7 +114,7 @@ export default function WaitlistPage() {
                     {waitlist.map((entry: any) => (
                         <div
                             key={entry.id}
-                            className="p-6 border rounded-lg bg-card"
+                            className="p-6 border rounded-md bg-card"
                         >
                             <div className="flex items-start justify-between">
                                 <div className="flex-1">

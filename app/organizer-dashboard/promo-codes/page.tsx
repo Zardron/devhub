@@ -185,7 +185,7 @@ export default function PromoCodesPage() {
                 </div>
 
                 {/* Promo Codes List Skeleton */}
-                <div className="border rounded-lg bg-card overflow-hidden animate-pulse">
+                <div className="border rounded-md bg-card overflow-hidden animate-pulse">
                     <div className="p-6 border-b">
                         <div className="h-6 bg-muted rounded w-48"></div>
                     </div>
@@ -238,7 +238,7 @@ export default function PromoCodesPage() {
 
             {/* Add Form */}
             {showAddForm && (
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <h2 className="text-xl font-semibold mb-4">Create New Promo Code</h2>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid md:grid-cols-2 gap-4">
@@ -359,7 +359,7 @@ export default function PromoCodesPage() {
             )}
 
             {/* Promo Codes List */}
-            <div className="border rounded-lg bg-card overflow-hidden">
+            <div className="border rounded-md bg-card overflow-hidden">
                 <div className="p-6 border-b">
                     <div className="flex items-center gap-2">
                         <Tag className="w-5 h-5" />

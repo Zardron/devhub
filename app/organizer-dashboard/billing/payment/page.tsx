@@ -430,7 +430,7 @@ export default function PaymentPage() {
         <div>
           <div
              onClick={() => router.push("/organizer-dashboard/billing")}
-            className="w-36 h-10 flex items-center mb-4 cursor-pointer border p-2 rounded-lg"
+            className="w-36 h-10 flex items-center mb-4 cursor-pointer border p-2 rounded-md"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Billing
@@ -447,11 +447,11 @@ export default function PaymentPage() {
 
         {/* Billing Details */}
         {newPlan && (
-          <div className="border rounded-lg bg-card p-6 space-y-4">
+          <div className="border rounded-md bg-card p-6 space-y-4">
             <h2 className="text-xl font-semibold">Billing Details</h2>
             <div className="space-y-3">
               {isUpgrade && currentPlan && (
-                <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-muted rounded-md">
                   <div>
                     <p className="text-sm text-muted-foreground">
                       Current Plan
@@ -468,7 +468,7 @@ export default function PaymentPage() {
                 </div>
               )}
               {!isUpgrade && (
-                <div className="p-3 bg-muted rounded-lg">
+                <div className="p-3 bg-muted rounded-md">
                   <p className="text-sm text-muted-foreground">
                     Subscribing To
                   </p>
@@ -499,14 +499,14 @@ export default function PaymentPage() {
                 {/* GCash Card */}
                 <div
                   onClick={() => setSelectedPaymentMethod("gcash")}
-                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`p-4 border-2 rounded-md cursor-pointer transition-all ${
                     selectedPaymentMethod === "gcash"
                       ? "border-primary bg-primary/5"
                       : "border-border hover:border-primary/50"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-md bg-blue-500/10 flex items-center justify-center">
                       <Smartphone className="w-6 h-6 text-blue-500" />
                     </div>
                     <div className="flex-1">
@@ -524,14 +524,14 @@ export default function PaymentPage() {
                 {/* GrabPay Card */}
                 <div
                   onClick={() => setSelectedPaymentMethod("grab_pay")}
-                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`p-4 border-2 rounded-md cursor-pointer transition-all ${
                     selectedPaymentMethod === "grab_pay"
                       ? "border-primary bg-primary/5"
                       : "border-border hover:border-primary/50"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-md bg-green-500/10 flex items-center justify-center">
                       <Wallet className="w-6 h-6 text-green-500" />
                     </div>
                     <div className="flex-1">
@@ -549,14 +549,14 @@ export default function PaymentPage() {
                 {/* PayMaya Card */}
                 <div
                   onClick={() => setSelectedPaymentMethod("paymaya")}
-                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`p-4 border-2 rounded-md cursor-pointer transition-all ${
                     selectedPaymentMethod === "paymaya"
                       ? "border-primary bg-primary/5"
                       : "border-border hover:border-primary/50"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-md bg-purple-500/10 flex items-center justify-center">
                       <Wallet className="w-6 h-6 text-purple-500" />
                     </div>
                     <div className="flex-1">
@@ -572,9 +572,9 @@ export default function PaymentPage() {
                 </div>
 
                 {/* Credit Card - Disabled */}
-                <div className="p-4 border-2 rounded-lg cursor-not-allowed opacity-50 bg-muted">
+                <div className="p-4 border-2 rounded-md cursor-not-allowed opacity-50 bg-muted">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg bg-gray-500/10 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-md bg-gray-500/10 flex items-center justify-center">
                       <CreditCard className="w-6 h-6 text-gray-500" />
                     </div>
                     <div className="flex-1">
@@ -588,7 +588,7 @@ export default function PaymentPage() {
               </div>
             </div>
 
-            <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+            <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-md">
               <p className="text-sm text-blue-500">
                 <strong>Note:</strong>{" "}
                 {selectedPaymentMethod === "gcash"
@@ -633,10 +633,10 @@ export default function PaymentPage() {
         )}
       </div>
 
-      <div className="w-1/2 border rounded-lg bg-card p-6 space-y-4 ">
+      <div className="w-1/2 border rounded-md bg-card p-6 space-y-4 ">
         {paymentStatus === "processing" && (
           <div className="space-y-3">
-            <div className="flex items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+            <div className="flex items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-md">
               <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
               <p className="text-sm text-blue-500">Processing your payment...</p>
             </div>
@@ -754,7 +754,7 @@ export default function PaymentPage() {
             <h3 className="text-lg font-semibold">Need Help?</h3>
           </div>
           <div className="space-y-2">
-            <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+            <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-md">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium">Payment Process</p>
@@ -763,7 +763,7 @@ export default function PaymentPage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+            <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-md">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium">Cancellation</p>

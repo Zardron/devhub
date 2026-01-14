@@ -127,7 +127,7 @@ export default function PayoutsPage() {
                 {/* Balance Cards Skeleton */}
                 <div className="grid gap-4 md:grid-cols-4">
                     {[...Array(4)].map((_, i) => (
-                        <div key={i} className="p-6 border rounded-lg bg-card animate-pulse">
+                        <div key={i} className="p-6 border rounded-md bg-card animate-pulse">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="h-4 bg-muted rounded w-32"></div>
                                 <div className="w-4 h-4 bg-muted rounded"></div>
@@ -139,7 +139,7 @@ export default function PayoutsPage() {
                 </div>
 
                 {/* Payout History Skeleton */}
-                <div className="border rounded-lg bg-card overflow-hidden animate-pulse">
+                <div className="border rounded-md bg-card overflow-hidden animate-pulse">
                     <div className="p-6 border-b">
                         <div className="h-6 bg-muted rounded w-40"></div>
                     </div>
@@ -198,7 +198,7 @@ export default function PayoutsPage() {
 
             {/* Balance Cards */}
             <div className="grid gap-4 md:grid-cols-4">
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Available Balance</p>
                         <DollarSign className="w-4 h-4 text-muted-foreground" />
@@ -206,7 +206,7 @@ export default function PayoutsPage() {
                     <p className="text-2xl font-bold text-green-500">{formatPrice(payoutData.availableBalance)}</p>
                     <p className="text-xs text-muted-foreground mt-1">Ready for payout</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Total Earned</p>
                         <TrendingUp className="w-4 h-4 text-muted-foreground" />
@@ -214,7 +214,7 @@ export default function PayoutsPage() {
                     <p className="text-2xl font-bold">{formatPrice(payoutData.totalEarned)}</p>
                     <p className="text-xs text-muted-foreground mt-1">All time revenue</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Total Paid</p>
                         <CreditCard className="w-4 h-4 text-muted-foreground" />
@@ -222,7 +222,7 @@ export default function PayoutsPage() {
                     <p className="text-2xl font-bold">{formatPrice(payoutData.totalPaid)}</p>
                     <p className="text-xs text-muted-foreground mt-1">Paid out</p>
                 </div>
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-muted-foreground">Pending</p>
                         <Clock className="w-4 h-4 text-muted-foreground" />
@@ -234,7 +234,7 @@ export default function PayoutsPage() {
 
             {/* Request Form */}
             {showRequestForm && (
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <h2 className="text-xl font-semibold mb-4">Request Payout</h2>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <FormInput
@@ -315,7 +315,7 @@ export default function PayoutsPage() {
             )}
 
             {/* Payout History */}
-            <div className="border rounded-lg bg-card overflow-hidden">
+            <div className="border rounded-md bg-card overflow-hidden">
                 <div className="p-6 border-b">
                     <h2 className="text-xl font-semibold">Payout History</h2>
                 </div>

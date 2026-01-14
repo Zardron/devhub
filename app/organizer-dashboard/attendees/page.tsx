@@ -149,7 +149,7 @@ export default function AttendeesPage() {
             {isLoading ? (
                 <div className="space-y-4">
                     <div className="h-10 bg-muted rounded w-full animate-pulse"></div>
-                    <div className="border rounded-lg overflow-hidden animate-pulse">
+                    <div className="border rounded-md overflow-hidden animate-pulse">
                         <div className="h-12 bg-muted/50"></div>
                         {[...Array(5)].map((_, i) => (
                             <div key={i} className="h-16 bg-muted/30 border-t"></div>
@@ -157,14 +157,14 @@ export default function AttendeesPage() {
                     </div>
                 </div>
             ) : attendees.length === 0 ? (
-                <div className="text-center py-12 border rounded-lg">
+                <div className="text-center py-12 border rounded-md">
                     <Users className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                     <p className="text-muted-foreground">
                         {selectedEventId ? "No attendees for this event yet" : "No attendees found. Select an event or create bookings."}
                     </p>
                 </div>
             ) : (
-                <div className="border rounded-lg overflow-hidden">
+                <div className="border rounded-md overflow-hidden">
                     <table className="w-full">
                         <thead className="bg-muted">
                             <tr>

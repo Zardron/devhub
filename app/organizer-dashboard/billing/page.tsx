@@ -116,7 +116,7 @@ export default function BillingPage() {
 
             {/* Current Subscription */}
             {!subscriptionLoading && (
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center justify-between mb-4">
                         <div>
                             <h3 className="text-xl font-semibold">Current Plan</h3>
@@ -188,7 +188,7 @@ export default function BillingPage() {
                 {plansLoading ? (
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 items-stretch">
                         {[...Array(4)].map((_, i) => (
-                            <div key={i} className="p-6 border rounded-lg bg-card animate-pulse">
+                            <div key={i} className="p-6 border rounded-md bg-card animate-pulse">
                                 <div className="h-6 bg-muted rounded w-32 mb-2"></div>
                                 <div className="h-4 bg-muted rounded w-full mb-4"></div>
                                 <div className="h-8 bg-muted rounded w-40 mb-4"></div>
@@ -227,7 +227,7 @@ export default function BillingPage() {
                         return (
                             <div
                                 key={plan.id}
-                                className={`p-6 border rounded-lg flex flex-col h-full ${
+                                className={`p-6 border rounded-md flex flex-col h-full ${
                                     isPopular ? "border-primary shadow-lg" : ""
                                 } ${isCurrentPlan ? "bg-primary/5" : "bg-card"}`}
                             >

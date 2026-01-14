@@ -174,7 +174,7 @@ export default function OrganizerDashboardPage() {
 
     // Skeleton loader components
     const SkeletonCard = () => (
-        <div className="p-6 border rounded-lg bg-card shadow-sm animate-pulse">
+        <div className="p-6 border rounded-md bg-card shadow-sm animate-pulse">
             <div className="flex items-center justify-between mb-4">
                 <div className="h-5 bg-muted rounded w-32"></div>
                 <div className="w-5 h-5 bg-muted rounded"></div>
@@ -188,7 +188,7 @@ export default function OrganizerDashboardPage() {
     );
 
     const SkeletonActionCard = () => (
-        <div className="p-6 border rounded-lg bg-card shadow-sm animate-pulse cursor-pointer hover:bg-accent transition-colors">
+        <div className="p-6 border rounded-md bg-card shadow-sm animate-pulse cursor-pointer hover:bg-accent transition-colors">
             <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-muted rounded flex items-center justify-center">
                     <div className="w-6 h-6 bg-muted-foreground/20 rounded"></div>
@@ -354,7 +354,7 @@ export default function OrganizerDashboardPage() {
             </div>
 
             {/* Global Timeline Picker */}
-            <div className="p-4 border rounded-lg bg-card">
+            <div className="p-4 border rounded-md bg-card">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     <div className="flex items-center gap-2">
                         <Filter className="w-4 h-4 text-muted-foreground" />
@@ -473,7 +473,7 @@ export default function OrganizerDashboardPage() {
             {/* Charts */}
             <div className="grid gap-6 md:grid-cols-2">
                 {/* Event Status Distribution */}
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <h3 className="text-lg font-semibold mb-4">Events by Status ({getTimeRangeLabel()})</h3>
                     {statusData.length > 0 ? (
                         <ResponsiveContainer width="100%" height={300}>
@@ -503,7 +503,7 @@ export default function OrganizerDashboardPage() {
                 </div>
 
                 {/* Event Mode Distribution */}
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <h3 className="text-lg font-semibold mb-4">Events by Mode ({getTimeRangeLabel()})</h3>
                     {modeData.length > 0 ? (
                         <ResponsiveContainer width="100%" height={300}>
@@ -535,11 +535,11 @@ export default function OrganizerDashboardPage() {
 
             {/* Recent Events Performance */}
             {statsData.recentEvents && statsData.recentEvents.length > 0 && (
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <h3 className="text-lg font-semibold mb-4">Recent Events Performance ({getTimeRangeLabel()})</h3>
                     <div className="space-y-4">
                         {statsData.recentEvents.map((event: any) => (
-                            <div key={event.id} className="flex items-center justify-between p-4 border rounded-lg">
+                            <div key={event.id} className="flex items-center justify-between p-4 border rounded-md">
                                 <div>
                                     <h4 className="font-semibold">{event.title}</h4>
                                     <p className="text-sm text-muted-foreground">
@@ -574,7 +574,7 @@ interface StatCardProps {
 
 function StatCard({ title, value, icon, href, timeRange }: StatCardProps) {
     const cardContent = (
-        <div className="p-6 border rounded-lg bg-card hover:bg-accent transition-colors">
+        <div className="p-6 border rounded-md bg-card hover:bg-accent transition-colors">
             <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
                 <div className="text-muted-foreground">{icon}</div>
@@ -611,7 +611,7 @@ function DashboardCard({
     return (
         <Link
             href={href}
-            className="block p-6 border rounded-lg hover:bg-accent transition-colors cursor-pointer"
+            className="block p-6 border rounded-md hover:bg-accent transition-colors cursor-pointer"
         >
             <div className="flex items-center gap-3 mb-2">
                 {icon}

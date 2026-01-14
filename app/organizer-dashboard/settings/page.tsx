@@ -147,7 +147,7 @@ export default function SettingsPage() {
 
             <div className="grid gap-6 md:grid-cols-2">
                 {/* Profile Settings */}
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center gap-3 mb-6">
                         <User className="w-5 h-5" />
                         <h2 className="text-xl font-semibold">Profile Information</h2>
@@ -178,7 +178,7 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Security Settings */}
-                <div className="p-6 border rounded-lg bg-card">
+                <div className="p-6 border rounded-md bg-card">
                     <div className="flex items-center gap-3 mb-6">
                         <Lock className="w-5 h-5" />
                         <h2 className="text-xl font-semibold">Security</h2>

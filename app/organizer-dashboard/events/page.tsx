@@ -145,7 +145,7 @@ export default function OrganizerEventsPage() {
                 {/* Event Cards Skeleton */}
                 <div className="grid gap-4">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="p-6 border rounded-lg animate-pulse">
+                        <div key={i} className="p-6 border rounded-md animate-pulse">
                             <div className="flex items-start justify-between">
                                 <div className="flex-1 space-y-4">
                                     <div className="flex items-center gap-3">
@@ -211,7 +211,7 @@ export default function OrganizerEventsPage() {
             </div>
 
             {events.length === 0 ? (
-                <div className="text-center py-12 border rounded-lg">
+                <div className="text-center py-12 border rounded-md">
                     <p className="text-muted-foreground mb-4">You haven't created any events yet</p>
                     <Link href="/organizer-dashboard/events/create">
                         <Button>
@@ -225,14 +225,15 @@ export default function OrganizerEventsPage() {
                     {events.map((event) => (
                         <div
                             key={event.id}
-                            className="p-6 border rounded-lg hover:shadow-md transition-shadow"
+                            className="p-6 border rounded-md hover:shadow-md transition-shadow"
                         >
                             <div className="flex items-start justify-between">
                                 <div className="flex-1">
-                                    <div className="flex items-center gap-3 mb-2">
+                                    <div className="flex items-center gap-4 mb-2">
                                         <h3 className="text-xl font-semibold">{event.title}</h3>
+                                        <div className="flex items-center gap-1">
                                         <span
-                                            className={`px-2 py-1 rounded-full uppercase text-xs font-medium ${
+                                            className={`px-2 py-1 rounded-sm uppercase text-[10px] font-medium ${
                                                 event.status === "published"
                                                     ? "bg-green-500/10 text-green-500"
                                                     : event.status === "draft"
@@ -243,7 +244,7 @@ export default function OrganizerEventsPage() {
                                             {event.status}
                                         </span>
                                         <span
-                                            className={`px-2 py-1 rounded-full uppercase text-xs font-medium ${
+                                            className={`px-2 py-1 rounded-sm uppercase text-[10px] font-medium ${
                                                 event.isFree
                                                     ? "bg-blue-500/10 text-blue-500"
                                                     : "bg-purple-500/10 text-purple-500"
@@ -251,6 +252,7 @@ export default function OrganizerEventsPage() {
                                         >
                                             {event.isFree ? "Free" : "Paid"}
                                         </span>
+                                        </div>
                                     </div>
 
                                     <p className="text-muted-foreground mb-4 line-clamp-2">
@@ -350,7 +352,7 @@ export default function OrganizerEventsPage() {
                         setSelectedPaymentMethods([]);
                         setActiveTab('bank');
                     }}></div>
-                    <div className="relative bg-background border rounded-lg p-6 w-full max-w-2xl mx-4 shadow-lg max-h-[90vh] overflow-y-auto">
+                    <div className="relative bg-background border rounded-md p-6 w-full max-w-2xl mx-4 shadow-lg max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-xl font-semibold">
                                 {selectedEvent?.status === "draft" ? "Setup Payment Method" : "Manage Payment Methods"}
@@ -423,7 +425,7 @@ export default function OrganizerEventsPage() {
                             <div className="space-y-3 min-h-[200px]">
                                 {activeTab === 'bank' && (
                                     <div className="space-y-4">
-                                        <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
+                                        <label className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:bg-muted/50">
                                             <input 
                                                 type="checkbox" 
                                                 checked={selectedPaymentMethods.includes('bank_transfer')}
@@ -443,7 +445,7 @@ export default function OrganizerEventsPage() {
                                         </label>
                                         
                                         {selectedPaymentMethods.includes('bank_transfer') && (
-                                            <div className="ml-7 space-y-3 p-4 border rounded-lg bg-muted/20">
+                                            <div className="ml-7 space-y-3 p-4 border rounded-md bg-muted/20">
                                                 <FormSelect
                                                     label="Bank"
                                                     value={paymentDetails.bank.bankName}
@@ -493,7 +495,7 @@ export default function OrganizerEventsPage() {
 
                                 {activeTab === 'ewallet' && (
                                     <div className="space-y-4">
-                                        <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
+                                        <label className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:bg-muted/50">
                                             <input 
                                                 type="checkbox" 
                                                 checked={selectedPaymentMethods.includes('gcash')}
@@ -513,7 +515,7 @@ export default function OrganizerEventsPage() {
                                         </label>
                                         
                                         {selectedPaymentMethods.includes('gcash') && (
-                                            <div className="ml-7 space-y-3 p-4 border rounded-lg bg-muted/20">
+                                            <div className="ml-7 space-y-3 p-4 border rounded-md bg-muted/20">
                                                 <FormInput
                                                     label="GCash Name"
                                                     value={paymentDetails.gcash.name}
@@ -537,7 +539,7 @@ export default function OrganizerEventsPage() {
                                             </div>
                                         )}
                                         
-                                        <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
+                                        <label className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:bg-muted/50">
                                             <input 
                                                 type="checkbox" 
                                                 checked={selectedPaymentMethods.includes('grab_pay')}
@@ -557,7 +559,7 @@ export default function OrganizerEventsPage() {
                                         </label>
                                         
                                         {selectedPaymentMethods.includes('grab_pay') && (
-                                            <div className="ml-7 space-y-3 p-4 border rounded-lg bg-muted/20">
+                                            <div className="ml-7 space-y-3 p-4 border rounded-md bg-muted/20">
                                                 <FormInput
                                                     label="GrabPay Name"
                                                     value={paymentDetails.grabpay.name}
@@ -581,7 +583,7 @@ export default function OrganizerEventsPage() {
                                             </div>
                                         )}
                                         
-                                        <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
+                                        <label className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:bg-muted/50">
                                             <input 
                                                 type="checkbox" 
                                                 checked={selectedPaymentMethods.includes('paymaya')}
@@ -601,7 +603,7 @@ export default function OrganizerEventsPage() {
                                         </label>
                                         
                                         {selectedPaymentMethods.includes('paymaya') && (
-                                            <div className="ml-7 space-y-3 p-4 border rounded-lg bg-muted/20">
+                                            <div className="ml-7 space-y-3 p-4 border rounded-md bg-muted/20">
                                                 <FormInput
                                                     label="PayMaya Name"
                                                     value={paymentDetails.paymaya.name}
@@ -629,7 +631,7 @@ export default function OrganizerEventsPage() {
 
                                 {activeTab === 'qr' && (
                                     <div className="space-y-4">
-                                        <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
+                                        <label className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:bg-muted/50">
                                             <input 
                                                 type="checkbox" 
                                                 checked={selectedPaymentMethods.includes('qr_ph') || selectedPaymentMethods.includes('qr_gcash') || selectedPaymentMethods.includes('qr_paymaya')}
@@ -654,7 +656,7 @@ export default function OrganizerEventsPage() {
                                         </label>
                                         
                                         {(selectedPaymentMethods.includes('qr_ph') || selectedPaymentMethods.includes('qr_gcash') || selectedPaymentMethods.includes('qr_paymaya')) && (
-                                            <div className="ml-7 space-y-3 p-4 border rounded-lg bg-muted/20">
+                                            <div className="ml-7 space-y-3 p-4 border rounded-md bg-muted/20">
                                                 <div className="space-y-2">
                                                     <label className="text-sm font-medium">QR Code Image</label>
                                                     <div className="flex items-center gap-4">
@@ -704,7 +706,7 @@ export default function OrganizerEventsPage() {
                                                         />
                                                         <label
                                                             htmlFor="qr-upload"
-                                                            className="flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer hover:bg-muted/50"
+                                                            className="flex items-center gap-2 px-4 py-2 border rounded-md cursor-pointer hover:bg-muted/50"
                                                         >
                                                             <Upload className="w-4 h-4" />
                                                             <span className="text-sm">Upload QR Code</span>

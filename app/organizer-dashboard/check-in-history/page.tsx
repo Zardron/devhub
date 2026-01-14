@@ -46,7 +46,7 @@ export default function CheckInHistoryPage() {
                 {/* Check-in History Cards Skeleton */}
                 <div className="space-y-4">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="p-6 border rounded-lg bg-card animate-pulse">
+                        <div key={i} className="p-6 border rounded-md bg-card animate-pulse">
                             <div className="flex items-start justify-between">
                                 <div className="flex-1 space-y-3">
                                     <div className="flex items-center gap-3">
@@ -105,7 +105,7 @@ export default function CheckInHistoryPage() {
             </div>
 
             {checkInHistory.length === 0 ? (
-                <div className="p-12 text-center border rounded-lg bg-card">
+                <div className="p-12 text-center border rounded-md bg-card">
                     <CheckCircle className="w-16 h-16 mx-auto text-muted-foreground/20 mb-4" />
                     <p className="text-muted-foreground">No check-ins found</p>
                 </div>
@@ -114,7 +114,7 @@ export default function CheckInHistoryPage() {
                     {checkInHistory.map((checkIn: any) => (
                         <div
                             key={checkIn.id}
-                            className="p-6 border rounded-lg bg-card"
+                            className="p-6 border rounded-md bg-card"
                         >
                             <div className="flex items-start justify-between">
                                 <div className="flex-1">

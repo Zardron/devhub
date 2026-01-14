@@ -69,7 +69,7 @@ export default function CommunicatePage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="p-6 border rounded-lg bg-card space-y-4">
+                <div className="p-6 border rounded-md bg-card space-y-4">
                     <FormSelect
                         label="Select Event"
                         value={selectedEventId}
@@ -112,7 +112,7 @@ export default function CommunicatePage() {
                         <textarea
                             value={formData.message}
                             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                            className="w-full min-h-[200px] p-3 border rounded-lg resize-y"
+                            className="w-full min-h-[200px] p-3 border rounded-md resize-y"
                             placeholder="Enter your message here. You can use placeholders: {name}, {event}, {date}, {time}, {location}"
                             required
                         />

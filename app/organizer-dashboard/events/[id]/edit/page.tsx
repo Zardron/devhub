@@ -294,7 +294,7 @@ export default function EditEventPage() {
                 />
 
                 {/* Pricing Section */}
-                <div className="p-4 border rounded-lg space-y-4">
+                <div className="p-4 border rounded-md space-y-4">
                     <div className="flex items-center gap-2">
                         <input
                             type="checkbox"
@@ -320,7 +320,7 @@ export default function EditEventPage() {
                 </div>
 
                 {/* Capacity Section */}
-                <div className="p-4 border rounded-lg space-y-4">
+                <div className="p-4 border rounded-md space-y-4">
                     <FormInput
                         label="Capacity (leave empty for unlimited)"
                         type="number"
@@ -449,7 +449,7 @@ export default function EditEventPage() {
                                 className="w-full"
                             />
                             {imagePreview && (
-                                <img src={imagePreview} alt="Preview" className="mt-4 max-w-md rounded-lg" />
+                                <img src={imagePreview} alt="Preview" className="mt-4 max-w-md rounded-md" />
                             )}
                         </div>
                     ) : (

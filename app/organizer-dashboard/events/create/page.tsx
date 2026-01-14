@@ -390,7 +390,7 @@ export default function CreateEventPage() {
                 />
 
                 {/* Pricing Section */}
-                <div className="p-4 border rounded-lg space-y-4">
+                <div className="p-4 border rounded-md space-y-4">
                     <div className="flex items-center gap-2">
                         <input
                             type="checkbox"
@@ -417,7 +417,7 @@ export default function CreateEventPage() {
                 </div>
 
                 {/* Capacity Section */}
-                <div className="p-4 border rounded-lg space-y-4">
+                <div className="p-4 border rounded-md space-y-4">
                     <FormInput
                         label="Capacity (leave empty for unlimited)"
                         type="number"
@@ -548,7 +548,7 @@ export default function CreateEventPage() {
                                 className="w-full"
                             />
                             {imagePreview && (
-                                <img src={imagePreview} alt="Preview" className="mt-4 max-w-md rounded-lg" />
+                                <img src={imagePreview} alt="Preview" className="mt-4 max-w-md rounded-md" />
                             )}
                         </div>
                     ) : (
@@ -583,7 +583,7 @@ export default function CreateEventPage() {
 
                 {/* Guidelines Section */}
                 <div className="lg:col-span-1">
-                    <div className="border rounded-lg bg-card shadow-sm sticky top-4">
+                    <div className="border rounded-md bg-card shadow-sm sticky top-4">
                         <div className="p-6 border-b">
                             <h2 className="text-lg font-semibold">Event Guidelines</h2>
                             <p className="text-sm text-muted-foreground mt-1">
