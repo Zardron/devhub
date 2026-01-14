@@ -63,9 +63,9 @@ export default function ContactPage() {
                 {/* Contact Information */}
                 <AnimateOnScroll variant="fade" delay={100}>
                     <div className="space-y-6">
-                        <div className="glass p-6 rounded-xl border border-blue/10 hover:border-blue/30 transition-all duration-300">
+                        <div className="glass p-6 rounded-md border border-blue/10 hover:border-blue/30 transition-all duration-300">
                             <div className="flex items-center gap-4 mb-4">
-                                <div className="w-12 h-12 rounded-lg bg-blue/10 flex items-center justify-center">
+                                <div className="w-12 h-12 rounded-md bg-blue/10 flex items-center justify-center">
                                     <Image src="/icons/pin.svg" alt="Location" width={24} height={24} />
                                 </div>
                                 <div>
@@ -78,9 +78,9 @@ export default function ContactPage() {
                             </p>
                         </div>
 
-                        <div className="glass p-6 rounded-xl border border-blue/10 hover:border-blue/30 transition-all duration-300">
+                        <div className="glass p-6 rounded-md border border-blue/10 hover:border-blue/30 transition-all duration-300">
                             <div className="flex items-center gap-4 mb-4">
-                                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center">
                                     <Image src="/icons/clock.svg" alt="Response Time" width={24} height={24} />
                                 </div>
                                 <div>
@@ -93,9 +93,9 @@ export default function ContactPage() {
                             </p>
                         </div>
 
-                        <div className="glass p-6 rounded-xl border border-blue/10 hover:border-blue/30 transition-all duration-300">
+                        <div className="glass p-6 rounded-md border border-blue/10 hover:border-blue/30 transition-all duration-300">
                             <div className="flex items-center gap-4 mb-4">
-                                <div className="w-12 h-12 rounded-lg bg-blue/10 flex items-center justify-center">
+                                <div className="w-12 h-12 rounded-md bg-blue/10 flex items-center justify-center">
                                     <Image src="/icons/audience.svg" alt="Support" width={24} height={24} />
                                 </div>
                                 <div>
@@ -112,7 +112,7 @@ export default function ContactPage() {
 
                 {/* Contact Form */}
                 <AnimateOnScroll variant="fade" delay={200} className="lg:col-span-2">
-                    <div className="glass p-8 rounded-2xl border border-blue/20">
+                    <div className="glass p-8 rounded-md border border-blue/20">
                         <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             Send us a Message
@@ -130,7 +130,7 @@ export default function ContactPage() {
                                         value={formData.name}
                                         onChange={handleChange}
                                         required
-                                        className="w-full bg-dark-200/80 backdrop-blur-sm rounded-lg px-4 py-3 text-foreground placeholder:text-light-200 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 focus:ring-offset-background border border-border-dark/50 hover:border-blue/30 transition-all"
+                                        className="w-full bg-dark-200/80 backdrop-blur-sm rounded-md px-4 py-3 text-foreground placeholder:text-light-200 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 focus:ring-offset-background border border-border-dark/50 hover:border-blue/30 transition-all"
                                         placeholder="Your name"
                                     />
                                 </div>
@@ -145,7 +145,7 @@ export default function ContactPage() {
                                         value={formData.email}
                                         onChange={handleChange}
                                         required
-                                        className="w-full bg-dark-200/80 backdrop-blur-sm rounded-lg px-4 py-3 text-foreground placeholder:text-light-200 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 focus:ring-offset-background border border-border-dark/50 hover:border-blue/30 transition-all"
+                                        className="w-full bg-dark-200/80 backdrop-blur-sm rounded-md px-4 py-3 text-foreground placeholder:text-light-200 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 focus:ring-offset-background border border-border-dark/50 hover:border-blue/30 transition-all"
                                         placeholder="your.email@example.com"
                                     />
                                 </div>
@@ -160,7 +160,7 @@ export default function ContactPage() {
                                     value={formData.subject}
                                     onChange={handleChange}
                                     required
-                                    className="w-full bg-dark-200/80 backdrop-blur-sm rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 focus:ring-offset-background border border-border-dark/50 hover:border-blue/30 transition-all"
+                                    className="w-full bg-dark-200/80 backdrop-blur-sm rounded-md px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 focus:ring-offset-background border border-border-dark/50 hover:border-blue/30 transition-all"
                                 >
                                     <option value="">Select a subject</option>
                                     <option value="general">General Inquiry</option>
@@ -181,19 +181,19 @@ export default function ContactPage() {
                                     onChange={handleChange}
                                     required
                                     rows={6}
-                                    className="w-full bg-dark-200/80 backdrop-blur-sm rounded-lg px-4 py-3 text-foreground placeholder:text-light-200 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 focus:ring-offset-background border border-border-dark/50 hover:border-blue/30 transition-all resize-none"
+                                    className="w-full bg-dark-200/80 backdrop-blur-sm rounded-md px-4 py-3 text-foreground placeholder:text-light-200 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 focus:ring-offset-background border border-border-dark/50 hover:border-blue/30 transition-all resize-none"
                                     placeholder="Tell us how we can help..."
                                 />
                             </div>
                             {submitMessage && (
-                                <div className={`p-4 rounded-lg ${submitMessage.type === 'success' ? 'bg-primary/10 border border-primary/30 text-primary' : 'bg-red-500/10 border border-red-500/30 text-red-400'}`}>
+                                <div className={`p-4 rounded-md ${submitMessage.type === 'success' ? 'bg-primary/10 border border-primary/30 text-primary' : 'bg-red-500/10 border border-red-500/30 text-red-400'}`}>
                                     <p className="text-sm font-medium">{submitMessage.text}</p>
                                 </div>
                             )}
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="w-full bg-primary hover:bg-primary/90 rounded-lg px-8 py-4 text-lg font-semibold text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/50"
+                                className="w-full bg-primary hover:bg-primary/90 rounded-md px-8 py-4 text-lg font-semibold text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/50"
                             >
                                 {isSubmitting ? 'Sending...' : 'Send Message'}
                             </button>
@@ -207,25 +207,25 @@ export default function ContactPage() {
                 <div className="mt-16">
                     <h2 className="text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="glass p-6 rounded-xl border border-blue/10 hover:border-blue/30 transition-all duration-300">
+                        <div className="glass p-6 rounded-md border border-blue/10 hover:border-blue/30 transition-all duration-300">
                             <h3 className="text-lg font-semibold mb-2">How do I report a problem with an event?</h3>
                             <p className="text-light-200 text-sm leading-relaxed">
                                 Use the contact form above and select "Technical Support" as the subject. Include the event name and details about the issue.
                             </p>
                         </div>
-                        <div className="glass p-6 rounded-xl border border-blue/10 hover:border-blue/30 transition-all duration-300">
+                        <div className="glass p-6 rounded-md border border-blue/10 hover:border-blue/30 transition-all duration-300">
                             <h3 className="text-lg font-semibold mb-2">Can I list my event on TechEventX?</h3>
                             <p className="text-light-200 text-sm leading-relaxed">
                                 Yes! We welcome event organizers. Select "Partnership Opportunity" in the contact form and we'll guide you through the process.
                             </p>
                         </div>
-                        <div className="glass p-6 rounded-xl border border-blue/10 hover:border-blue/30 transition-all duration-300">
+                        <div className="glass p-6 rounded-md border border-blue/10 hover:border-blue/30 transition-all duration-300">
                             <h3 className="text-lg font-semibold mb-2">How can I unsubscribe from emails?</h3>
                             <p className="text-light-200 text-sm leading-relaxed">
                                 You can manage your email preferences in your account settings or use the unsubscribe link in any newsletter email.
                             </p>
                         </div>
-                        <div className="glass p-6 rounded-xl border border-blue/10 hover:border-blue/30 transition-all duration-300">
+                        <div className="glass p-6 rounded-md border border-blue/10 hover:border-blue/30 transition-all duration-300">
                             <h3 className="text-lg font-semibold mb-2">Do you have a mobile app?</h3>
                             <p className="text-light-200 text-sm leading-relaxed">
                                 TechEventX is fully responsive and works great on mobile browsers. We're working on native apps for iOS and Android.

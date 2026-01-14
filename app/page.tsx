@@ -133,42 +133,42 @@ const Page = () => {
         <div className="my-20 space-y-12">
           <h2 className="text-3xl font-bold text-center">Why Choose TechEventX?</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            <AnimateOnScroll delay={0} variant="slide" className="glass p-6 rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300">
+            <AnimateOnScroll delay={0} variant="slide" className="glass p-6 rounded-md hover:scale-105 hover:shadow-lg transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <Image src="/icons/calendar.svg" alt="Calendar" width={32} height={32} className="animate-pulse" />
                 <h3 className="text-xl font-semibold">Easy Discovery</h3>
               </div>
               <p className="text-light-200">Find events that match your interests, skills, and schedule. Filter by location, date, and type.</p>
             </AnimateOnScroll>
-            <AnimateOnScroll delay={100} variant="slide" className="glass p-6 rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300">
+            <AnimateOnScroll delay={100} variant="slide" className="glass p-6 rounded-md hover:scale-105 hover:shadow-lg transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <Image src="/icons/mode.svg" alt="Mode" width={32} height={32} className="animate-pulse" />
                 <h3 className="text-xl font-semibold">Multiple Formats</h3>
               </div>
               <p className="text-light-200">Join online, offline, or hybrid events. Attend from anywhere or connect in person.</p>
             </AnimateOnScroll>
-            <AnimateOnScroll delay={200} variant="slide" className="glass p-6 rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300">
+            <AnimateOnScroll delay={200} variant="slide" className="glass p-6 rounded-md hover:scale-105 hover:shadow-lg transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <Image src="/icons/audience.svg" alt="Audience" width={32} height={32} className="animate-pulse" />
                 <h3 className="text-xl font-semibold">Community Driven</h3>
               </div>
               <p className="text-light-200">Connect with like-minded developers, share knowledge, and grow your network.</p>
             </AnimateOnScroll>
-            <AnimateOnScroll delay={300} variant="slide" className="glass p-6 rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300">
+            <AnimateOnScroll delay={300} variant="slide" className="glass p-6 rounded-md hover:scale-105 hover:shadow-lg transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <Image src="/icons/clock.svg" alt="Clock" width={32} height={32} className="animate-pulse" />
                 <h3 className="text-xl font-semibold">Stay Updated</h3>
               </div>
               <p className="text-light-200">Get notified about new events, schedule changes, and important updates.</p>
             </AnimateOnScroll>
-            <AnimateOnScroll delay={400} variant="slide" className="glass p-6 rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300">
+            <AnimateOnScroll delay={400} variant="slide" className="glass p-6 rounded-md hover:scale-105 hover:shadow-lg transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <Image src="/icons/pin.svg" alt="Location" width={32} height={32} className="animate-pulse" />
                 <h3 className="text-xl font-semibold">Global Reach</h3>
               </div>
               <p className="text-light-200">Events from around the world. Find local meetups or international conferences.</p>
             </AnimateOnScroll>
-            <AnimateOnScroll delay={500} variant="slide" className="glass p-6 rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300">
+            <AnimateOnScroll delay={500} variant="slide" className="glass p-6 rounded-md hover:scale-105 hover:shadow-lg transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 bg-blue rounded-full flex items-center justify-center">
                   <span className="text-white dark:text-foreground font-bold">✓</span>
@@ -177,14 +177,14 @@ const Page = () => {
               </div>
               <p className="text-light-200">Simple and fast event registration. Book your spot in seconds with secure payment processing.</p>
             </AnimateOnScroll>
-            <AnimateOnScroll delay={600} variant="slide" className="glass p-6 rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300">
+            <AnimateOnScroll delay={600} variant="slide" className="glass p-6 rounded-md hover:scale-105 hover:shadow-lg transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <Shield className="w-8 h-8 text-green-500" />
                 <h3 className="text-xl font-semibold">Secure Payments</h3>
               </div>
               <p className="text-light-200">Safe and secure payment processing for paid events. Your transactions are protected.</p>
             </AnimateOnScroll>
-            <AnimateOnScroll delay={700} variant="slide" className="glass p-6 rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300">
+            <AnimateOnScroll delay={700} variant="slide" className="glass p-6 rounded-md hover:scale-105 hover:shadow-lg transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <Zap className="w-8 h-8 text-yellow-500" />
                 <h3 className="text-xl font-semibold">Instant Tickets</h3>
@@ -251,7 +251,7 @@ const Page = () => {
                   key={plan.id}
                   delay={index * 100}
                   variant="slide"
-                  className={`glass p-6 rounded-xl hover:scale-105 hover:shadow-lg transition-all duration-300 border-2 ${
+                  className={`glass p-6 rounded-md hover:scale-105 hover:shadow-lg transition-all duration-300 border-2 ${
                     plan.isPopular
                       ? "border-blue/50 bg-gradient-to-b from-blue/10 to-transparent relative"
                       : "border-blue/20"
@@ -380,9 +380,9 @@ const Page = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <AnimateOnScroll delay={0} variant="slide" className="glass p-6 rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300 border border-blue/20">
+            <AnimateOnScroll delay={0} variant="slide" className="glass p-6 rounded-md hover:scale-105 hover:shadow-lg transition-all duration-300 border border-blue/20">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-blue/20 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-blue/20 rounded-md flex items-center justify-center">
                   <Calendar className="w-6 h-6 text-blue" />
                 </div>
                 <h3 className="text-lg font-semibold">Event Management</h3>
@@ -390,9 +390,9 @@ const Page = () => {
               <p className="text-light-200 text-sm">Create and manage unlimited events with our powerful dashboard.</p>
             </AnimateOnScroll>
 
-            <AnimateOnScroll delay={100} variant="slide" className="glass p-6 rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300 border border-blue/20">
+            <AnimateOnScroll delay={100} variant="slide" className="glass p-6 rounded-md hover:scale-105 hover:shadow-lg transition-all duration-300 border border-blue/20">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-primary/20 rounded-md flex items-center justify-center">
                   <CreditCard className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold">Monetize Events</h3>
@@ -400,9 +400,9 @@ const Page = () => {
               <p className="text-light-200 text-sm">Accept payments, set ticket prices, and track revenue seamlessly.</p>
             </AnimateOnScroll>
 
-            <AnimateOnScroll delay={200} variant="slide" className="glass p-6 rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300 border border-blue/20">
+            <AnimateOnScroll delay={200} variant="slide" className="glass p-6 rounded-md hover:scale-105 hover:shadow-lg transition-all duration-300 border border-blue/20">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-green-500/20 rounded-md flex items-center justify-center">
                   <BarChart3 className="w-6 h-6 text-green-500" />
                 </div>
                 <h3 className="text-lg font-semibold">Analytics & Insights</h3>
@@ -410,9 +410,9 @@ const Page = () => {
               <p className="text-light-200 text-sm">Track bookings, revenue, and attendee engagement in real-time.</p>
             </AnimateOnScroll>
 
-            <AnimateOnScroll delay={300} variant="slide" className="glass p-6 rounded-lg hover:scale-105 hover:shadow-lg transition-all duration-300 border border-blue/20">
+            <AnimateOnScroll delay={300} variant="slide" className="glass p-6 rounded-md hover:scale-105 hover:shadow-lg transition-all duration-300 border border-blue/20">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-purple-500/20 rounded-md flex items-center justify-center">
                   <Ticket className="w-6 h-6 text-purple-500" />
                 </div>
                 <h3 className="text-lg font-semibold">Ticket System</h3>
@@ -440,7 +440,7 @@ const Page = () => {
 
       {/* CTA Section */}
       <AnimateOnScroll variant="glow">
-        <div className="my-10 glass p-12 rounded-lg text-center hover:scale-[1.02] transition-transform duration-300">
+        <div className="my-10 glass p-12 rounded-md text-center hover:scale-[1.02] transition-transform duration-300">
           <h2 className="text-3xl font-bold mb-4">Ready to Explore?</h2>
           <p className="text-light-200 mb-8 max-w-2xl mx-auto">
             Join thousands of developers discovering and attending amazing events. Start your journey today and unlock endless opportunities to learn, network, and grow your career.

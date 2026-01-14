@@ -63,7 +63,7 @@ export default function AppealBanPage() {
             {/* Back to Sign In Link - Upper Left */}
             <Link
                 href="/sign-in"
-                className="fixed top-6 left-6 z-50 flex items-center gap-2 text-light-200 hover:text-primary transition-all duration-200 group px-4 py-2 rounded-lg hover:bg-dark-100/30 backdrop-blur-sm"
+                className="fixed top-6 left-6 z-50 flex items-center gap-2 text-light-200 hover:text-primary transition-all duration-200 group px-4 py-2 rounded-md hover:bg-dark-100/30 backdrop-blur-sm"
             >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
                 <span className="text-sm font-medium">Back to Sign In</span>
@@ -77,12 +77,12 @@ export default function AppealBanPage() {
             </div>
 
             {/* Main Glassmorphism Container */}
-            <div className="w-full max-w-2xl mx-auto my-auto bg-dark-100/40 backdrop-blur-2xl border border-red-500/20 rounded-2xl shadow-2xl overflow-hidden relative z-10 animate-scale-in">
+            <div className="w-full max-w-2xl mx-auto my-auto bg-dark-100/40 backdrop-blur-2xl border border-red-500/20 rounded-md shadow-2xl overflow-hidden relative z-10 animate-scale-in">
                 {/* Subtle inner glow with red accent */}
                 <div className="absolute inset-0 bg-linear-to-br from-red-500/5 via-primary/5 to-blue/5 pointer-events-none" />
 
                 {/* Animated border glow */}
-                <div className="absolute inset-0 rounded-2xl bg-linear-to-r from-red-500/20 via-transparent to-primary/20 opacity-50 blur-xl pointer-events-none animate-pulse" />
+                <div className="absolute inset-0 rounded-md bg-linear-to-r from-red-500/20 via-transparent to-primary/20 opacity-50 blur-xl pointer-events-none animate-pulse" />
 
                 <div className="relative z-10 p-6 sm:p-8">
                     <AnimateOnScroll variant="fade">
@@ -104,7 +104,7 @@ export default function AppealBanPage() {
                         </div>
 
                         {/* Appeal Form */}
-                        <div className="bg-dark-200/60 backdrop-blur-xl border border-red-500/20 rounded-xl shadow-lg px-5 py-5 relative overflow-hidden">
+                        <div className="bg-dark-200/60 backdrop-blur-xl border border-red-500/20 rounded-md shadow-lg px-5 py-5 relative overflow-hidden">
                             {/* Subtle glow effect inside card */}
                             <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                             <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
@@ -128,7 +128,7 @@ export default function AppealBanPage() {
                                             value={formData.email}
                                             onChange={handleChange}
                                             required
-                                            className="bg-dark-100/80 backdrop-blur-sm rounded-lg px-4 py-3 pl-11 w-full text-sm text-foreground placeholder:text-light-200/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 border border-border-dark/50 transition-all duration-300 hover:border-primary/40"
+                                            className="bg-dark-100/80 backdrop-blur-sm rounded-md px-4 py-3 pl-11 w-full text-sm text-foreground placeholder:text-light-200/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 border border-border-dark/50 transition-all duration-300 hover:border-primary/40"
                                         />
                                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-light-200/40 pointer-events-none" />
                                     </div>
@@ -152,11 +152,11 @@ export default function AppealBanPage() {
                                             onChange={handleChange}
                                             required
                                             rows={5}
-                                            className="bg-dark-100/80 backdrop-blur-sm rounded-lg px-4 py-2.5 pl-11 w-full text-sm text-foreground placeholder:text-light-200/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 border border-border-dark/50 transition-all duration-300 hover:border-primary/40 resize-none leading-relaxed"
+                                            className="bg-dark-100/80 backdrop-blur-sm rounded-md px-4 py-2.5 pl-11 w-full text-sm text-foreground placeholder:text-light-200/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 border border-border-dark/50 transition-all duration-300 hover:border-primary/40 resize-none leading-relaxed"
                                         />
                                         <FileText className="absolute left-3 top-3 w-4 h-4 text-light-200/40 pointer-events-none" />
                                     </div>
-                                    <div className="flex items-start gap-2 p-2.5 bg-primary/5 border border-primary/10 rounded-lg">
+                                    <div className="flex items-start gap-2 p-2.5 bg-primary/5 border border-primary/10 rounded-md">
                                         <MessageSquare className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
                                         <p className="text-light-200/70 text-xs leading-relaxed">
                                             Please provide a detailed explanation. This will help us review your case more effectively.
@@ -166,7 +166,7 @@ export default function AppealBanPage() {
 
                                 {/* Messages */}
                                 {submitMessage && (
-                                    <div className={`relative p-3 rounded-lg border backdrop-blur-sm overflow-hidden ${submitMessage.type === 'success'
+                                    <div className={`relative p-3 rounded-md border backdrop-blur-sm overflow-hidden ${submitMessage.type === 'success'
                                         ? 'bg-green-500/10 border-green-500/50 text-green-400'
                                         : 'bg-red-500/10 border-red-500/50 text-red-400'
                                         }`}>
@@ -187,7 +187,7 @@ export default function AppealBanPage() {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="group relative w-full bg-linear-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary cursor-pointer items-center justify-center rounded-lg px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden"
+                                    className="group relative w-full bg-linear-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary cursor-pointer items-center justify-center rounded-md px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden"
                                 >
                                     <span className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                                     <span className="relative flex items-center justify-center gap-2">
@@ -209,7 +209,7 @@ export default function AppealBanPage() {
 
                         {/* Additional Information */}
                         <div className="mt-5 text-center">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-dark-200/30 backdrop-blur-sm border border-blue/10 rounded-lg">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-dark-200/30 backdrop-blur-sm border border-blue/10 rounded-md">
                                 <p className="text-light-200 text-xs">
                                     Need additional help?{" "}
                                     <Link

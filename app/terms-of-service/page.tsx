@@ -36,7 +36,7 @@ export default function TermsOfServicePage() {
             {/* Content */}
             <div className="max-w-4xl mx-auto space-y-8">
                 <AnimateOnScroll variant="fade" delay={100}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             1. Acceptance of Terms
@@ -48,7 +48,7 @@ export default function TermsOfServicePage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={200}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             2. Description of Service
@@ -68,7 +68,7 @@ export default function TermsOfServicePage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={300}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             3. User Accounts
@@ -91,7 +91,7 @@ export default function TermsOfServicePage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={400}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             4. Event Bookings and Cancellations
@@ -114,7 +114,7 @@ export default function TermsOfServicePage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={500}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             5. User Conduct
@@ -136,7 +136,7 @@ export default function TermsOfServicePage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={600}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             6. Intellectual Property
@@ -150,7 +150,7 @@ export default function TermsOfServicePage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={700}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             7. Disclaimers and Limitation of Liability
@@ -173,7 +173,7 @@ export default function TermsOfServicePage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={800}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             8. Indemnification
@@ -185,7 +185,7 @@ export default function TermsOfServicePage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={900}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             9. Changes to Terms
@@ -197,7 +197,7 @@ export default function TermsOfServicePage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={1000}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             10. Governing Law
@@ -209,7 +209,7 @@ export default function TermsOfServicePage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={1100}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             11. Contact Information

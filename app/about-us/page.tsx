@@ -32,7 +32,7 @@ export default function AboutUsPage() {
             {/* Mission Section */}
             <AnimateOnScroll variant="fade" delay={100}>
                 <div className="mb-16">
-                    <div className="glass p-10 rounded-2xl border border-blue/20 hover:border-blue/40 transition-all duration-300">
+                    <div className="glass p-10 rounded-md border border-blue/20 hover:border-blue/40 transition-all duration-300">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                             <div>
                                 <h2 className="text-3xl font-bold mb-4 flex items-center gap-3">
@@ -47,7 +47,7 @@ export default function AboutUsPage() {
                                 </p>
                             </div>
                             <div className="flex items-center justify-center">
-                                <div className="w-full max-w-md p-8 rounded-xl bg-dark-200/50 border border-blue/10">
+                                <div className="w-full max-w-md p-8 rounded-md bg-dark-200/50 border border-blue/10">
                                     <div className="grid grid-cols-2 gap-6">
                                         <div className="text-center">
                                             <div className="w-16 h-16 rounded-full bg-blue/10 flex items-center justify-center mx-auto mb-3">
@@ -76,9 +76,9 @@ export default function AboutUsPage() {
                 <div className="mb-16">
                     <h2 className="text-3xl font-bold mb-8 text-center">Our Values</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <AnimateOnScroll delay={0} variant="slide" className="glass p-6 rounded-xl border border-blue/10 hover:border-blue/30 transition-all duration-300 hover:scale-105">
+                        <AnimateOnScroll delay={0} variant="slide" className="glass p-6 rounded-md border border-blue/10 hover:border-blue/30 transition-all duration-300 hover:scale-105">
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="w-12 h-12 rounded-lg bg-blue/10 flex items-center justify-center">
+                                <div className="w-12 h-12 rounded-md bg-blue/10 flex items-center justify-center">
                                     <Image src="/icons/mode.svg" alt="Innovation" width={24} height={24} />
                                 </div>
                                 <h3 className="text-xl font-semibold">Innovation</h3>
@@ -88,9 +88,9 @@ export default function AboutUsPage() {
                             </p>
                         </AnimateOnScroll>
 
-                        <AnimateOnScroll delay={100} variant="slide" className="glass p-6 rounded-xl border border-blue/10 hover:border-blue/30 transition-all duration-300 hover:scale-105">
+                        <AnimateOnScroll delay={100} variant="slide" className="glass p-6 rounded-md border border-blue/10 hover:border-blue/30 transition-all duration-300 hover:scale-105">
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center">
                                     <Image src="/icons/audience.svg" alt="Community" width={24} height={24} />
                                 </div>
                                 <h3 className="text-xl font-semibold">Community</h3>
@@ -100,9 +100,9 @@ export default function AboutUsPage() {
                             </p>
                         </AnimateOnScroll>
 
-                        <AnimateOnScroll delay={200} variant="slide" className="glass p-6 rounded-xl border border-blue/10 hover:border-blue/30 transition-all duration-300 hover:scale-105">
+                        <AnimateOnScroll delay={200} variant="slide" className="glass p-6 rounded-md border border-blue/10 hover:border-blue/30 transition-all duration-300 hover:scale-105">
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="w-12 h-12 rounded-lg bg-blue/10 flex items-center justify-center">
+                                <div className="w-12 h-12 rounded-md bg-blue/10 flex items-center justify-center">
                                     <Image src="/icons/clock.svg" alt="Accessibility" width={24} height={24} />
                                 </div>
                                 <h3 className="text-xl font-semibold">Accessibility</h3>
@@ -118,7 +118,7 @@ export default function AboutUsPage() {
             {/* What We Do Section */}
             <AnimateOnScroll variant="glow" delay={300}>
                 <div className="mb-16">
-                    <div className="glass p-10 rounded-2xl border border-blue/20">
+                    <div className="glass p-10 rounded-md border border-blue/20">
                         <h2 className="text-3xl font-bold mb-8 text-center">What We Do</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-4">
@@ -176,7 +176,7 @@ export default function AboutUsPage() {
 
             {/* CTA Section */}
             <AnimateOnScroll variant="fade" delay={400}>
-                <div className="glass p-12 rounded-2xl border border-blue/20 text-center hover:scale-[1.02] transition-transform duration-300">
+                <div className="glass p-12 rounded-md border border-blue/20 text-center hover:scale-[1.02] transition-transform duration-300">
                     <h2 className="text-3xl font-bold mb-4">Join Our Community</h2>
                     <p className="text-light-100 mb-8 max-w-2xl mx-auto">
                         Be part of a growing community of developers, innovators, and tech enthusiasts. Start discovering events that will shape your career today.

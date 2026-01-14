@@ -97,7 +97,7 @@ export default function PricingPage() {
                                     className="relative h-full"
                                 >
                                     <div
-                                        className={`relative h-full flex flex-col glass rounded-2xl p-8 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-blue/10 ${
+                                        className={`relative h-full flex flex-col glass rounded-md p-8 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-blue/10 ${
                                             isPopular
                                                 ? "border-2 border-blue/50 bg-linear-to-br from-blue/10 via-blue/5 to-transparent"
                                                 : "border border-border-dark/50 hover:border-blue/30"
@@ -255,7 +255,7 @@ export default function PricingPage() {
                                         {/* CTA Button */}
                                         <Link href="/sign-up" className="block mt-auto">
                                             <Button
-                                                className={`w-full py-6 rounded-xl font-semibold transition-all duration-300 ${
+                                                className={`w-full py-6 rounded-md font-semibold transition-all duration-300 ${
                                                     isPopular
                                                         ? "bg-blue hover:bg-blue/90 text-white shadow-lg shadow-blue/20"
                                                         : "bg-dark-100 hover:bg-dark-100/90 text-foreground border border-blue/20 hover:border-blue/40"
@@ -286,25 +286,25 @@ export default function PricingPage() {
                             Frequently Asked Questions
                         </h2>
                         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                            <div className="glass p-6 rounded-xl border border-border-dark/50 hover:border-blue/30 transition-colors">
+                            <div className="glass p-6 rounded-md border border-border-dark/50 hover:border-blue/30 transition-colors">
                                 <h3 className="font-semibold mb-3">Can I change plans later?</h3>
                                 <p className="text-sm text-light-200/80">
                                     Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately.
                                 </p>
                             </div>
-                            <div className="glass p-6 rounded-xl border border-border-dark/50 hover:border-blue/30 transition-colors">
+                            <div className="glass p-6 rounded-md border border-border-dark/50 hover:border-blue/30 transition-colors">
                                 <h3 className="font-semibold mb-3">What payment methods do you accept?</h3>
                                 <p className="text-sm text-light-200/80">
                                     We accept all major credit cards through Stripe. Secure and encrypted payments.
                                 </p>
                             </div>
-                            <div className="glass p-6 rounded-xl border border-border-dark/50 hover:border-blue/30 transition-colors">
+                            <div className="glass p-6 rounded-md border border-border-dark/50 hover:border-blue/30 transition-colors">
                                 <h3 className="font-semibold mb-3">Is there a setup fee?</h3>
                                 <p className="text-sm text-light-200/80">
                                     No setup fees. Just choose your plan and start creating events immediately.
                                 </p>
                             </div>
-                            <div className="glass p-6 rounded-xl border border-border-dark/50 hover:border-blue/30 transition-colors">
+                            <div className="glass p-6 rounded-md border border-border-dark/50 hover:border-blue/30 transition-colors">
                                 <h3 className="font-semibold mb-3">Can I cancel anytime?</h3>
                                 <p className="text-sm text-light-200/80">
                                     Yes, you can cancel your subscription at any time. No long-term commitments.
@@ -316,13 +316,13 @@ export default function PricingPage() {
 
                 {/* CTA Section */}
                 <AnimateOnScroll variant="glow">
-                    <div className="mt-20 glass p-12 rounded-2xl text-center border border-border-dark/50">
+                    <div className="mt-20 glass p-12 rounded-md text-center border border-border-dark/50">
                         <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
                         <p className="text-light-200 mb-8 max-w-2xl mx-auto text-lg">
                             Join thousands of event organizers using TechEventX to manage their events.
                         </p>
                         <Link href="/sign-up">
-                            <Button className="bg-linear-to-r from-blue to-primary hover:from-blue/90 hover:to-primary/90 text-white px-8 py-6 rounded-xl text-base font-semibold hover:scale-105 transition-all duration-300 shadow-lg shadow-blue/20">
+                            <Button className="bg-linear-to-r from-blue to-primary hover:from-blue/90 hover:to-primary/90 text-white px-8 py-6 rounded-md text-base font-semibold hover:scale-105 transition-all duration-300 shadow-lg shadow-blue/20">
                                 Start Your Free Trial
                             </Button>
                         </Link>

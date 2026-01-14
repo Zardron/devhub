@@ -36,7 +36,7 @@ export default function PrivacyPolicyPage() {
             {/* Content */}
             <div className="max-w-4xl mx-auto space-y-8">
                 <AnimateOnScroll variant="fade" delay={100}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             1. Information We Collect
@@ -59,7 +59,7 @@ export default function PrivacyPolicyPage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={200}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             2. How We Use Your Information
@@ -80,7 +80,7 @@ export default function PrivacyPolicyPage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={300}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             3. Information Sharing and Disclosure
@@ -104,7 +104,7 @@ export default function PrivacyPolicyPage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={400}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             4. Data Security
@@ -123,7 +123,7 @@ export default function PrivacyPolicyPage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={500}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             5. Your Rights and Choices
@@ -143,7 +143,7 @@ export default function PrivacyPolicyPage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={600}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             6. Children's Privacy
@@ -155,7 +155,7 @@ export default function PrivacyPolicyPage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={700}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             7. Changes to This Policy
@@ -167,7 +167,7 @@ export default function PrivacyPolicyPage() {
                 </AnimateOnScroll>
 
                 <AnimateOnScroll variant="fade" delay={800}>
-                    <div className="glass p-8 rounded-xl border border-blue/10">
+                    <div className="glass p-8 rounded-md border border-blue/10">
                         <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
                             <span className="w-1 h-6 bg-linear-to-b from-blue to-primary rounded-full" />
                             8. Contact Us

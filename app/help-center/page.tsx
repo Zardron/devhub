@@ -139,7 +139,7 @@ export default function HelpCenterPage() {
             {/* Search Bar */}
             <AnimateOnScroll variant="fade" delay={100}>
                 <div className="mb-12">
-                    <div className="glass p-6 rounded-2xl border border-blue/20 max-w-3xl mx-auto">
+                    <div className="glass p-6 rounded-md border border-blue/20 max-w-3xl mx-auto">
                         <div className="flex items-center gap-4 mb-4">
                             <div className="flex-1 relative">
                                 <input
@@ -147,7 +147,7 @@ export default function HelpCenterPage() {
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="Search for help..."
-                                    className="w-full bg-dark-200/80 backdrop-blur-sm rounded-lg px-4 py-3 pl-10 text-foreground placeholder:text-light-200 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 focus:ring-offset-background border border-border-dark/50 hover:border-blue/30 transition-all"
+                                    className="w-full bg-dark-200/80 backdrop-blur-sm rounded-md px-4 py-3 pl-10 text-foreground placeholder:text-light-200 focus:outline-none focus:ring-2 focus:ring-blue focus:ring-offset-2 focus:ring-offset-background border border-border-dark/50 hover:border-blue/30 transition-all"
                                 />
                                 <Image
                                     src="/icons/mode.svg"
@@ -184,10 +184,10 @@ export default function HelpCenterPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <a
                             href="/events"
-                            className="glass p-6 rounded-xl border border-blue/10 hover:border-blue/30 transition-all duration-300 hover:scale-105 group"
+                            className="glass p-6 rounded-md border border-blue/10 hover:border-blue/30 transition-all duration-300 hover:scale-105 group"
                         >
                             <div className="flex items-center gap-4 mb-3">
-                                <div className="w-12 h-12 rounded-lg bg-blue/10 flex items-center justify-center group-hover:bg-blue/20 transition-colors">
+                                <div className="w-12 h-12 rounded-md bg-blue/10 flex items-center justify-center group-hover:bg-blue/20 transition-colors">
                                     <Image src="/icons/calendar.svg" alt="Events" width={24} height={24} />
                                 </div>
                                 <h3 className="text-lg font-semibold">Browse Events</h3>
@@ -196,10 +196,10 @@ export default function HelpCenterPage() {
                         </a>
                         <a
                             href="/bookings"
-                            className="glass p-6 rounded-xl border border-blue/10 hover:border-blue/30 transition-all duration-300 hover:scale-105 group"
+                            className="glass p-6 rounded-md border border-blue/10 hover:border-blue/30 transition-all duration-300 hover:scale-105 group"
                         >
                             <div className="flex items-center gap-4 mb-3">
-                                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                                <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                                     <Image src="/icons/clock.svg" alt="Bookings" width={24} height={24} />
                                 </div>
                                 <h3 className="text-lg font-semibold">My Bookings</h3>
@@ -208,10 +208,10 @@ export default function HelpCenterPage() {
                         </a>
                         <a
                             href="/contact"
-                            className="glass p-6 rounded-xl border border-blue/10 hover:border-blue/30 transition-all duration-300 hover:scale-105 group"
+                            className="glass p-6 rounded-md border border-blue/10 hover:border-blue/30 transition-all duration-300 hover:scale-105 group"
                         >
                             <div className="flex items-center gap-4 mb-3">
-                                <div className="w-12 h-12 rounded-lg bg-blue/10 flex items-center justify-center group-hover:bg-blue/20 transition-colors">
+                                <div className="w-12 h-12 rounded-md bg-blue/10 flex items-center justify-center group-hover:bg-blue/20 transition-colors">
                                     <Image src="/icons/audience.svg" alt="Contact" width={24} height={24} />
                                 </div>
                                 <h3 className="text-lg font-semibold">Contact Support</h3>
@@ -234,7 +234,7 @@ export default function HelpCenterPage() {
                         )}
                     </h2>
                     {filteredFAQs.length === 0 ? (
-                        <div className="glass p-12 rounded-xl border border-blue/10 text-center">
+                        <div className="glass p-12 rounded-md border border-blue/10 text-center">
                             <p className="text-light-200 mb-4">No results found for your search.</p>
                             <p className="text-light-200 text-sm">Try different keywords or <a href="/contact" className="text-blue hover:underline">contact support</a> for help.</p>
                         </div>
@@ -242,7 +242,7 @@ export default function HelpCenterPage() {
                         <div className="space-y-4">
                             {filteredFAQs.map((faq, index) => (
                                 <AnimateOnScroll key={index} delay={index * 50} variant="slide">
-                                    <div className="glass rounded-xl border border-blue/10 hover:border-blue/30 transition-all duration-300 overflow-hidden">
+                                    <div className="glass rounded-md border border-blue/10 hover:border-blue/30 transition-all duration-300 overflow-hidden">
                                         <button
                                             onClick={() => toggleFAQ(index)}
                                             className="w-full p-6 text-left flex items-center justify-between hover:bg-dark-200/30 transition-colors"
@@ -272,7 +272,7 @@ export default function HelpCenterPage() {
 
             {/* Still Need Help Section */}
             <AnimateOnScroll variant="glow" delay={400}>
-                <div className="glass p-10 rounded-2xl border border-blue/20 text-center">
+                <div className="glass p-10 rounded-md border border-blue/20 text-center">
                     <h2 className="text-3xl font-bold mb-4">Still Need Help?</h2>
                     <p className="text-light-100 mb-8 max-w-2xl mx-auto">
                         Can't find what you're looking for? Our support team is here to help you with any questions or issues.
