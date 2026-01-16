@@ -59,29 +59,32 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
             .sort({ createdAt: -1 });
 
         // Format refund requests
-        const refundRequests = transactions.map((transaction: any) => ({
-            id: transaction._id.toString(),
-            transactionId: transaction._id.toString(),
-            bookingId: transaction.bookingId?._id.toString(),
-            userId: transaction.userId._id.toString(),
-            user: {
-                id: transaction.userId._id.toString(),
-                name: transaction.userId.name,
-                email: transaction.userId.email,
-            },
-            event: {
-                id: transaction.eventId._id.toString(),
-                title: transaction.eventId.title,
-                slug: transaction.eventId.slug,
-                date: transaction.eventId.date,
-            },
-            amount: transaction.amount,
-            currency: transaction.currency,
-            status: transaction.status,
-            discountAmount: transaction.discountAmount || 0,
-            refundAmount: transaction.refundAmount || 0,
-            createdAt: transaction.createdAt,
-        }));
+        const refundRequests = transactions
+            .filter((transaction: any) => transaction.eventId) // Filter out transactions with missing events
+            .map((transaction: any) => ({
+                id: transaction._id.toString(),
+                transactionId: transaction._id.toString(),
+                bookingId: transaction.bookingId?._id.toString(),
+                userId: transaction.userId?._id?.toString() || '',
+                user: {
+                    id: transaction.userId?._id?.toString() || '',
+                    name: transaction.userId?.name || 'Unknown',
+                    email: transaction.userId?.email || '',
+                },
+                event: transaction.eventId ? {
+                    id: transaction.eventId._id.toString(),
+                    title: transaction.eventId.title || 'Unknown Event',
+                    slug: transaction.eventId.slug || '',
+                    date: transaction.eventId.date || new Date(),
+                } : null,
+                amount: transaction.amount,
+                currency: transaction.currency,
+                status: transaction.status,
+                discountAmount: transaction.discountAmount || 0,
+                refundAmount: transaction.refundAmount || 0,
+                createdAt: transaction.createdAt,
+            }))
+            .filter((request: any) => request.event !== null); // Filter out requests with null events
 
         return handleSuccessResponse("Refund requests retrieved successfully", {
             refundRequests,

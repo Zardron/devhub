@@ -221,6 +221,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
         // Calculate payment details for transaction (before creating booking)
         let transactionData: any = null;
+        let finalAmount: number = 0; // Store final amount for payment record
         const Transaction = (await import("@/database/transaction.model")).default;
         const { calculateRevenue } = await import("@/lib/tickets");
 
@@ -247,7 +248,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 }
             }
 
-            const finalAmount = (event.price || 0) - discountAmount;
+            finalAmount = (event.price || 0) - discountAmount;
             const { platformFee: finalPlatformFee, organizerRevenue: finalOrganizerRevenue } = calculateRevenue(finalAmount);
 
             // Prepare transaction data (will be created after booking)
@@ -367,18 +368,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                     paymentStatus = 'failed';
                 }
 
-                // Calculate final amount (with discount if applicable)
-                let finalAmount = event.price;
-                if (transaction && typeof transaction === 'object' && 'discountAmount' in transaction) {
-                    finalAmount = transaction.amount || event.price;
-                }
+                // Use the finalAmount calculated earlier (includes event price with discounts)
+                // This is the actual amount the user paid (event.price - discountAmount)
+                // Note: Amounts are stored in cents (e.g., 100 PHP = 10000 cents)
+                // We always use finalAmount since it's calculated from event.price
+                const paymentAmount = finalAmount || (event.price || 0);
 
                 // Create payment record
                 const payment = await Payment.create({
                     eventId: event._id,
                     bookingId: booking._id,
                     userId: user._id,
-                    amount: finalAmount,
+                    amount: paymentAmount,
                     currency: event.currency || 'php',
                     status: paymentStatus,
                     paymentMethod: paymentMethodType,
@@ -390,6 +391,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                         eventSlug: event.slug,
                         eventTitle: event.title,
                         promoCode: promoCode || null,
+                        originalEventPrice: event.price || 0, // Store original event price for reference
+                        discountAmount: transactionData?.discountAmount || 0, // Store discount amount if applicable
                     },
                     paidAt: paymentStatus === 'succeeded' ? new Date() : undefined,
                 });

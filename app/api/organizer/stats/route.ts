@@ -73,23 +73,26 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
             eventId: { $in: eventIds }
         });
 
-        // Get revenue from transactions
-        const transactions = await Transaction.find({
+        // Get revenue from payments (only confirmed/succeeded payments)
+        // Only count payments that have been confirmed, not pending payments
+        const Payment = (await import("@/database/payment.model")).default;
+        const payments = await Payment.find({
             eventId: { $in: eventIds },
-            status: 'completed'
+            status: 'succeeded' // Only include confirmed payments
         });
 
-        const totalRevenue = transactions.reduce((sum, t) => sum + (t.organizerRevenue || 0), 0);
+        // Calculate total revenue from payment amounts (full payment amount, not organizer revenue)
+        const totalRevenue = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
         
         // Monthly revenue (current month)
         const currentMonth = new Date();
         currentMonth.setDate(1);
         currentMonth.setHours(0, 0, 0, 0);
         
-        const monthlyTransactions = transactions.filter(t => 
-            new Date(t.createdAt) >= currentMonth
+        const monthlyPayments = payments.filter(p => 
+            new Date(p.createdAt) >= currentMonth
         );
-        const monthlyRevenue = monthlyTransactions.reduce((sum, t) => sum + (t.organizerRevenue || 0), 0);
+        const monthlyRevenue = monthlyPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
 
         // Upcoming events
         const today = new Date().toISOString().split('T')[0];
