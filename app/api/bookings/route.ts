@@ -495,7 +495,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         const booking = new Booking(bookingData);
         await booking.save();
 
-        // Create transaction after booking is created (for both Stripe and manual payments)
+        // Create transaction after booking is created (for both PayMongo and manual payments)
         // Use try-catch to handle duplicate key errors from unique index
         let transaction: any = null;
         if (transactionData) {
@@ -809,7 +809,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                     notificationTitle = 'New Booking Received';
                     notificationMessage = `${user.name || user.email} has booked "${event.title}".${ticket?.ticketNumber ? ` Ticket: ${ticket.ticketNumber}` : ''}`;
                 } 
-                // Handle confirmed paid bookings (Stripe payments)
+                // Handle confirmed paid bookings (PayMongo payments)
                 else {
                     notificationType = 'payment_received';
                     notificationTitle = 'New Booking Received';
@@ -853,7 +853,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         }
 
         // Update event available tickets - only for confirmed bookings
-        // Free events and Stripe payments are auto-confirmed (no paymentStatus or paymentStatus is undefined)
+        // Free events and PayMongo payments are auto-confirmed (no paymentStatus or paymentStatus is undefined)
         // Manual payments start as pending, so don't decrement until confirmed
         if (event.capacity) {
             const isConfirmed = event.isFree || paymentIntentId || !booking.paymentStatus || booking.paymentStatus === 'confirmed';

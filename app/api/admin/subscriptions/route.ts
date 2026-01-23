@@ -90,8 +90,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
                 currency: sub.planId.currency,
             },
             status: sub.status,
-            stripeSubscriptionId: sub.stripeSubscriptionId,
-            stripeCustomerId: sub.stripeCustomerId,
             currentPeriodStart: sub.currentPeriodStart,
             currentPeriodEnd: sub.currentPeriodEnd,
             cancelAtPeriodEnd: sub.cancelAtPeriodEnd,

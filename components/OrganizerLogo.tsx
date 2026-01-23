@@ -29,8 +29,6 @@ const COMPANY_LOGOS: Record<string, string> = {
     "Github": "https://logos-api.apistemic.com/domain:github.com",
     "Vercel": "https://logos-api.apistemic.com/domain:vercel.com",
     "vercel": "https://logos-api.apistemic.com/domain:vercel.com",
-    "Stripe": "https://logos-api.apistemic.com/domain:stripe.com",
-    "stripe": "https://logos-api.apistemic.com/domain:stripe.com",
     "Shopify": "https://logos-api.apistemic.com/domain:shopify.com",
     "shopify": "https://logos-api.apistemic.com/domain:shopify.com",
     "MongoDB": "https://logos-api.apistemic.com/domain:mongodb.com",

@@ -6,8 +6,6 @@ export interface ISubscription extends Document {
     userId: Types.ObjectId;
     planId: Types.ObjectId;
     status: 'active' | 'canceled' | 'past_due' | 'trialing' | 'incomplete' | 'incomplete_expired';
-    stripeSubscriptionId?: string; // Deprecated, use paymongoSubscriptionId
-    stripeCustomerId?: string; // Deprecated, use paymongoCustomerId
     paymongoSubscriptionId?: string;
     paymongoCustomerId?: string;
     paymongoPaymentIntentId?: string;
@@ -38,16 +36,6 @@ const subscriptionSchema = new Schema<ISubscription>(
             enum: ['active', 'canceled', 'past_due', 'trialing', 'incomplete', 'incomplete_expired'],
             required: [true, 'Status is required'],
             default: 'trialing',
-        },
-        stripeSubscriptionId: {
-            type: String,
-            trim: true,
-            sparse: true, // Allows multiple nulls but enforces uniqueness for non-null values
-        },
-        stripeCustomerId: {
-            type: String,
-            trim: true,
-            index: true,
         },
         paymongoSubscriptionId: {
             type: String,
@@ -90,7 +78,6 @@ const subscriptionSchema = new Schema<ISubscription>(
 
 // Indexes
 subscriptionSchema.index({ userId: 1 });
-subscriptionSchema.index({ stripeSubscriptionId: 1 }, { unique: true, sparse: true });
 subscriptionSchema.index({ paymongoSubscriptionId: 1 }, { unique: true, sparse: true });
 subscriptionSchema.index({ status: 1 });
 subscriptionSchema.index({ currentPeriodEnd: 1 });

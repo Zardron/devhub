@@ -28,8 +28,6 @@ You **MUST** configure these in Vercel's dashboard before deployment:
 - `CLOUDINARY_API_SECRET`
 
 ### Payment Processing (Required if using payments)
-- `STRIPE_SECRET_KEY` - Required (throws error if missing)
-- `STRIPE_WEBHOOK_SECRET` - Optional but recommended for webhooks
 - `PAYMONGO_SECRET_KEY` - Required (throws error if missing)
 
 ### Email Service (Required for email functionality)
@@ -76,7 +74,7 @@ Choose one provider:
 
 4. **Verify External Services**
    - Cloudinary account is active
-   - Stripe/PayMongo accounts are configured
+   - PayMongo account is configured
    - Email service (SendGrid/Mailgun) is set up
 
 ## 🚀 Deployment Steps
@@ -128,9 +126,9 @@ Choose one provider:
 - Embedding logo as base64
 
 ### Issue 5: Webhook Endpoints
-**Solution**: For Stripe/PayMongo webhooks:
-- Configure webhook URLs in Stripe/PayMongo dashboard
-- Use format: `https://your-domain.vercel.app/api/webhooks/stripe` (or similar)
+**Solution**: For PayMongo webhooks:
+- Configure webhook URLs in PayMongo dashboard
+- Use format: `https://your-domain.vercel.app/api/webhooks/paymongo` (or similar)
 - Add webhook secrets to environment variables
 
 ## ✅ Post-Deployment Checklist

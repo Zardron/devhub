@@ -58,10 +58,6 @@ export async function DELETE(
         // Cancel at period end (soft cancel)
         if (subscription.paymongoSubscriptionId) {
             await cancelPayMongoSubscription(subscription.paymongoSubscriptionId);
-        } else if (subscription.stripeSubscriptionId) {
-            // Legacy Stripe support
-            const { cancelStripeSubscription } = await import("@/lib/stripe");
-            await cancelStripeSubscription(subscription.stripeSubscriptionId, false);
         }
 
         subscription.cancelAtPeriodEnd = true;
@@ -181,16 +177,6 @@ export async function PATCH(
                 { message: "Plan upgrades are not yet supported. Please cancel and create a new subscription." },
                 { status: 400 }
             );
-        } else if (subscription.stripeSubscriptionId) {
-            // Legacy Stripe support
-            if (!newPriceId) {
-                return NextResponse.json(
-                    { message: "Invalid subscription or price ID" },
-                    { status: 400 }
-                );
-            }
-            const { updateStripeSubscription } = await import("@/lib/stripe");
-            await updateStripeSubscription(subscription.stripeSubscriptionId, newPriceId);
         }
 
         // Update database

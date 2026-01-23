@@ -11,8 +11,6 @@ export interface ITransaction extends Document {
     currency: string;
     status: 'pending' | 'completed' | 'failed' | 'refunded' | 'partially_refunded';
     paymentMethod: 'card' | 'bank_transfer' | 'paypal' | 'free';
-    stripePaymentIntentId?: string; // Legacy Stripe support
-    stripeChargeId?: string; // Legacy Stripe support
     paymongoPaymentIntentId?: string; // PayMongo payment intent ID
     refundAmount?: number; // Refunded amount in cents
     refundedAt?: Date;
@@ -69,15 +67,6 @@ const transactionSchema = new Schema<ITransaction>(
             enum: ['card', 'bank_transfer', 'paypal', 'free'],
             required: [true, 'Payment method is required'],
         },
-        stripePaymentIntentId: {
-            type: String,
-            trim: true,
-            sparse: true,
-        },
-        stripeChargeId: {
-            type: String,
-            trim: true,
-        },
         paymongoPaymentIntentId: {
             type: String,
             trim: true,
@@ -128,7 +117,6 @@ transactionSchema.index({ userId: 1, createdAt: -1 });
 transactionSchema.index({ eventId: 1 });
 transactionSchema.index({ bookingId: 1 });
 transactionSchema.index({ status: 1 });
-transactionSchema.index({ stripePaymentIntentId: 1 }, { unique: true, sparse: true });
 transactionSchema.index({ paymongoPaymentIntentId: 1 }, { unique: true, sparse: true });
 
 const Transaction = mongoose.models.Transaction || mongoose.model<ITransaction>('Transaction', transactionSchema);

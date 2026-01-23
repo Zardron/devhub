@@ -211,13 +211,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             }
         }
 
-        // TODO: Process actual refund through Stripe
-        // if (transaction.stripePaymentIntentId) {
-        //     const { stripe } = await import("@/lib/stripe");
-        //     await stripe.refunds.create({
-        //         payment_intent: transaction.stripePaymentIntentId,
-        //         amount: finalRefundAmount,
-        //     });
+        // TODO: Process actual refund through PayMongo
+        // if (transaction.paymongoPaymentIntentId) {
+        //     // Process refund via PayMongo API
+        //     // amount: finalRefundAmount,
         // }
 
         // Create notification

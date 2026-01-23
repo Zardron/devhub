@@ -115,12 +115,6 @@ async function seedPlans() {
         }
 
         console.log('\n✅ All plans seeded successfully!');
-        console.log('\n⚠️  IMPORTANT: Create Stripe Products and Prices for each plan:');
-        console.log('   1. Go to Stripe Dashboard → Products');
-        console.log('   2. Create a product for each plan (Free, Basic, Pro, Enterprise)');
-        console.log('   3. Create prices (monthly and annual) for each product');
-        console.log('   4. Add price IDs to plan metadata or environment variables');
-        console.log('\n   Example: STRIPE_PRICE_BASIC_MONTHLY=price_xxxxx');
         
         process.exit(0);
     } catch (error) {

@@ -8,7 +8,6 @@
         avatar?: string; // User avatar URL
         role: 'admin' | 'user' | 'organizer';
         organizerId?: mongoose.Types.ObjectId; // Reference to Organizer if role is 'organizer'
-        stripeCustomerId?: string; // Stripe customer ID for payment processing (deprecated, use paymongoCustomerId)
         paymongoCustomerId?: string; // PayMongo customer ID for payment processing
         banned?: boolean;
         planId?: string;
@@ -76,17 +75,11 @@
                 enum: ['admin', 'user', 'organizer'],
                 required: [true, 'Role is required'],
             },
-            organizerId: {
-                type: Schema.Types.ObjectId,
-                ref: 'Organizer',
-            },
-            stripeCustomerId: {
-                type: String,
-                trim: true,
-                sparse: true,
-                index: true,
-            },
-            paymongoCustomerId: {
+        organizerId: {
+            type: Schema.Types.ObjectId,
+            ref: 'Organizer',
+        },
+        paymongoCustomerId: {
                 type: String,
                 trim: true,
                 sparse: true,

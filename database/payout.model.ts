@@ -6,13 +6,12 @@ export interface IPayout extends Document {
     amount: number; // Amount in cents
     currency: string;
     status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
-    paymentMethod: 'bank_transfer' | 'paypal' | 'stripe_connect';
+    paymentMethod: 'bank_transfer' | 'paypal';
     accountDetails?: {
         bankName?: string;
         accountNumber?: string;
         accountHolderName?: string;
         paypalEmail?: string;
-        stripeAccountId?: string;
     };
     transactionIds: Types.ObjectId[]; // Transactions included in this payout
     requestedAt: Date;
@@ -52,7 +51,7 @@ const payoutSchema = new Schema<IPayout>(
         },
         paymentMethod: {
             type: String,
-            enum: ['bank_transfer', 'paypal', 'stripe_connect'],
+            enum: ['bank_transfer', 'paypal'],
             required: [true, 'Payment method is required'],
         },
         accountDetails: {
@@ -60,7 +59,6 @@ const payoutSchema = new Schema<IPayout>(
             accountNumber: String,
             accountHolderName: String,
             paypalEmail: String,
-            stripeAccountId: String,
         },
         transactionIds: [{
             type: Schema.Types.ObjectId,

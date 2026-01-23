@@ -295,7 +295,7 @@ export default function PricingPage() {
                             <div className="glass p-6 rounded-md border border-border-dark/50 hover:border-blue/30 transition-colors">
                                 <h3 className="font-semibold mb-3">What payment methods do you accept?</h3>
                                 <p className="text-sm text-light-200/80">
-                                    We accept all major credit cards through Stripe. Secure and encrypted payments.
+                                    We accept all major payment methods through PayMongo. Secure and encrypted payments.
                                 </p>
                             </div>
                             <div className="glass p-6 rounded-md border border-border-dark/50 hover:border-blue/30 transition-colors">

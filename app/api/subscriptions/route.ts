@@ -126,7 +126,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             }
 
             // Create or retrieve PayMongo customer (optional - not required for payment intents)
-            let paymongoCustomerId = user.paymongoCustomerId || user.stripeCustomerId; // Support migration
+            let paymongoCustomerId = user.paymongoCustomerId;
             if (!paymongoCustomerId) {
                 try {
                     const customer = await createPayMongoCustomer(user.email, user.name, {
@@ -176,7 +176,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         }
 
         // Create or retrieve PayMongo customer (optional - not required for payment intents)
-        let paymongoCustomerId = user.paymongoCustomerId || user.stripeCustomerId; // Support migration
+        let paymongoCustomerId = user.paymongoCustomerId;
         if (!paymongoCustomerId) {
             try {
                 const customer = await createPayMongoCustomer(user.email, user.name, {

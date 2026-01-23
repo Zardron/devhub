@@ -339,18 +339,15 @@ export async function DELETE(
         // Handle refund if payment was made
         if (transaction && transaction.amount > 0) {
             // For now, we'll mark the transaction as refunded
-            // In production, you'd want to actually process the refund through Stripe
+            // In production, you'd want to actually process the refund through PayMongo
             transaction.status = 'refunded';
             transaction.refundAmount = transaction.amount;
             transaction.refundedAt = new Date();
             await transaction.save();
 
-            // TODO: Process actual refund through Stripe
-            // if (transaction.stripePaymentIntentId) {
-            //     const { stripe } = await import("@/lib/stripe");
-            //     await stripe.refunds.create({
-            //         payment_intent: transaction.stripePaymentIntentId,
-            //     });
+            // TODO: Process actual refund through PayMongo
+            // if (transaction.paymongoPaymentIntentId) {
+            //     // Process refund via PayMongo API
             // }
         }
 
