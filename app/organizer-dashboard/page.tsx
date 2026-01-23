@@ -279,7 +279,9 @@ export default function OrganizerDashboardPage() {
     }
 
     // Handle error case - only show error if there's an actual error from the query
-    if (error || (stats && !stats.data)) {
+    // Note: handleSuccessResponse spreads data at root level, so stats.data may not exist
+    // We check for actual query errors, not the absence of stats.data
+    if (error) {
         return (
             <div className="space-y-6">
                 <div>
